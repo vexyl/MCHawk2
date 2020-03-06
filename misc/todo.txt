@@ -1,0 +1,12 @@
+Project8 TODO
+--------------
+Linux compatibility (DONE)
+Multithreading OR interrupts in map loading
+Position/Orientation updates (deltas?)
+throw exceptions?
+remove Socket class, TCPSocket is fine
+Check if valid block type
+custom Lua binding
+Permission system
+extensive server API
+central sqlite3 database
