@@ -20,10 +20,9 @@ public:
 		//m_map = MapGen::GenerateFlatMap(256, 64, 256);
 		m_map = std::make_unique<Map>();
 		m_map->LoadFromFile("test.map", 256, 64, 256);
-		if (!m_map->LoadFromFile("test.map", 256, 64, 256)) {
+		if (!m_map->LoadFromFile("test.map", 256, 64, 256))
 			m_map = MapGen::GenerateFlatMap(256, 64, 256);
-			std::cout << "created map" << std::endl;
-		}
+
 		m_spawnPosition = { 256 / 2, 64 / 2, 256 / 2};
 	}
 
