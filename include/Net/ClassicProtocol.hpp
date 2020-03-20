@@ -1,12 +1,14 @@
 #ifndef CLASSICPROTOCOL_H_
 #define CLASSICPROTOCOL_H_
 
-#include "../../include/Net/IProtocol.hpp"
-#include "../../include/Net/PacketHandlerEvent.hpp"
-#include "../../include/Utils/MCString.hpp"
+#include "IProtocol.hpp"
+#include "Packet.hpp"
+#include "../Event.hpp"
+#include "../Utils/MCString.hpp"
 
 #include <map>
 #include <functional>
+#include <memory>
 
 #ifdef __linux__
 #include <arpa/inet.h>
@@ -495,10 +497,10 @@ public:
 	static std::shared_ptr<ClassicProtocol::SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
 
 	// Packet handler delegates
-	PacketHandlerEvent<AuthenticationPacket> authEvents;
-	PacketHandlerEvent<SetBlockPacket> setBlockEvents;
-	PacketHandlerEvent<PositionOrientationPacket> positionOrientationEvents;
-	PacketHandlerEvent<MessagePacket> messageEvents;
+	::Event<Client*, AuthenticationPacket> authEvents;
+	::Event<Client*, SetBlockPacket> setBlockEvents;
+	::Event<Client*, PositionOrientationPacket> positionOrientationEvents;
+	::Event<Client*, MessagePacket> messageEvents;
 
 	ClassicProtocol();
 

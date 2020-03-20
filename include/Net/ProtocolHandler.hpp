@@ -1,8 +1,8 @@
 #ifndef PROTOCOLHANDLER_H_
 #define PROTOCOLHANDLER_H_
 
-#include "../../include/Net/IProtocol.hpp"
-#include "../../include/Net/Socket.hpp"
+#include "../Net/IProtocol.hpp"
+#include "../Net/Socket.hpp"
 
 #include <string>
 #include <map>

@@ -1,8 +1,7 @@
 #ifndef IPROTOCOL_H_
 #define IPROTOCOL_H_
 
-#include "../../include/Net/IProtocol.hpp"
-#include "../../include/Utils/BufferStream.hpp"
+#include "../Utils/BufferStream.hpp"
 
 #include <cstdint>
 

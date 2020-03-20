@@ -1,15 +1,15 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "../include/Net/Packet.hpp"
-#include "../include/Utils/MCString.hpp"
-#include "../include/Net/ProtocolHandler.hpp"
-#include "../include/Net/ClassicProtocol.hpp"
-#include "../include/Utils/Logger.hpp"
-#include "../include/Net/TCPSocket.hpp"
-#include "../include/Net/Client.hpp"
-#include "../include/World.hpp"
-#include "../include/Player.hpp"
+#include "Net/Packet.hpp"
+#include "Utils/MCString.hpp"
+#include "Net/ProtocolHandler.hpp"
+#include "Net/ClassicProtocol.hpp"
+#include "Utils/Logger.hpp"
+#include "Net/TCPSocket.hpp"
+#include "Net/Client.hpp"
+#include "World.hpp"
+#include "Player.hpp"
 
 #include <vector>
 

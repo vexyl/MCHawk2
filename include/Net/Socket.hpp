@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <cassert>
 
-#include "../../include/Utils/BufferStream.hpp"
+#include "../Utils/BufferStream.hpp"
 
 constexpr auto MAX_PACKET_SIZE = 131 * 2; // AuthenticationPacket = 131 bytes
 

@@ -1,7 +1,7 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
-#include "../../include/Net/Socket.hpp"
+#include "../Net/Socket.hpp"
 
 #include <vector>
 #include <memory>
