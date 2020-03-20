@@ -72,9 +72,12 @@ void Map::SaveToFile(std::string filename)
 }
 
 // FIXME: Map dimensions should not be set here
-void Map::LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z)
+bool Map::LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z)
 {
 	std::ifstream file(filename, std::ios::binary | std::ios::ate);
+
+	if (!file) return false;
+
 	std::streamsize size = file.tellg();
 	file.seekg(0, std::ios::beg);
 
@@ -93,4 +96,6 @@ void Map::LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z)
 	m_xSize = x;
 	m_ySize = y;
 	m_zSize = z;
+
+	return true;
 }

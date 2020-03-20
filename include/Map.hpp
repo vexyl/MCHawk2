@@ -26,7 +26,7 @@ public:
 
 	void CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const;
 	void SaveToFile(std::string filename);
-	void LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z);
+	bool LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z);
 
 private:
 	friend struct MapGen;
