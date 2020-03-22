@@ -1,0 +1,36 @@
+// In OnSetBlock
+if (type == FLOWING_WATER) {
+	neighbors = m_map->GetNeighbors(x, y, z);
+	for (auto& block : neighbors) {
+		// Ignore blocks above original block
+		if (block->type == FLOWING_WATER) {
+			// Change block to FLOWING_WATER
+			// Repeat process on said block (recursion)
+			// Stack exhaustion? Use a command queue instead?
+		}
+
+		// Change original block to STATIONARY_WATER
+	}
+}
+
+// Recursion
+// Stack exhaustion possible
+// Possibly hang checking large amount of blocks
+
+
+// Command queue
+commandQueue->add(block, CheckWaterFlow);
+// In command queue update() go through each command and execute
+// Deletes command when done
+// No system governing blocks, fast if put on a thread or only execute X amount at a time
+// No recursion
+
+
+// Physics system
+// Keep track of all flowing water blocks
+// Periodically go through list and check if neighbors need updating
+// Delete from list if changes to stationary or if deleted
+// Slow?
+
+
+// Minecraft original way -- Neighbor triggers, same as recursive method? Can't remember.

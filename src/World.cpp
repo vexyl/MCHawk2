@@ -94,7 +94,7 @@ void World::SendLevel(Client* client)
 
 		bytes += count;
 
-		std::cout << bytes << "/" << compSize << " bytes" << std::endl;
+		// std::cout << bytes << "/" << compSize << " bytes" << std::endl;
 
 		chunkPacket->percent = static_cast<uint8_t>((((float)bytes / (float)compSize) * 100.0f));
 

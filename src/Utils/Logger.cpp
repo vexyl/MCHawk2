@@ -64,12 +64,8 @@ void Logger::Log(LogLevel logLevel, const char* format, ...)
 
 	if (logLevel == LogLevel::kNormal) {
 		if (!mute) {
-#ifdef __linux__
-			std::cerr << "\033[1;32mTODO kNormal\033[0m ";
-#elif _WIN32
+#ifdef _WIN32
 			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-#else
-			std::cerr << "DEBUG ";
 #endif
 		}
 
