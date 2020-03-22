@@ -10,3 +10,4 @@ custom Lua binding
 Permission system
 extensive server API
 central sqlite3 database
+MCString to C string function so we don't have to convert to std::string first

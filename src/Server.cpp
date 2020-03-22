@@ -228,7 +228,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	Player& player = pair.first->second;
 	player.SetName(packet.name.ToString());
 
-	std::string serverName = "Project8", serverMOTD = "Welcome";
+	std::string serverName = "MCHawk2", serverMOTD = "Welcome to a world of blocks!";
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, serverName, serverMOTD, 0));
 
 	m_world.AddPlayer(client->GetPID());
