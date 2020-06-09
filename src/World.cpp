@@ -44,9 +44,6 @@ void World::AddPlayer(int8_t pid)
 	player.SetWorld(this);
 	m_playerPids.push_back(pid);
 
-	// TEMPORARY
-	ServerAPI::SetUserType(nullptr, client, 0x64);
-
 	ServerAPI::SendClientMessage(nullptr, client, "&bWelcome to the world, " + name + "!");
 }
 

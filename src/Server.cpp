@@ -232,8 +232,8 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, serverName, serverMOTD, 0));
 
 	m_world.AddPlayer(client->GetPID());
-
 	client->SetAuthorized(true);
+	ServerAPI::SetUserType(nullptr, client, 0x64); // TEMPORARY
 
 	BroadcastMessage("&e" + name + " connected");
 }

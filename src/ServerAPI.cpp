@@ -16,10 +16,8 @@ using namespace Net;
 	}
 #pragma endregion
 
-void ServerAPI::BroadcastMessage(Client* client, std::string message)
+void ServerAPI::BroadcastMessage(Client* srcClient, std::string message)
 {
-	SERVERAPI_PREFIX_MESSAGE(client, message);
-
 	// ClassicalSharp color codes
 	// and this could be made more efficient by keeping track of pos of last color
 	size_t colorPos = 0;
@@ -34,10 +32,7 @@ void ServerAPI::BroadcastMessage(Client* client, std::string message)
 		colorPos++;
 	}
 
-	if (client != nullptr)
-		LOG(LOGLEVEL_NORMAL, message.c_str());
-
-	serverAPI_prefix_server->BroadcastMessage(message);
+	ServerAPI::SendClientMessage(srcClient, nullptr, message);
 }
 
 void ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::string message)
@@ -45,7 +40,15 @@ void ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::str
 	assert(dstClient != nullptr);
 	SERVERAPI_PREFIX_MESSAGE(srcClient, message);
 
-	Server::SendClientMessage(dstClient, message);
+	if (srcClient == nullptr)
+		message = "&e" + message;
+
+	if (dstClient == nullptr) {
+		serverAPI_prefix_server->BroadcastMessage(message);
+		LOG(LOGLEVEL_NORMAL, message.c_str());
+	} else {
+		Server::SendWrappedMessage(dstClient, message);
+	}
 }
 
 void ServerAPI::MapSetBlock(Net::Client* client, Map* map, Position pos, uint8_t type)
