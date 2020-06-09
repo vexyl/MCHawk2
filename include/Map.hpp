@@ -18,6 +18,7 @@ public:
 	Map(const Map&) = delete;
 	Map& operator=(const Map&) = delete;
 
+	uint8_t PeekBlock(Position& pos);
 	uint16_t GetXSize() const { return m_xSize; }
 	uint16_t GetYSize() const { return m_ySize; }
 	uint16_t GetZSize() const { return m_zSize; }

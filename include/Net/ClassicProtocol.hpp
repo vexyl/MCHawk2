@@ -32,6 +32,78 @@ public:
 	enum ClientOpcodes { kAuthentication = 0x00, kSetBlock = 0x05, kPositionOrientation = 0x08, kOrientation = 0x0b, kDespawn = 0x0c, kMessage = 0x0d };
 	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07};
 
+	enum BlockType {
+		kAir,
+		kStone,
+		kGrass,
+		kDirt,
+		kCobblestone,
+		kWoodPlanks,
+		kSapling,
+		kBedrock,
+		kFlowingWater,
+		kStationaryWater,
+		kFlowingLava,
+		kStationaryLava,
+		kSand,
+		kGravel,
+		kGoldOre,
+		kIronOre,
+		kCoalOre,
+		kWood,
+		kLeaves,
+		kSponge,
+		kGlass,
+		kRedCloth,
+		kOrangeCloth,
+		kYellowCloth,
+		kLimeCloth,
+		kGreenCloth,
+		kAquaGreenCloth,
+		kCyanCloth,
+		kBlueCloth,
+		kPurpleCloth,
+		kIndigoCloth,
+		kVioletCloth,
+		kMagentaCloth,
+		kPinkCloth,
+		kBlackCloth,
+		kGrayCloth,
+		kWhiteCloth,
+		kDandelion,
+		kRose,
+		kBrownMushroom,
+		kRedMushroom,
+		kGoldBlock,
+		kIronBlock,
+		kDoubleSlab,
+		kSlab,
+		kBricks,
+		kTNT,
+		kBookshelf,
+		kMossStone,
+		kObsidian
+	};
+
+	static std::map<uint8_t, std::string> blockTypes;
+
+	static bool IsValidBlock(uint8_t type)
+	{
+		auto iter = blockTypes.find(type);
+		if (iter != blockTypes.end())
+			return true;
+		return false;
+	}
+
+	static std::string GetBlockNameByType(uint8_t type)
+	{
+		std::string name;
+		auto iter = blockTypes.find(type);
+		if (iter != blockTypes.end())
+			name = iter->second;
+		return name;
+	}
+
 	// Client -> Server
 	class AuthenticationPacket final : public Packet {
 	public:
