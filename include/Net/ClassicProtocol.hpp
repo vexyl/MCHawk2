@@ -422,9 +422,7 @@ public:
 			Packet(ServerOpcodes::kLevelDataChunkPacket, 1028),
 			chunkLength(0),
 			percent(0)
-		{
-			std::memset(chunkData, 0x0, 1024);
-		}
+		{}
 
 		virtual void Deserialize(Utils::BufferStream& reader) override
 		{
