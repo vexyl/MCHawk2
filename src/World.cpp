@@ -118,6 +118,12 @@ void World::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPack
 
 	Position pos(p->x, p->y, p->z);
 
+	if (!ClassicProtocol::IsValidBlock(packet.type)) {
+		uint8_t actualType = m_map->PeekBlock(pos);
+		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
+		return;
+	}
+
 	ServerAPI::MapSetBlock(client, m_map.get(), pos, p->type);
 	
 	uint8_t pid = client->GetPID();

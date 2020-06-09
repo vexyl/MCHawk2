@@ -49,7 +49,7 @@ void ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::str
 
 void ServerAPI::MapSetBlock(Net::Client* client, Map* map, Position pos, uint8_t type)
 {
-	// std::string message = "placed block " + std::to_string(type) + " @ (" + std::to_string(static_cast<short>(pos.x)) + ", " + std::to_string(static_cast<short>(pos.y)) + ", " + std::to_string(static_cast<short>(pos.z)) + ")";
+	//std::string message = "placed block " + std::to_string(type) + " (" + ClassicProtocol::GetBlockNameByType(type) + ") @ (" + std::to_string(static_cast<short>(pos.x)) + ", " + std::to_string(static_cast<short>(pos.y)) + ", " + std::to_string(static_cast<short>(pos.z)) + ")";
 
 	//SERVERAPI_PREFIX_MESSAGE(client, message);
 	//LOG(LOGLEVEL_DEBUG, message.c_str());

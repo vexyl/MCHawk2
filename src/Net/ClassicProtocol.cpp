@@ -3,6 +3,58 @@
 
 using namespace Net;
 
+std::map<uint8_t, std::string> ClassicProtocol::blockTypes = {
+	{ kAir, "air" },
+	{ kStone, "stone" },
+	{ kGrass, "grass" },
+	{ kDirt, "dirt" },
+	{ kCobblestone, "cobblestone" },
+	{ kWoodPlanks, "wood planks" },
+	{ kSapling, "sapling" },
+	{ kBedrock, "bedrock" },
+	{ kFlowingWater, "flowing water" },
+	{ kStationaryWater, "stationary water" },
+	{ kFlowingLava, "flowing lava" },
+	{ kStationaryLava, "stationary lava" },
+	{ kSand, "sand" },
+	{ kGravel, "gravel" },
+	{ kGoldOre, "gold ore" },
+	{ kCoalOre, "coal ore" },
+	{ kWood, "wood" },
+	{ kLeaves, "leaves" },
+	{ kSponge, "sponge" },
+	{ kGlass, "glass" },
+	{ kRedCloth, "red cloth" },
+	{ kOrangeCloth, "orange cloth" },
+	{ kYellowCloth, "yellow cloth" },
+	{ kLimeCloth, "lime cloth" },
+	{ kGreenCloth, "green cloth" },
+	{ kAquaGreenCloth, "aqua cloth" },
+	{ kCyanCloth, "cyan cloth" },
+	{ kBlueCloth, "blue cloth" },
+	{ kPurpleCloth, "purple cloth" },
+	{ kIndigoCloth, "indigo cloth" },
+	{ kVioletCloth, "violet cloth" },
+	{ kMagentaCloth, "magenta cloth" },
+	{ kPinkCloth, "pink cloth" },
+	{ kBlackCloth, "black cloth" },
+	{ kGrayCloth, "gray cloth" },
+	{ kWhiteCloth, "white cloth" },
+	{ kDandelion, "dandelion" },
+	{ kRose, "rose" },
+	{ kBrownMushroom, "brown mushroom" },
+	{ kRedMushroom, "red mushroom" },
+	{ kGoldBlock, "gold block" },
+	{ kIronBlock, "iron block" },
+	{ kDoubleSlab, "double slab" },
+	{ kSlab, "slab" },
+	{ kBricks, "bricks" },
+	{ kTNT, "tnt" },
+	{ kBookshelf, "bookshelf" },
+	{ kMossStone, "moss stone" },
+	{ kObsidian, "obsidian" }
+};
+
 // Are the sizes necessary here? Packet has GetSize()
 ClassicProtocol::ClassicProtocol()
 {
@@ -80,7 +132,7 @@ void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream&
 	setBlockEvents.Trigger(client, packet);
 
 	std::cout
-		<< "SetBlock type=" << static_cast<unsigned>(packet.type)
+		<< "SetBlock type=" << static_cast<unsigned>(packet.type) << " (" << GetBlockNameByType(packet.type) << ")"
 		<< ", mode=" << static_cast<unsigned>(packet.mode)
 		<< " @ ("
 		<< static_cast<short>(packet.x) << ", "
