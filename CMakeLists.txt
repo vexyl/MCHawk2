@@ -19,5 +19,6 @@ file(GLOB SOURCES
 # add the executable
 add_executable(MCHawk2 ${SOURCES})
 
-find_package(ZLIB)
-target_link_libraries(MCHawk2 PUBLIC ${ZLIB_LIBRARIES})
+add_subdirectory(deps/zlib-1.2.11)
+include_directories(MCHawk2 ${ZLIB_DEPS_DIR})
+target_link_libraries(MCHawk2 PUBLIC zlib)
