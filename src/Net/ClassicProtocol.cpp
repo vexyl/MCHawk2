@@ -206,8 +206,6 @@ std::shared_ptr<ClassicProtocol::LevelInitializePacket> ClassicProtocol::MakeLev
 	return std::make_shared<ClassicProtocol::LevelInitializePacket>();
 }
 
-// TODO: LevelDataChunkPacket
-
 std::shared_ptr<ClassicProtocol::LevelFinalizePacket> ClassicProtocol::MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z)
 {
 	return std::make_shared<ClassicProtocol::LevelFinalizePacket>(x, y, z);
@@ -216,4 +214,9 @@ std::shared_ptr<ClassicProtocol::LevelFinalizePacket> ClassicProtocol::MakeLevel
 std::shared_ptr<ClassicProtocol::SetBlock2Packet> ClassicProtocol::MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type)
 {
 	return std::make_shared<ClassicProtocol::SetBlock2Packet>(x, y, z, type);
+}
+
+std::shared_ptr<ClassicProtocol::UserTypePacket> ClassicProtocol::MakeUserTypePacket(uint8_t type)
+{
+	return std::make_shared<ClassicProtocol::UserTypePacket>(type);
 }

@@ -30,7 +30,7 @@ struct OpcodeHandler final {
 class ClassicProtocol final : public IProtocol {
 public:
 	enum ClientOpcodes { kAuthentication = 0x00, kSetBlock = 0x05, kPositionOrientation = 0x08, kOrientation = 0x0b, kDespawn = 0x0c, kMessage = 0x0d };
-	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07};
+	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07, kUserTypePacket = 0x0f};
 
 	enum BlockType {
 		kAir,
@@ -556,17 +556,46 @@ public:
 		}
 	};
 
+	// Server -> Client
+	class UserTypePacket final : public Packet {
+	public:
+		uint8_t type;
+
+		UserTypePacket() : UserTypePacket(0) {}
+		UserTypePacket(uint8_t type) :
+			Packet(ServerOpcodes::kUserTypePacket, 2),
+			type(type)
+		{}
+
+		virtual void Deserialize(Utils::BufferStream& reader) override
+		{
+			// Skip opcode because each packet knows its opcode
+			reader.Skip(sizeof(m_opcode));
+		}
+
+		virtual std::unique_ptr<Utils::BufferStream> Serialize() override
+		{
+			auto writer = std::make_unique<Utils::BufferStream>(m_packetSize);
+
+			if (writer != nullptr) {
+				writer->WriteUInt8(m_opcode);
+				writer->WriteUInt8(type);
+			}
+
+			return writer;
+		}
+	};
+
 	static std::shared_ptr<PositionOrientationPacket> MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
 	static std::shared_ptr<OrientationPacket> MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch);
-	static std::shared_ptr<ClassicProtocol::MessagePacket> MakeMessagePacket(uint8_t flag, Utils::MCString message);
-	static std::shared_ptr<ClassicProtocol::DespawnPacket> MakeDespawnPacket(int8_t pid);
-	static std::shared_ptr<ClassicProtocol::ServerIdentificationPacket> MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType);
-	static std::shared_ptr<ClassicProtocol::SpawnPlayerPacket> MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
-	static std::shared_ptr<ClassicProtocol::LevelInitializePacket> MakeLevelInitializePacket();
-	//static std::shared_ptr<ClassicProtocol::SpawnPlayerPacket> MakeLevelDataChunkPacket();
-	static std::shared_ptr<ClassicProtocol::LevelFinalizePacket> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
-
-	static std::shared_ptr<ClassicProtocol::SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
+	static std::shared_ptr<MessagePacket> MakeMessagePacket(uint8_t flag, Utils::MCString message);
+	static std::shared_ptr<DespawnPacket> MakeDespawnPacket(int8_t pid);
+	static std::shared_ptr<ServerIdentificationPacket> MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType);
+	static std::shared_ptr<SpawnPlayerPacket> MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
+	static std::shared_ptr<LevelInitializePacket> MakeLevelInitializePacket();
+	static std::shared_ptr<LevelFinalizePacket> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
+	static std::shared_ptr<SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
+	static std::shared_ptr<UserTypePacket> ClassicProtocol::MakeUserTypePacket(uint8_t type);
 
 	// Packet handler delegates
 	::Event<Client*, AuthenticationPacket> authEvents;

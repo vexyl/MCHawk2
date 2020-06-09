@@ -12,7 +12,7 @@ using namespace Net;
 		Player& player = serverAPI_prefix_server->GetPlayer(client->GetPID()); \
 		message = "[" + player.GetName() + "] " + message; \
 	} else { \
-		message = "&e[CONSOLE] " + message; \
+		message = "[CONSOLE] " + message; \
 	}
 #pragma endregion
 
@@ -44,6 +44,7 @@ void ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::str
 {
 	assert(dstClient != nullptr);
 	SERVERAPI_PREFIX_MESSAGE(srcClient, message);
+
 	Server::SendClientMessage(dstClient, message);
 }
 
@@ -55,4 +56,12 @@ void ServerAPI::MapSetBlock(Net::Client* client, Map* map, Position pos, uint8_t
 	//LOG(LOGLEVEL_DEBUG, message.c_str());
 
 	map->SetBlock(pos, type);
+}
+
+void ServerAPI::SetUserType(Net::Client* client, Net::Client* dstClient, uint8_t type)
+{
+	std::string message = "set user type of pid " + std::to_string(dstClient->GetPID()) + " to " + std::to_string(type);
+	SERVERAPI_PREFIX_MESSAGE(client, message);
+	LOG(LOGLEVEL_DEBUG, message.c_str());
+	dstClient->QueuePacket(ClassicProtocol::MakeUserTypePacket(type));
 }
