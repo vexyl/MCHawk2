@@ -593,7 +593,7 @@ public:
 	static std::shared_ptr<LevelInitializePacket> MakeLevelInitializePacket();
 	static std::shared_ptr<LevelFinalizePacket> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
 	static std::shared_ptr<SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
-	static std::shared_ptr<UserTypePacket> ClassicProtocol::MakeUserTypePacket(uint8_t type);
+	static std::shared_ptr<UserTypePacket> MakeUserTypePacket(uint8_t type);
 
 	// Packet handler delegates
 	::Event<Client*, AuthenticationPacket> authEvents;
