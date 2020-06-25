@@ -37,7 +37,7 @@ void ServerAPI::BroadcastMessage(Client* srcClient, std::string message)
 
 void ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::string message)
 {
-	assert(dstClient != nullptr);
+	assert(srcClient != nullptr || dstClient != nullptr);
 	SERVERAPI_PREFIX_MESSAGE(srcClient, message);
 
 	if (srcClient == nullptr)
