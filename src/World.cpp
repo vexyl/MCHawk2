@@ -118,13 +118,15 @@ void World::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPack
 
 	Position pos(p->x, p->y, p->z);
 
+	// TODO: Kick player
 	if (!ClassicProtocol::IsValidBlock(packet.type)) {
 		uint8_t actualType = m_map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
 		return;
 	}
 
-	ServerAPI::MapSetBlock(client, m_map.get(), pos, p->type);
+	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, p->type))
+		return;
 	
 	uint8_t pid = client->GetPID();
 	FOREACH_PLAYER(obj_player, obj_client)

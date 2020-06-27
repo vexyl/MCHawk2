@@ -10,6 +10,7 @@
 #include "Net/Client.hpp"
 #include "World.hpp"
 #include "Player.hpp"
+#include "Privileges.hpp"
 
 #include <vector>
 
@@ -35,6 +36,7 @@ public:
 
 	Player& GetPlayer(uint8_t pid);
 	Utils::Logger& GetLogger() { return m_logger; }
+	PrivilegeHandler& GetPrivilegeHandler() { return m_privHandler; }
 
 	void Init();
 
@@ -52,6 +54,7 @@ private:
 	Utils::Logger m_logger;
 	Net::ProtocolHandler m_protocolHandler;
 	Net::TCPSocket m_socket;
+	PrivilegeHandler m_privHandler;
 	bool m_running = true;
 
 	std::vector<Net::Client*> m_unauthorizedClients;

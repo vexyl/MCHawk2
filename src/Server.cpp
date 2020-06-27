@@ -233,7 +233,11 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	m_world.AddPlayer(client->GetPID());
 	client->SetAuthorized(true);
-	ServerAPI::SetUserType(nullptr, client, 0x64); // TEMPORARY
+
+	// FIXME: TEMPORARY
+	ServerAPI::SetUserType(nullptr, client, 0x64);
+	m_privHandler.GivePrivilege(player.GetName(), "MapSetBlock");
+	m_privHandler.GivePrivilege(player.GetName(), "chat");
 
 	BroadcastMessage("&e" + name + " connected");
 }
@@ -260,5 +264,5 @@ void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacke
 		return;
 	}
 
-	ServerAPI::BroadcastMessage(client, message);
+	ServerAPI::BroadcastMessage(nullptr, client, message);
 }
