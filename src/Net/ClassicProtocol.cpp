@@ -114,7 +114,7 @@ bool ClassicProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::Buffer
 
 void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
-	std::cout << "[AuthenticationOpcodeHandler]" << std::endl;
+	//std::cout << "[AuthenticationOpcodeHandler]" << std::endl;
 
 	AuthenticationPacket packet;
 	packet.Deserialize(reader);
@@ -163,7 +163,7 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 
 void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
-	std::cout << "[MessageOpcodeHandler]" << std::endl;
+	//std::cout << "[MessageOpcodeHandler]" << std::endl;
 
 	MessagePacket packet;
 	packet.Deserialize(reader);
