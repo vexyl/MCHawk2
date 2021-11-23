@@ -48,18 +48,6 @@ void World::AddPlayer(Player::PlayerPtr player)
 		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(spawnPlayerPid, otherPlayer->GetName(), pos.x, pos.y, pos.z, yaw, pitch));
 	END_FOREACH_PLAYER
 
-	int idOffset = 0; // FIXME
-	for (auto& bot : m_bots) {
-			int8_t spawnPlayerPid = 30 + idOffset;
-			Position pos = bot->GetPosition();
-			uint8_t yaw = bot->GetYaw();
-			uint8_t pitch = bot->GetPitch();
-
-			client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(spawnPlayerPid, bot->GetName(), pos.x, pos.y, pos.z, yaw, pitch));
-
-			idOffset++;
-	}
-
 	player->SetWorld(this);
 	m_players.push_back(player);
 	LOG(LOGLEVEL_INFO, "world pid=%d", player->GetID());
@@ -78,53 +66,9 @@ void World::RemovePlayer(int8_t pid)
 	END_FOREACH_PLAYER
 }
 
-void World::AddBot(std::shared_ptr<Bot> bot)
-{
-	m_bots.push_back(bot);
-	std::cout << "bot added " << bot->GetName() << std::endl;
-	int8_t spawnPlayerPid = m_bots.size();
-	FOREACH_PLAYER(player, client)
-		//client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(spawnPlayerPid, bot->GetName(), 0, 0, 0, 0, 0));
-		client->QueuePacket(ExtendedProtocol::MakeExtAddEntity2Packet(spawnPlayerPid, bot->GetName(), std::string("Notch"), 0, 0, 0, 0, 0));
-	END_FOREACH_PLAYER
-}
-
-void World::RemoveBot(int8_t id)
-{
-
-}
-
-void World::ClearBots()
-{
-	m_bots.clear();
-}
-
 void World::Update()
 {
-	int pidOffset = 0; // FIXME
-	for (auto& bot : m_bots)
-	{
-		if (bot->ChangedPosition()) {
-			uint8_t pid = 30 + pidOffset;
-			Position pos = bot->GetPosition();
-			auto positionOrientationPacket = ClassicProtocol::MakePositionOrientationPacket(pid, pos.x, pos.y, pos.z, bot->GetYaw(), bot->GetPitch());
 
-			FOREACH_PLAYER(obj_player, obj_client)
-				obj_client->QueuePacket(positionOrientationPacket);
-			END_FOREACH_PLAYER
-		} else {
-			if (bot->ChangedOrientation()) {
-				uint8_t pid = 30 + pidOffset;
-				auto orientationPacket = ClassicProtocol::MakeOrientationPacket(pid, bot->GetYaw(), bot->GetPitch());
-
-				FOREACH_PLAYER(obj_player, obj_client)
-					obj_client->QueuePacket(orientationPacket);
-				END_FOREACH_PLAYER
-			}
-		}
-		bot->Update();
-		pidOffset++;
-	}
 }
 
 void World::SendLevel(Client* client)

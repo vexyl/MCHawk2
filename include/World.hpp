@@ -6,7 +6,6 @@
 #include "Map.hpp"
 #include "MapGen.hpp"
 #include "Position.hpp"
-#include "Bot.hpp"
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
 
@@ -46,10 +45,6 @@ public:
 	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
 
-	void AddBot(std::shared_ptr<Bot> bot);
-	void RemoveBot(int8_t id);
-	void ClearBots();
-
 	void Update();
 
 	void SendLevel(Net::Client* client);
@@ -64,7 +59,6 @@ private:
 	std::string m_name;
 	Position m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;
-	std::vector<std::shared_ptr<Bot>> m_bots;
 };
 
 #endif // WORLD_H_
