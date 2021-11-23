@@ -4,7 +4,7 @@
 
 using namespace Net;
 
-int8_t Client::pid = 0;
+int8_t Client::sid = 0;
 
 void Client::QueuePacket(std::shared_ptr<Net::Packet> packet)
 {
@@ -24,6 +24,7 @@ void Client::ProcessPacketsInQueue()
 
 		if (result < 0) {
 			std::cerr << "Failed to send packet, result=" << result << std::endl;
+			Kill();
 			break;
 		}
 

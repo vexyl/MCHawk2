@@ -12,7 +12,7 @@ std::unique_ptr<Map> MapGen::GenerateFlatMap(uint16_t x, uint16_t y, uint16_t z)
 
 	std::memset(map->m_buffer, 0, map->m_bufferSize);
 
-	int32_t sz = htonl(map->m_bufferSize - 4);
+	int32_t sz = htonl(static_cast<unsigned long>(map->m_bufferSize) - 4);
 	std::memcpy(map->m_buffer, &sz, sizeof(sz));
 
 	for (int16_t gen_y = 0; gen_y < y / 2; gen_y++) {

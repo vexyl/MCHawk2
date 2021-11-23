@@ -11,7 +11,7 @@ class Packet;
 
 class Client final {
 public:
-	Client(Net::Socket* socket) : m_socket(socket) { assert(pid != 255); m_pid = pid++; }
+	Client(Net::Socket* socket) : m_socket(socket) { assert(sid != 255); m_sid = sid++; }
 
 	~Client() { delete m_socket; }
 
@@ -22,7 +22,7 @@ public:
 	std::string GetIPAddress() const { return m_socket->GetIPAddress(); }
 	bool KeepAlive() const { return m_keepAlive; }
 	bool IsAuthorized() const { return m_isAuthorized; }
-	int8_t GetPID() const { return m_pid; }
+	int8_t GetID() const { return m_sid; }
 
 	void SetKeepAlive(bool keepAlive) { m_keepAlive = keepAlive; }
 	void SetAuthorized(bool isAuthorized) { m_isAuthorized = isAuthorized; }
@@ -33,13 +33,13 @@ public:
 	void ProcessPacketsInQueue();
 
 private:
-	static int8_t pid;
+	static int8_t sid;
 
 	Net::Socket* m_socket = nullptr;
-	std::vector<std::shared_ptr<Net::Packet>> m_packetQueue;
+	std::vector<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryQueue;
 	bool m_keepAlive = true, m_isAuthorized = false;
 
-	int8_t m_pid = 0;
+	int8_t m_sid = 0;
 };
 } // namespace Net
 

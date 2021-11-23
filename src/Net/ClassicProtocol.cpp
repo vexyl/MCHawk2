@@ -55,7 +55,6 @@ std::map<uint8_t, std::string> ClassicProtocol::blockTypes = {
 	{ kObsidian, "obsidian" }
 };
 
-// Are the sizes necessary here? Packet has GetSize()
 ClassicProtocol::ClassicProtocol()
 {
 	// Default callbacks
@@ -63,7 +62,7 @@ ClassicProtocol::ClassicProtocol()
 		ClientOpcodes::kAuthentication,
 		OpcodeHandler{
 			[&](Client* client, Utils::BufferStream& reader) { AuthenticationOpcodeHandler(client, reader); },
-			131 /* packet size */
+			kAuthenticationSize /* packet size */
 		}
 	));
 
@@ -71,7 +70,7 @@ ClassicProtocol::ClassicProtocol()
 		ClientOpcodes::kSetBlock,
 		OpcodeHandler{
 			[&](Client* client, Utils::BufferStream& reader) { SetBlockOpcodeHandler(client, reader); },
-			9 /* packet size */
+			kSetBlockSize /* packet size */
 		}
 	));
 
@@ -79,7 +78,7 @@ ClassicProtocol::ClassicProtocol()
 		ClientOpcodes::kPositionOrientation,
 		OpcodeHandler{
 			[&](Client* client, Utils::BufferStream& reader) { PositionOrientationOpcodeHandler(client, reader); },
-			10 /* packet size */
+			kPositionOrientationSize /* packet size */
 		}
 	));
 
@@ -87,7 +86,7 @@ ClassicProtocol::ClassicProtocol()
 		ClientOpcodes::kMessage,
 		OpcodeHandler{
 			[&](Client* client, Utils::BufferStream& reader) { MessageOpcodeHandler(client, reader); },
-			66 /* packet size */
+			kMessageSize /* packet size */
 		}
 	));
 }
@@ -124,21 +123,12 @@ void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferS
 
 void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
-	std::cout << "[SetBlockOpcodeHandler]" << std::endl;
+	//std::cout << "[SetBlockOpcodeHandler]" << std::endl;
 
 	SetBlockPacket packet;
 	packet.Deserialize(reader);
 
 	setBlockEvents.Trigger(client, packet);
-
-	std::cout
-		<< "SetBlock type=" << static_cast<unsigned>(packet.type) << " (" << GetBlockNameByType(packet.type) << ")"
-		<< ", mode=" << static_cast<unsigned>(packet.mode)
-		<< " @ ("
-		<< static_cast<short>(packet.x) << ", "
-		<< static_cast<short>(packet.y) << ", "
-		<< static_cast<short>(packet.z) << ")"
-		<< std::endl;
 }
 
 void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -219,4 +209,9 @@ std::shared_ptr<ClassicProtocol::SetBlock2Packet> ClassicProtocol::MakeSetBlock2
 std::shared_ptr<ClassicProtocol::UserTypePacket> ClassicProtocol::MakeUserTypePacket(uint8_t type)
 {
 	return std::make_shared<ClassicProtocol::UserTypePacket>(type);
+}
+
+std::shared_ptr<ClassicProtocol::DisconnectPlayerPacket> ClassicProtocol::MakeDisconnectPlayerPacket(Utils::MCString reason)
+{
+	return std::make_shared<ClassicProtocol::DisconnectPlayerPacket>(reason);
 }

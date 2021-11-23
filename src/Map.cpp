@@ -55,8 +55,9 @@ uint8_t Map::PeekBlock(Position& pos)
 	int offset = calcMapOffset(pos.x, pos.y, pos.z, m_xSize, m_zSize);
 
 	if (offset < 0 || offset >= (int)m_bufferSize) {
-		std::cerr << "Buffer overflow in Map::SetBlock()" << std::endl;
-		std::exit(1);
+		//std::cerr << "Buffer overflow in Map::PeekBlock()" << std::endl;
+		//std::exit(1);
+		return 0; // FIXME - should this exit or throw error?
 	}
 
 	return m_buffer[offset];

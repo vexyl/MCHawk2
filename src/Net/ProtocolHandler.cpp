@@ -1,6 +1,6 @@
 #include "../../include/Net/ProtocolHandler.hpp"
-
 #include "../../include/Net/ClassicProtocol.hpp"
+#include "../../include/Net/ExtendedProtocol.hpp"
 #include "../../include/Net/Client.hpp"
 
 using namespace Net;
@@ -8,6 +8,7 @@ using namespace Net;
 ProtocolHandler::ProtocolHandler()
 {
 	RegisterProtocol("ClassicProtocol", new ClassicProtocol());
+	RegisterProtocol("ExtendedProtocol", new ExtendedProtocol());
 }
 
 ProtocolHandler::~ProtocolHandler()
@@ -25,6 +26,30 @@ IProtocolPtr ProtocolHandler::GetProtocol(std::string name)
 	return protocolEntry->second;
 }
 
+bool ProtocolHandler::IsValidBlock(uint8_t type)
+{
+	bool result = false;
+	for (const auto& entry : m_protocols) {
+		result = entry.second->IsValidBlock(type);
+		if (result)
+			break;
+	}
+
+	return result;
+}
+
+std::string ProtocolHandler::GetBlockNameByType(uint8_t type)
+{
+	std::string result;
+	for (const auto& entry : m_protocols) {
+		result = entry.second->GetBlockNameByType(type);
+		if (result != "")
+			break;
+	}
+
+	return result;
+}
+
 void ProtocolHandler::RegisterProtocol(std::string name, IProtocolPtr protocol)
 {
 	if (m_protocols.find(name) != m_protocols.end()) {
@@ -38,7 +63,7 @@ void ProtocolHandler::RegisterProtocol(std::string name, IProtocolPtr protocol)
 ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(Net::Client* client) const
 {
 	Net::Socket* socket = client->GetSocket();
-	auto opcode = static_cast<ClassicProtocol::ClientOpcodes>(socket->PeekFirstByte());
+	uint8_t opcode = socket->PeekFirstByte();
 	bool handledOpcode = false;
 
 	for (const auto& entry : m_protocols) {

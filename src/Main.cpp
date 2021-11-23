@@ -54,6 +54,6 @@ int main()
 
 	delete server;
 
-	std::cerr << "Good bye." << std::endl;
+	std::cerr << "Goodbye." << std::endl;
 	return 0;
 }

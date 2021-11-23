@@ -90,6 +90,11 @@ public:
 		Read(&inData, sizeof(inData));
 	}
 
+	void ReadInt32(int32_t& inData)
+	{
+		Read(&inData, sizeof(inData));
+	}
+
 	void ReadUInt32(uint32_t& inData)
 	{
 		Read(&inData, sizeof(inData));
@@ -122,6 +127,11 @@ public:
 	}
 
 	void WriteInt16(int16_t inData)
+	{
+		Write(&inData, sizeof(inData));
+	}
+
+	void WriteInt32(int32_t inData)
 	{
 		Write(&inData, sizeof(inData));
 	}

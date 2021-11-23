@@ -6,6 +6,9 @@
 #include "Map.hpp"
 #include "MapGen.hpp"
 #include "Position.hpp"
+#include "Bot.hpp"
+#include "Utils/Vector.hpp"
+#include "Player.hpp"
 
 #include <vector>
 
@@ -13,35 +16,55 @@ class World final {
 public:
 	World() : m_spawnPosition(0, 0, 0) {}
 
-	~World() { m_map->SaveToFile("test.map"); }
-
-	void Init()
+	World(std::string name) : World()
 	{
-		//m_map = MapGen::GenerateFlatMap(256, 64, 256);
-		m_map = std::make_unique<Map>();
-		m_map->LoadFromFile("test.map", 256, 64, 256);
-		if (!m_map->LoadFromFile("test.map", 256, 64, 256))
-			m_map = MapGen::GenerateFlatMap(256, 64, 256);
+		m_name = name;
+	}
 
-		m_spawnPosition = { 256 / 2, 64 / 2, 256 / 2};
+	void Init(std::string filename = "", int xSize=0, int ySize=0, int zSize=0)
+	{
+		if (filename == "") {
+			m_map = MapGen::GenerateFlatMap(256, 64, 256);
+			m_spawnPosition = Position(256 / 2, 64 / 2, 256 / 2);
+		} else {
+			m_map = std::make_unique<Map>();
+			if (!m_map->LoadFromFile(filename, xSize, ySize, zSize)) {
+				std::cerr << "error loading map" << std::endl;
+				std::exit(1);
+			}
+		}
 	}
 
 	Map* GetMap() { return m_map.get(); }
 	Position GetSpawnPosition() const { return m_spawnPosition; }
-	void AddPlayer(int8_t pid);
+	std::string GetName() const { return m_name; }
+	const std::vector<Player::PlayerPtr>& GetPlayerPids() const { return m_players; }
+	Utils::Vector GetSpawnPositionVector() const { return Utils::Vector(m_spawnPosition.x, m_spawnPosition.y, m_spawnPosition.z); }
+
+	void SetSpawnPosition(const Position& position) { m_spawnPosition = position; }
+
+	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
+
+	void AddBot(std::shared_ptr<Bot> bot);
+	void RemoveBot(int8_t id);
+	void ClearBots();
 
 	void Update();
 
 	void SendLevel(Net::Client* client);
 
-	void OnSetBlockPacket(Net::Client* client, const Net::ClassicProtocol::SetBlockPacket& packet);
-	void OnPositionOrientationPacket(Net::Client* client, const Net::ClassicProtocol::PositionOrientationPacket& packet);
+	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
+	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 
 private:
+	static int8_t pid;
+
 	std::unique_ptr<Map> m_map;
+	std::string m_name;
 	Position m_spawnPosition;
-	std::vector<int8_t> m_playerPids;
+	std::vector<Player::PlayerPtr> m_players;
+	std::vector<std::shared_ptr<Bot>> m_bots;
 };
 
 #endif // WORLD_H_

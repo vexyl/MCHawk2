@@ -5,16 +5,17 @@
 
 using namespace Net;
 
-#pragma region HelperMacros
-#define SERVERAPI_PREFIX_MESSAGE(client, message) \
-	Server* serverAPI_prefix_server = Server::GetInstance(); \
-	if (client != nullptr) { \
-		Player& player = serverAPI_prefix_server->GetPlayer(client->GetPID()); \
-		message = "[" + player.GetName() + "] " + message; \
-	} else { \
-		message = "[CONSOLE] " + message; \
-	}
-#pragma endregion
+void ServerAPI::PrefixMessage(Net::Client* client, std::string& message, bool hideConsolePrefix)
+{
+		if (client != nullptr) {
+				Player::PlayerPtr player = Server::GetInstance()->GetPlayer(client->GetID());
+				message = "[" + player->GetName() + "] " + message;
+		}
+		else {
+				if (hideConsolePrefix == false)
+					message = "[CONSOLE] " + message;
+		}
+}
 
 // TODO: return priv_result so plugins can send message instead
 bool ServerAPI::CheckPrivilege(Net::Client* client, std::string priv)
@@ -23,12 +24,14 @@ bool ServerAPI::CheckPrivilege(Net::Client* client, std::string priv)
 		return true;
 
 	Server* server = Server::GetInstance();
-	Player& player = server->GetPlayer(client->GetPID());
+	Player::PlayerPtr player = server->GetPlayer(client->GetID());
 
-	auto privResult = server->GetPrivilegeHandler().HasPrivilege(player.GetName(), priv);
+	assert(player != nullptr);
+	
+	auto privResult = server->GetPrivilegeHandler().HasPrivilege(player->GetName(), priv);
 	if (privResult.error) {
 		SendClientMessage(nullptr, client, privResult.message);
-		std::string message = "Client " + std::to_string(client->GetPID()) + " (" + client->GetIPAddress() + ") " + privResult.message;
+		std::string message = "Client " + std::to_string(client->GetID()) + " (" + client->GetIPAddress() + ") " + privResult.message;
 		LOG(LOGLEVEL_DEBUG, message.c_str());
 		return false;
 	}
@@ -36,7 +39,7 @@ bool ServerAPI::CheckPrivilege(Net::Client* client, std::string priv)
 	return true;
 }
 
-bool ServerAPI::BroadcastMessage(Client* srcClient, Client* fromClient, std::string message)
+bool ServerAPI::BroadcastMessage(Client* srcClient, Client* fromClient, std::string message, bool hideConsolePrefix)
 {
 	if (!CheckPrivilege(srcClient, "BroadcastMessage"))
 		return false;
@@ -45,10 +48,11 @@ bool ServerAPI::BroadcastMessage(Client* srcClient, Client* fromClient, std::str
 		return false;
 
 	if (srcClient == nullptr && fromClient != nullptr) {
-		SERVERAPI_PREFIX_MESSAGE(fromClient, message);
+		PrefixMessage(fromClient, message);
 	} else {
-		SERVERAPI_PREFIX_MESSAGE(srcClient, message);
-		message = "&e" + message;
+		if (!hideConsolePrefix)
+			message = "&e" + message;
+		PrefixMessage(nullptr, message, hideConsolePrefix);
 	}
 
 	// ClassicalSharp color codes
@@ -71,17 +75,16 @@ bool ServerAPI::BroadcastMessage(Client* srcClient, Client* fromClient, std::str
 	return true;
 }
 
-bool ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::string message)
+bool ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::string message, bool hideConsolePrefix)
 {
 	assert(dstClient != nullptr);
 
 	if (!CheckPrivilege(srcClient, "SendClientMessage"))
 		return false;
 
-	SERVERAPI_PREFIX_MESSAGE(srcClient, message);
-
-	if (srcClient == nullptr)
+	if (!hideConsolePrefix)
 		message = "&e" + message;
+	PrefixMessage(srcClient, message, hideConsolePrefix);
 
 	Server::SendWrappedMessage(dstClient, message);
 	return true;
@@ -91,7 +94,7 @@ bool ServerAPI::MapSetBlock(Net::Client* client, Map* map, Position pos, uint8_t
 {
 	//std::string message = "placed block " + std::to_string(type) + " (" + ClassicProtocol::GetBlockNameByType(type) + ") @ (" + std::to_string(static_cast<short>(pos.x)) + ", " + std::to_string(static_cast<short>(pos.y)) + ", " + std::to_string(static_cast<short>(pos.z)) + ")";
 
-	//SERVERAPI_PREFIX_MESSAGE(client, message);
+	//PrefixMessage(client, message);
 	//LOG(LOGLEVEL_DEBUG, message.c_str());
 
 	if (!CheckPrivilege(client, "MapSetBlock")) {
@@ -109,8 +112,8 @@ bool ServerAPI::SetUserType(Net::Client* srcClient, Net::Client* dstClient, uint
 	if (!CheckPrivilege(srcClient, "SetUserType"))
 		return false;
 
-	std::string message = "set user type of pid " + std::to_string(dstClient->GetPID()) + " to " + std::to_string(type);
-	SERVERAPI_PREFIX_MESSAGE(srcClient, message);
+	std::string message = "set user type of sid " + std::to_string(dstClient->GetID()) + " to " + std::to_string(type);
+	PrefixMessage(srcClient, message, false);
 	LOG(LOGLEVEL_DEBUG, message.c_str());
 	dstClient->QueuePacket(ClassicProtocol::MakeUserTypePacket(type));
 

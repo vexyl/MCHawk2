@@ -25,6 +25,11 @@ public:
 		return true;
 	}
 
+	void Clear()
+	{
+		m_callbacks.clear();
+	}
+
 private:
 	std::vector<EventCallback> m_callbacks;
 };

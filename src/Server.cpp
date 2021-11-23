@@ -7,43 +7,43 @@ using namespace Net;
 #pragma region HelperMacros
 #define FOREACH_PLAYER(player_arg, client_arg) \
 	for (auto& obj : m_players) { \
-			Player& player_arg = obj.second; \
-			Client* client_arg = obj_player.GetClient();
+			Player::PlayerPtr player_arg = obj.second; \
+			Client* client_arg = obj_player->GetClient();
 #define END_FOREACH_PLAYER }
 #pragma endregion
 
-Player& Server::GetPlayer(uint8_t pid)
+Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 {
 	auto iter = m_players.find(pid);
 	assert(iter != m_players.end());
 	return iter->second;
 }
 
-void Server::SendClientMessage(Client* client, std::string message)
+void Server::SendClientMessage(Client* client, std::string message, int messageType)
 {
-	client->QueuePacket(ClassicProtocol::MakeMessagePacket(0, message));
+	client->QueuePacket(ClassicProtocol::MakeMessagePacket(messageType, message));
 }
 
-void Server::SendWrappedMessage(Client* client, std::string message)
+void Server::SendWrappedMessage(Client* client, std::string message, int messageType)
 {
 	int max = 64;
 	int pos = 0;
 
-	int length = message.length();
+	int length = static_cast<int>(message.length());
 	while (pos < length) {
 		int diff = length - pos;
 		int count = std::min(diff, max);
 
-		SendClientMessage(client, message.substr(pos, count));
+		SendClientMessage(client, message.substr(pos, count), messageType);
 
 		pos += count;
 	}
 }
 
-void Server::BroadcastMessage(std::string message)
+void Server::BroadcastMessage(std::string message, int messageType)
 {
 	FOREACH_PLAYER(obj_player, obj_client)
-		SendWrappedMessage(obj_client, message);
+		SendWrappedMessage(obj_client, message, messageType);
 	END_FOREACH_PLAYER
 }
 
@@ -96,7 +96,9 @@ void Server::Init()
 	}
 	);
 
-	m_world.Init();
+	std::shared_ptr<World> world = std::make_shared<World>("default");
+	world->Init();
+	m_worlds[world->GetName()] = std::move(world);
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -154,14 +156,13 @@ void Server::UpdatePlayers()
 {
 	auto iter = m_players.begin();
 	while (iter != m_players.end()) {
-		Player& player = iter->second;
-		Net::Client* client = player.GetClient();
-		std::string name = iter->second.GetName();
+		Player::PlayerPtr player = iter->second;
+		Net::Client* client = player->GetClient();
+		std::string name = iter->second->GetName();
 
 		if (!client->KeepAlive()) {
-			iter->second.GetWorld()->RemovePlayer(client->GetPID());
+			iter->second->GetWorld()->RemovePlayer(client->GetID());
 			iter = m_players.erase(iter);
-			BroadcastMessage("&e" + name + " disconnected");
 			continue;
 		}
 
@@ -205,7 +206,9 @@ bool Server::Update()
 	CheckForConnections();
 	ProcessUnauthorizedClients();
 	UpdatePlayers();
-	m_world.Update();
+
+	for (auto& world : m_worlds)
+		world.second->Update();
 
 	return m_running;
 }
@@ -221,48 +224,50 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	LOG(LOGLEVEL_INFO, "Player '%s' authorized with key %s", name.c_str(), packet.key.ToString().c_str());
 
-	auto pair = m_players.emplace(client->GetPID(), client);
+	auto pair = m_players.emplace(client->GetID(), std::make_shared<Player>(client));
 
 	assert(pair.second == true);
 
-	Player& player = pair.first->second;
-	player.SetName(packet.name.ToString());
+	Player::PlayerPtr player = pair.first->second;
+	player->SetName(packet.name.ToString());
 
 	std::string serverName = "MCHawk2", serverMOTD = "Welcome to a world of blocks!";
+
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, serverName, serverMOTD, 0));
 
-	m_world.AddPlayer(client->GetPID());
+	m_worlds["default"]->AddPlayer(player);
 	client->SetAuthorized(true);
 
 	// FIXME: TEMPORARY
 	ServerAPI::SetUserType(nullptr, client, 0x64);
-	m_privHandler.GivePrivilege(player.GetName(), "MapSetBlock");
-	m_privHandler.GivePrivilege(player.GetName(), "chat");
-
-	BroadcastMessage("&e" + name + " connected");
+	m_privHandler.GivePrivilege(player->GetName(), "MapSetBlock");
+	m_privHandler.GivePrivilege(player->GetName(), "chat");
 }
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
 {
-	GetPlayer(client->GetPID()).GetWorld()->OnSetBlockPacket(client, packet);
+	if (m_blockDefaultEventHandler) {
+		m_blockDefaultEventHandler = false;
+		return;
+	}
+
+	Player::PlayerPtr player = GetPlayer(client->GetID());
+	player->GetWorld()->OnSetBlockPacket(player, packet);
 }
 
 void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	GetPlayer(client->GetPID()).GetWorld()->OnPositionOrientationPacket(client, packet);
+	if (m_blockDefaultEventHandler) {
+		m_blockDefaultEventHandler = false;
+		return;
+	}
+
+	Player::PlayerPtr player = GetPlayer(client->GetID());
+	player->GetWorld()->OnPositionOrientationPacket(player, packet);
 }
 
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
-	Player& player = GetPlayer(client->GetPID());
-
 	std::string message = packet.message.ToString();
-
-	if (message[0] == '/') {
-		LOG(LOGLEVEL_NORMAL, "[COMMAND | %s] %s", player.GetName().c_str(), message.c_str());
-		SendClientMessage(client, "&cCommands are not supported yet.");
-		return;
-	}
-
 	ServerAPI::BroadcastMessage(nullptr, client, message);
 }

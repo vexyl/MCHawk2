@@ -7,7 +7,6 @@
 #include "../Utils/MCString.hpp"
 
 #include <map>
-#include <functional>
 #include <memory>
 
 #ifdef __linux__
@@ -21,16 +20,27 @@
 namespace Net {
 class Client;
 
-// This shouldn't be here...maybe in IProtocol? Or its own header?
-struct OpcodeHandler final {
-	std::function<void(Client*, Utils::BufferStream&)> handler;
-	size_t packetSize = 0;
-};
-
 class ClassicProtocol final : public IProtocol {
 public:
+	// Client->Server
+	static const uint32_t kAuthenticationSize		= 131;
+	static const uint32_t kSetBlockSize				= 9;
+	static const uint32_t kPositionOrientationSize	= 10;
+	static const uint32_t kMessageSize				= 66;
+	static const uint32_t kOrientationSize			= 4;
+	static const uint32_t kDespawnSize				= 2;
+	// Server->Client
+	static const uint32_t kServerIdentificationSize	= 131;
+	static const uint32_t kLevelInitializeSize		= 1;
+	static const uint32_t kLevelDataChunkSize		= 1028;
+	static const uint32_t kLevelFinalizeSize		= 7;
+	static const uint32_t kSetBlock2Size			= 8;
+	static const uint32_t kSpawnPlayerSize			= 74;
+	static const uint32_t kDisconnectPlayerSize		= 65;
+	static const uint32_t kUserTypeSize				= 2;
+
 	enum ClientOpcodes { kAuthentication = 0x00, kSetBlock = 0x05, kPositionOrientation = 0x08, kOrientation = 0x0b, kDespawn = 0x0c, kMessage = 0x0d };
-	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07, kUserTypePacket = 0x0f};
+	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07, kDisconnectPlayerPacket = 0x0e, kUserTypePacket = 0x0f};
 
 	enum BlockType {
 		kAir,
@@ -87,7 +97,7 @@ public:
 
 	static std::map<uint8_t, std::string> blockTypes;
 
-	static bool IsValidBlock(uint8_t type)
+	virtual bool IsValidBlock(uint8_t type) const override
 	{
 		auto iter = blockTypes.find(type);
 		if (iter != blockTypes.end())
@@ -95,7 +105,7 @@ public:
 		return false;
 	}
 
-	static std::string GetBlockNameByType(uint8_t type)
+	virtual std::string GetBlockNameByType(uint8_t type) const override
 	{
 		std::string name;
 		auto iter = blockTypes.find(type);
@@ -250,7 +260,7 @@ public:
 
 		OrientationPacket() : OrientationPacket(0, 0, 0) {}
 		OrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch) :
-			Packet(ClientOpcodes::kOrientation, 4),
+			Packet(ClientOpcodes::kOrientation, kOrientationSize),
 			pid(pid),
 			yaw(yaw), pitch(pitch)
 		{}
@@ -286,7 +296,7 @@ public:
 
 		DespawnPacket() : DespawnPacket(0) {}
 		DespawnPacket(int8_t pid) :
-			Packet(ClientOpcodes::kDespawn, 2),
+			Packet(ClientOpcodes::kDespawn, kDespawnSize),
 			pid(pid)
 
 		{}
@@ -355,7 +365,7 @@ public:
 
 		ServerIdentificationPacket() : ServerIdentificationPacket(0, std::string(), std::string(), 0) {}
 		ServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType) :
-			Packet(ServerOpcodes::kServerIdentification, 131),
+			Packet(ServerOpcodes::kServerIdentification, kServerIdentificationSize),
 			version(version),
 			name(name), motd(motd),
 			userType(userType)
@@ -391,7 +401,7 @@ public:
 	// Server -> Client
 	class LevelInitializePacket final : public Packet {
 	public:
-		LevelInitializePacket() : Packet(ServerOpcodes::kLevelInitializePacket, 1) {}
+		LevelInitializePacket() : Packet(ServerOpcodes::kLevelInitializePacket, kLevelInitializeSize) {}
 
 		virtual void Deserialize(Utils::BufferStream& reader) override
 		{
@@ -419,7 +429,7 @@ public:
 		uint8_t percent;
 
 		LevelDataChunkPacket() :
-			Packet(ServerOpcodes::kLevelDataChunkPacket, 1028),
+			Packet(ServerOpcodes::kLevelDataChunkPacket, kLevelDataChunkSize),
 			chunkLength(0),
 			percent(0)
 		{}
@@ -452,7 +462,7 @@ public:
 
 		LevelFinalizePacket() : LevelFinalizePacket(0, 0, 0) {}
 		LevelFinalizePacket(int16_t x, int16_t y, int16_t z) :
-			Packet(ServerOpcodes::kLevelFinalizePacket, 7),
+			Packet(ServerOpcodes::kLevelFinalizePacket, kLevelFinalizeSize),
 			x(x), y(y), z(z)
 		{}
 
@@ -485,7 +495,7 @@ public:
 
 		SetBlock2Packet() : SetBlock2Packet(0, 0, 0, 0) {}
 		SetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type) :
-			Packet(ServerOpcodes::kSetBlock2, 8),
+			Packet(ServerOpcodes::kSetBlock2, kSetBlock2Size),
 			x(x), y(y), z(z),
 			type(type)
 		{}
@@ -522,7 +532,7 @@ public:
 
 		SpawnPlayerPacket() : SpawnPlayerPacket(0, std::string(), 0, 0, 0, 0, 0) {}
 		SpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch) :
-			Packet(ServerOpcodes::kSpawnPlayerPacket, 74),
+			Packet(ServerOpcodes::kSpawnPlayerPacket, kSpawnPlayerSize),
 			pid(pid),
 			name(name),
 			x(x), y(y), z(z),
@@ -561,7 +571,7 @@ public:
 
 		UserTypePacket() : UserTypePacket(0) {}
 		UserTypePacket(uint8_t type) :
-			Packet(ServerOpcodes::kUserTypePacket, 2),
+			Packet(ServerOpcodes::kUserTypePacket, kUserTypeSize),
 			type(type)
 		{}
 
@@ -584,6 +594,38 @@ public:
 		}
 	};
 
+	// Server -> Client
+	class DisconnectPlayerPacket final : public Packet {
+	public:
+		Utils::MCString reason;
+
+		DisconnectPlayerPacket() : DisconnectPlayerPacket(std::string()) {}
+		DisconnectPlayerPacket(Utils::MCString reason) :
+			Packet(ServerOpcodes::kDisconnectPlayerPacket, kDisconnectPlayerSize),
+			reason(reason)
+		{}
+
+		virtual void Deserialize(Utils::BufferStream& reader) override
+		{
+			// Skip opcode because each packet knows its opcode
+			reader.Skip(sizeof(m_opcode));
+
+			reader.ReadMCString(reason);
+		}
+
+		virtual std::unique_ptr<Utils::BufferStream> Serialize() override
+		{
+			auto writer = std::make_unique<Utils::BufferStream>(m_packetSize);
+
+			if (writer != nullptr) {
+				writer->WriteUInt8(m_opcode);
+				writer->WriteMCString(reason);
+			}
+
+			return writer;
+		}
+	};
+
 	static std::shared_ptr<PositionOrientationPacket> MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
 	static std::shared_ptr<OrientationPacket> MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch);
 	static std::shared_ptr<MessagePacket> MakeMessagePacket(uint8_t flag, Utils::MCString message);
@@ -594,6 +636,7 @@ public:
 	static std::shared_ptr<LevelFinalizePacket> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
 	static std::shared_ptr<SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
 	static std::shared_ptr<UserTypePacket> MakeUserTypePacket(uint8_t type);
+	static std::shared_ptr<DisconnectPlayerPacket> MakeDisconnectPlayerPacket(Utils::MCString reason);
 
 	// Packet handler delegates
 	::Event<Client*, AuthenticationPacket> authEvents;
@@ -609,7 +652,6 @@ public:
 	ClassicProtocol& operator=(const ClassicProtocol&) = delete;
 
 	virtual size_t GetPacketSize(uint8_t opcode) const override;
-
 	virtual bool HandleOpcode(uint8_t opcode, Client* client, Utils::BufferStream& reader) const override;
 private:
 	std::map<ClientOpcodes, OpcodeHandler> m_defaultPacketHandlers;
