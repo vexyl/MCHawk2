@@ -130,11 +130,7 @@ void Server::ProcessUnauthorizedClients()
 			}
 
 			auto result = m_protocolHandler.HandleMessage(client);
-			if (result == ProtocolHandler::MessageStatus::kUnknownOpcode) {
-				LOG(LOGLEVEL_INFO, "Unauthorized client sent unknown packet '%d' (%s)", socket->PeekFirstByte(), socket->GetIPAddress().c_str());
-				client->Kill();
-				continue;
-			} else if (result == ProtocolHandler::MessageStatus::kSuccess) {
+			if (result == ProtocolHandler::MessageStatus::kSuccess) {
 				if (client->IsAuthorized()) {
 					iter = m_unauthorizedClients.erase(iter);
 					continue;

@@ -28,6 +28,7 @@ void Client::ProcessPacketsInQueue()
 			break;
 		}
 
+		// TODO
 		if (result < static_cast<int>((*iter)->GetSize())) {
 			std::cerr << "Sent partial message" << std::endl;
 			std::exit(1);
