@@ -14,12 +14,6 @@ struct Vector {
 	float Length() const;
 	float LengthSqr() const;
 
-	Vector Multiply(Vector v) const;
-	Vector Multiply(float s) const;
-	Vector Divide(float s) const;
-	Vector Add(const Vector& v) const;
-	Vector Subtract(const Vector& v) const;
-
 	Vector operator=(const Vector& v);
 	Vector operator*(Vector v) const;
 	Vector operator*(float s) const;

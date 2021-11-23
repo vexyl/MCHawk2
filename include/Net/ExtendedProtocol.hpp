@@ -22,15 +22,15 @@ class Client;
 
 class ExtendedProtocol final : public IProtocol {
 public:
-	static const uint32_t kExtInfoSize			= 67;
-	static const uint32_t kExtEntrySize			= 69;
-	static const uint32_t kCustomBlocksSize		= 2;
-	static const uint32_t kSetTextHotkeySize	= 134;
-	static const uint32_t kExtAddPlayerNameSize	= 196;
-	static const uint32_t kExtAddEntity2Size	= 138;
-	static const uint32_t kChangeModelSize		= 66;
-	static const uint32_t kDefineBlockSize		= 80;
-	static const uint32_t kPlayerClickSize		= 15;
+	static const uint32_t kExtInfoSize          = 67;
+	static const uint32_t kExtEntrySize         = 69;
+	static const uint32_t kCustomBlocksSize     = 2;
+	static const uint32_t kSetTextHotkeySize    = 134;
+	static const uint32_t kExtAddPlayerNameSize = 196;
+	static const uint32_t kExtAddEntity2Size    = 138;
+	static const uint32_t kChangeModelSize      = 66;
+	static const uint32_t kDefineBlockSize      = 80;
+	static const uint32_t kPlayerClickSize      = 15;
 
 	enum Opcodes { kExtInfo = 0x10, kExtEntry = 0x11, kCustomBlocks = 0x13, kSetTextHotkey = 0x15, kExtAddPlayerName = 0x16, kExtAddEntity2 = 0x21, kChangeModel = 0x1D, kDefineBlock = 0x23, kPlayerClick = 0x22 };
 

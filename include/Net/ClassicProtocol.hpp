@@ -23,21 +23,21 @@ class Client;
 class ClassicProtocol final : public IProtocol {
 public:
 	// Client->Server
-	static const uint32_t kAuthenticationSize		= 131;
-	static const uint32_t kSetBlockSize				= 9;
-	static const uint32_t kPositionOrientationSize	= 10;
-	static const uint32_t kMessageSize				= 66;
-	static const uint32_t kOrientationSize			= 4;
-	static const uint32_t kDespawnSize				= 2;
+	static const uint32_t kAuthenticationSize       = 131;
+	static const uint32_t kSetBlockSize             = 9;
+	static const uint32_t kPositionOrientationSize  = 10;
+	static const uint32_t kMessageSize              = 66;
+	static const uint32_t kOrientationSize          = 4;
+	static const uint32_t kDespawnSize              = 2;
 	// Server->Client
-	static const uint32_t kServerIdentificationSize	= 131;
-	static const uint32_t kLevelInitializeSize		= 1;
-	static const uint32_t kLevelDataChunkSize		= 1028;
-	static const uint32_t kLevelFinalizeSize		= 7;
-	static const uint32_t kSetBlock2Size			= 8;
-	static const uint32_t kSpawnPlayerSize			= 74;
-	static const uint32_t kDisconnectPlayerSize		= 65;
-	static const uint32_t kUserTypeSize				= 2;
+	static const uint32_t kServerIdentificationSize = 131;
+	static const uint32_t kLevelInitializeSize      = 1;
+	static const uint32_t kLevelDataChunkSize       = 1028;
+	static const uint32_t kLevelFinalizeSize        = 7;
+	static const uint32_t kSetBlock2Size            = 8;
+	static const uint32_t kSpawnPlayerSize          = 74;
+	static const uint32_t kDisconnectPlayerSize     = 65;
+	static const uint32_t kUserTypeSize             = 2;
 
 	enum ClientOpcodes { kAuthentication = 0x00, kSetBlock = 0x05, kPositionOrientation = 0x08, kOrientation = 0x0b, kDespawn = 0x0c, kMessage = 0x0d };
 	enum ServerOpcodes { kServerIdentification, kLevelInitializePacket=0x02, kLevelDataChunkPacket=0x03, kLevelFinalizePacket=0x04, kSetBlock2=0x06, kSpawnPlayerPacket = 0x07, kDisconnectPlayerPacket = 0x0e, kUserTypePacket = 0x0f};
