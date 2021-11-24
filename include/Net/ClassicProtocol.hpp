@@ -123,7 +123,7 @@ public:
 
 		AuthenticationPacket() : AuthenticationPacket(0, std::string(), std::string(), 0) {}
 		AuthenticationPacket(uint8_t version, Utils::MCString name, Utils::MCString key, uint8_t UNK0) :
-			Packet(ClientOpcodes::kAuthentication, 131),
+			Packet(ClientOpcodes::kAuthentication, kAuthenticationSize),
 			version(version),
 			name(name), key(key),
 			UNK0(UNK0)
@@ -164,7 +164,7 @@ public:
 
 		SetBlockPacket() : SetBlockPacket(0, 0, 0, 0, 0) {}
 		SetBlockPacket(int16_t x, int16_t y, int16_t z, uint8_t mode, uint8_t type) :
-			Packet(ClientOpcodes::kSetBlock, 9),
+			Packet(ClientOpcodes::kSetBlock, kSetBlockSize),
 			x(x), y(y), z(z),
 			mode(mode), type(type)
 		{}
@@ -211,7 +211,7 @@ public:
 
 		PositionOrientationPacket() : PositionOrientationPacket(0, 0, 0, 0, 0, 0) {}
 		PositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch) :
-			Packet(ClientOpcodes::kPositionOrientation, 10),
+			Packet(ClientOpcodes::kPositionOrientation, kPositionOrientationSize),
 			pid(pid),
 			x(x), y(y), z(z),
 			yaw(yaw), pitch(pitch)
@@ -328,7 +328,7 @@ public:
 
 		MessagePacket() : MessagePacket(0, std::string()) {}
 		MessagePacket(uint8_t flag, Utils::MCString message) :
-			Packet(ClientOpcodes::kMessage, 66),
+			Packet(ClientOpcodes::kMessage, kMessageSize),
 			flag(flag),
 			message(message)
 		{}
