@@ -140,7 +140,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	Position pos(p->x, p->y, p->z);
 
 	// TODO: Kick player
-	if (!protocolHandler.IsValidBlock(packet.type) && !protocolHandler.IsValidBlock(packet.type)) {
+	if (!protocolHandler.IsValidBlock(packet.type)) {
 		uint8_t actualType = m_map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
 		return;
