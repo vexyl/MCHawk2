@@ -1,4 +1,4 @@
-// Design inspired by from SFML's sf::Clock
+// Design inspired by SFML's sf::Clock
 
 #include "../../include/Utils/Clock.hpp"
 

@@ -1,7 +1,7 @@
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
-// Design from SFML's sf::Clock
+// Design inspired by SFML's sf::Clock
 
 #include <chrono>
 #include <thread>

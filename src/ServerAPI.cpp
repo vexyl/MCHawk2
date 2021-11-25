@@ -69,7 +69,7 @@ bool ServerAPI::BroadcastMessage(Client* srcClient, Client* fromClient, std::str
 		colorPos++;
 	}
 
-    LOG(LOGLEVEL_NORMAL, message.c_str());
+	LOG(LOGLEVEL_NORMAL, message.c_str());
 
 	Server::GetInstance()->BroadcastMessage(message);
 	return true;

@@ -4,7 +4,6 @@ using namespace Net;
 
 #ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
-#pragma comment(lib, "zlib.lib")
 #else
 #include <arpa/inet.h>
 #include <fcntl.h>

@@ -50,7 +50,6 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	player->SetWorld(this);
 	m_players.push_back(player);
-	LOG(LOGLEVEL_INFO, "world pid=%d", player->GetID());
 }
 
 void World::RemovePlayer(int8_t pid)
@@ -162,8 +161,11 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	Position position = player->GetPosition();
 
 	bool doOrientationUpdate = false, doPositionUpdate = false;
+	uint8_t yaw = player->GetYaw(), pitch = player->GetPitch();
 
 	if (player->GetPitch() != packet.pitch || player->GetYaw() != packet.yaw) {
+		yaw = packet.yaw;
+		pitch = packet.pitch;
 		player->SetOrientation(packet.pitch, packet.yaw);
 		doOrientationUpdate = true;
 	}
@@ -176,7 +178,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	}
 
 	if (doPositionUpdate == true) {
-		auto positionOrientationPacket = ClassicProtocol::MakePositionOrientationPacket(srcPid, packet.x, packet.y, packet.z, packet.yaw, packet.pitch);
+		auto positionOrientationPacket = ClassicProtocol::MakePositionOrientationPacket(srcPid, packet.x, packet.y, packet.z, yaw, pitch);
 
 		FOREACH_PLAYER(obj_player, obj_client)
 			int8_t destPid = obj_player->GetID();

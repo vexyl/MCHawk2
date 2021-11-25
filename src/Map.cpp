@@ -5,6 +5,10 @@
 #include <cstring>
 #include <zlib.h>
 
+#ifdef _WIN32
+#pragma comment(lib, "zlib.lib")
+#endif
+
 void Map::CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const
 {
 	assert(*outCompBuffer == nullptr && m_buffer != nullptr);
