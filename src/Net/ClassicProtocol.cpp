@@ -128,6 +128,7 @@ void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream&
 
 	SetBlockPacket packet;
 	packet.Deserialize(reader);
+
 	if (onSetBlockCallback != nullptr)
 		onSetBlockCallback(client, packet);
 }
@@ -148,6 +149,7 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 		<< ", yaw=" << static_cast<unsigned>(packet.yaw)
 		<< ", pitch=" << static_cast<unsigned>(packet.pitch)
 		<< std::endl;*/
+
 	if (onPositionOrientationCallback != nullptr)
 		onPositionOrientationCallback(client, packet);
 }
