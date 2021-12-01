@@ -3,7 +3,6 @@
 
 #include "IProtocol.hpp"
 #include "Packet.hpp"
-#include "../Event.hpp"
 #include "../Utils/MCString.hpp"
 
 #include <map>
@@ -269,9 +268,6 @@ public:
 		{
 			// Skip opcode because each packet knows its opcode
 			reader.Skip(sizeof(m_opcode));
-
-			reader.ReadUInt8(yaw);
-			reader.ReadUInt8(pitch);
 		}
 
 		virtual std::unique_ptr<Utils::BufferStream> Serialize() override
@@ -638,11 +634,10 @@ public:
 	static std::shared_ptr<UserTypePacket> MakeUserTypePacket(uint8_t type);
 	static std::shared_ptr<DisconnectPlayerPacket> MakeDisconnectPlayerPacket(Utils::MCString reason);
 
-	// Packet handler delegates
-	::Event<Client*, AuthenticationPacket> authEvents;
-	::Event<Client*, SetBlockPacket> setBlockEvents;
-	::Event<Client*, PositionOrientationPacket> positionOrientationEvents;
-	::Event<Client*, MessagePacket> messageEvents;
+	std::function<void(Client*, const AuthenticationPacket&)> onAuthenticationCallback;
+	std::function<void(Client*, const SetBlockPacket&)> onSetBlockCallback;
+	std::function<void(Client*, const PositionOrientationPacket&)> onPositionOrientationCallback;
+	std::function<void(Client*, const MessagePacket&)> onMessageCallback;
 
 	ClassicProtocol();
 

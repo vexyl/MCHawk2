@@ -69,8 +69,6 @@ void ExtendedProtocol::ExtInfoOpcodeHandler(Client* client, Utils::BufferStream&
 
 	ExtInfoPacket packet;
 	packet.Deserialize(reader);
-
-	//authEvents.Trigger(client, packet);
 }
 
 void ExtendedProtocol::ExtEntryOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -79,8 +77,6 @@ void ExtendedProtocol::ExtEntryOpcodeHandler(Client* client, Utils::BufferStream
 
 	ExtEntryPacket packet;
 	packet.Deserialize(reader);
-
-	//authEvents.Trigger(client, packet);
 }
 
 void ExtendedProtocol::CustomBlocksOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -89,8 +85,6 @@ void ExtendedProtocol::CustomBlocksOpcodeHandler(Client* client, Utils::BufferSt
 
 	CustomBlocksPacket packet;
 	packet.Deserialize(reader);
-
-	//authEvents.Trigger(client, packet);
 }
 
 void ExtendedProtocol::PlayerClickOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -101,8 +95,6 @@ void ExtendedProtocol::PlayerClickOpcodeHandler(Client* client, Utils::BufferStr
 	packet.Deserialize(reader);
 
 	std::cout << std::to_string(packet.action) << "," << std::to_string(packet.button) << "," << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << "," << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
-
-	playerClickEvents.Trigger(client, packet);
 }
 
 size_t ExtendedProtocol::GetPacketSize(uint8_t opcode) const

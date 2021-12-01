@@ -118,7 +118,8 @@ void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferS
 	AuthenticationPacket packet;
 	packet.Deserialize(reader);
 
-	authEvents.Trigger(client, packet);
+	if (onAuthenticationCallback != nullptr)
+		onAuthenticationCallback(client, packet);
 }
 
 void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -127,8 +128,8 @@ void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream&
 
 	SetBlockPacket packet;
 	packet.Deserialize(reader);
-
-	setBlockEvents.Trigger(client, packet);
+	if (onSetBlockCallback != nullptr)
+		onSetBlockCallback(client, packet);
 }
 
 void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -137,8 +138,6 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 
 	PositionOrientationPacket packet;
 	packet.Deserialize(reader);
-
-	positionOrientationEvents.Trigger(client, packet);
 
 	/*std::cout
 		<< "PositionOrientation pid=" << static_cast<signed>(packet.pid)
@@ -149,6 +148,8 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 		<< ", yaw=" << static_cast<unsigned>(packet.yaw)
 		<< ", pitch=" << static_cast<unsigned>(packet.pitch)
 		<< std::endl;*/
+	if (onPositionOrientationCallback != nullptr)
+		onPositionOrientationCallback(client, packet);
 }
 
 void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& reader)
@@ -158,7 +159,8 @@ void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& 
 	MessagePacket packet;
 	packet.Deserialize(reader);
 
-	messageEvents.Trigger(client, packet);
+	if (onMessageCallback != nullptr)
+		onMessageCallback(client, packet);
 }
 
 std::shared_ptr<ClassicProtocol::PositionOrientationPacket> ClassicProtocol::MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)

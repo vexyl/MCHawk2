@@ -3,7 +3,6 @@
 
 #include "IProtocol.hpp"
 #include "Packet.hpp"
-#include "../Event.hpp"
 #include "../Utils/MCString.hpp"
 
 #include <map>
@@ -496,8 +495,6 @@ public:
 		uint8_t fogDensity,
 		uint8_t fogR, uint8_t fogG, uint8_t fogB
 	);
-
-	::Event<Client*, PlayerClickPacket> playerClickEvents;
 
 	ExtendedProtocol();
 

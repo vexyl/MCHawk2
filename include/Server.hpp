@@ -12,6 +12,7 @@
 #include "World.hpp"
 #include "Player.hpp"
 #include "Privileges.hpp"
+#include "Utils/Event.hpp"
 
 #include <vector>
 
@@ -26,6 +27,12 @@
 
 class Server final {
 public:
+	// Packet handler delegates
+	Utils::Event<Net::Client*, Net::ClassicProtocol::AuthenticationPacket> authEvents;
+	Utils::Event<Net::Client*, Net::ClassicProtocol::SetBlockPacket> setBlockEvents;
+	Utils::Event<Net::Client*, Net::ClassicProtocol::PositionOrientationPacket> positionOrientationEvents;
+	Utils::Event<Net::Client*, Net::ClassicProtocol::MessagePacket> messageEvents;
+
 	Server() : m_socket(true), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
 
 	Server(const Server&) = delete;
