@@ -244,12 +244,12 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
 {
+	setBlockEvents.Trigger(client, packet);
+
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
 	}
-
-	setBlockEvents.Trigger(client, packet);
 
 	Player::PlayerPtr player = GetPlayer(client->GetID());
 	player->GetWorld()->OnSetBlockPacket(player, packet);
@@ -257,12 +257,12 @@ void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPac
 
 void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
+	positionOrientationEvents.Trigger(client, packet);
+
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
 	}
-
-	positionOrientationEvents.Trigger(client, packet);
 
 	Player::PlayerPtr player = GetPlayer(client->GetID());
 	player->GetWorld()->OnPositionOrientationPacket(player, packet);
@@ -271,7 +271,5 @@ void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
 	messageEvents.Trigger(client, packet);
-
-	std::string message = packet.message.ToString();
-	ServerAPI::BroadcastMessage(nullptr, client, message);
+	ServerAPI::BroadcastMessage(nullptr, client, packet.message.ToString());
 }
