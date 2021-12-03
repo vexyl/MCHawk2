@@ -2,7 +2,7 @@
 #include "../include/Server.hpp"
 #include "../include/Net/ClassicProtocol.hpp"
 #include "../include/ServerAPI.hpp"
-#include "../include/Position.hpp"
+#include "../include/BLock/Position.hpp"
 
 using namespace Net;
 
@@ -41,11 +41,15 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 		// Send other players to player
 		int8_t spawnPlayerPid = otherPlayer->GetID();
-		Position pos = otherPlayer->GetPosition();
+		Utils::Vector pos = otherPlayer->GetPosition();
 		uint8_t yaw = otherPlayer->GetYaw();
 		uint8_t pitch = otherPlayer->GetPitch();
 
-		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(spawnPlayerPid, otherPlayer->GetName(), pos.x, pos.y, pos.z, yaw, pitch));
+		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
+			spawnPlayerPid,
+			otherPlayer->GetName(),
+			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
+		);
 	END_FOREACH_PLAYER
 
 	player->SetWorld(this);
@@ -136,7 +140,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	if (packet.mode == 0)
 		p->type = 0x00;
 
-	Position pos(p->x, p->y, p->z);
+	Block::Position pos(p->x, p->y, p->z);
 
 	// TODO: Kick player
 	if (!protocolHandler.IsValidBlock(packet.type)) {
@@ -158,7 +162,8 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicProtocol::PositionOrientationPacket& packet)
 {
 	int8_t srcPid = player->GetID();
-	Position position = player->GetPosition();
+	Utils::Vector position = player->GetPosition();
+	Utils::Vector newPosition(static_cast<float>(packet.x), static_cast<float>(packet.y), static_cast<float>(packet.z));
 
 	bool doOrientationUpdate = false, doPositionUpdate = false;
 	uint8_t yaw = player->GetYaw(), pitch = player->GetPitch();
@@ -170,9 +175,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 		doOrientationUpdate = true;
 	}
 
-	if (position.x != packet.x || position.y != packet.y || position.z != packet.z) {
-		Utils::Vector newPosition(static_cast<float>(packet.x) / 32.0f, static_cast<float>(packet.y) / 32.0f, static_cast<float>(packet.z) / 32.0f);
-
+	if (newPosition != position) {
 		player->SetPosition(newPosition);
 		doPositionUpdate = true;
 	}

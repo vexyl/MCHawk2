@@ -82,6 +82,16 @@ Vector Vector::operator-=(const Vector& v)
 	return *this;
 }
 
+bool Vector::operator==(const Vector& v) const
+{
+	return this->x == v.x && this->y == v.y && this->z == v.z;
+}
+
+bool Vector::operator!=(const Vector& v) const
+{
+	return this->x != v.x || this->y != v.y || this->z != v.z;
+}
+
 Vector Vector::Normalized() const
 {
 	return *this / Length();

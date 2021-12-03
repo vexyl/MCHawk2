@@ -54,7 +54,7 @@ void Map::CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const
 	*outCompSize = (size_t)strm.total_out;
 }
 
-uint8_t Map::PeekBlock(Position& pos)
+uint8_t Map::PeekBlock(Block::Position& pos)
 {
 	int offset = calcMapOffset(pos.x, pos.y, pos.z, m_xSize, m_zSize);
 
@@ -67,7 +67,7 @@ uint8_t Map::PeekBlock(Position& pos)
 	return m_buffer[offset];
 }
 
-void Map::SetBlock(Position& pos, uint8_t type)
+void Map::SetBlock(Block::Position& pos, uint8_t type)
 {
 	int offset = calcMapOffset(pos.x, pos.y, pos.z, m_xSize, m_zSize);
 

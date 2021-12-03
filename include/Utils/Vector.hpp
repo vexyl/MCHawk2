@@ -22,6 +22,8 @@ struct Vector {
 	Vector operator-(const Vector& v) const;
 	Vector operator+=(const Vector& v);
 	Vector operator-=(const Vector& v);
+	bool operator==(const Vector& v) const;
+	bool operator!=(const Vector& v) const;
 
 	Vector Normalized() const;
 	Vector Cross(const Vector& v) const;

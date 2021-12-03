@@ -1,7 +1,7 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include "Position.hpp"
+#include "BLock/Position.hpp"
 
 #include <string>
 
@@ -18,12 +18,12 @@ public:
 	Map(const Map&) = delete;
 	Map& operator=(const Map&) = delete;
 
-	uint8_t PeekBlock(Position& pos);
+	uint8_t PeekBlock(Block::Position& pos);
 	uint16_t GetXSize() const { return m_xSize; }
 	uint16_t GetYSize() const { return m_ySize; }
 	uint16_t GetZSize() const { return m_zSize; }
 
-	void SetBlock(Position& pos, uint8_t type);
+	void SetBlock(Block::Position& pos, uint8_t type);
 
 	void CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const;
 	void SaveToFile(std::string filename);

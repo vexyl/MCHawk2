@@ -5,7 +5,7 @@
 #include "Net/ClassicProtocol.hpp"
 #include "Map.hpp"
 #include "MapGen.hpp"
-#include "Position.hpp"
+#include "BLock/Position.hpp"
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
 
@@ -24,7 +24,7 @@ public:
 	{
 		if (filename == "") {
 			m_map = MapGen::GenerateFlatMap(256, 64, 256);
-			m_spawnPosition = Position(256 / 2, 64 / 2, 256 / 2);
+			m_spawnPosition = Block::Position(256 / 2, 64 / 2, 256 / 2);
 		} else {
 			m_map = std::make_unique<Map>();
 			if (!m_map->LoadFromFile(filename, xSize, ySize, zSize)) {
@@ -35,12 +35,12 @@ public:
 	}
 
 	Map* GetMap() { return m_map.get(); }
-	Position GetSpawnPosition() const { return m_spawnPosition; }
+	Block::Position GetSpawnPosition() const { return m_spawnPosition; }
 	std::string GetName() const { return m_name; }
 	const std::vector<Player::PlayerPtr>& GetPlayerPids() const { return m_players; }
 	Utils::Vector GetSpawnPositionVector() const { return Utils::Vector(m_spawnPosition.x, m_spawnPosition.y, m_spawnPosition.z); }
 
-	void SetSpawnPosition(const Position& position) { m_spawnPosition = position; }
+	void SetSpawnPosition(const Block::Position& position) { m_spawnPosition = position; }
 
 	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
@@ -57,7 +57,7 @@ private:
 
 	std::unique_ptr<Map> m_map;
 	std::string m_name;
-	Position m_spawnPosition;
+	Block::Position m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;
 };
 
