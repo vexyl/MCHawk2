@@ -12,17 +12,17 @@ struct Position final {
 		return Position(static_cast<int16_t>(v.x) / 32, static_cast<int16_t>(v.y) / 32, static_cast<int16_t>(v.z) / 32);
 	}
 
-	static Utils::Vector ConvertBlockToVector(Block::Position& pos)
+	static Utils::Vector ConvertBlockToVector(Position& pos)
 	{
 		return Utils::Vector(static_cast<float>(pos.x) * 32, static_cast<float>(pos.y) * 32, static_cast<float>(pos.z) * 32);
 	}
 
-	static Position ConvertBlockToPlayer(Block::Position& pos)
+	static Position ConvertBlockToPlayer(Position& pos)
 	{
 		return Position(pos.x * 32, pos.y * 32 + 51, pos.z * 32);
 	}
 
-	static Position ConvertPlayerToBlock(Block::Position& pos)
+	static Position ConvertPlayerToBlock(Position& pos)
 	{
 		return Position(pos.x / 32, (pos.y - 51) / 32, pos.z / 32);
 	}
@@ -34,7 +34,7 @@ struct Position final {
 	Position(const Position& pos);
 
 	// Copy assignment
-	Block::Position& operator=(const Position& pos);
+	Position& operator=(const Position& pos);
 
 	Utils::Vector ToVector()
 	{
