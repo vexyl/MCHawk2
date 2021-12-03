@@ -90,7 +90,7 @@ bool ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::str
 	return true;
 }
 
-bool ServerAPI::MapSetBlock(Net::Client* client, Map* map, Block::Position pos, uint8_t type)
+bool ServerAPI::MapSetBlock(Net::Client* client, Map* map, Utils::Vector pos, uint8_t type)
 {
 	//std::string message = "placed block " + std::to_string(type) + " (" + ClassicProtocol::GetBlockNameByType(type) + ") @ (" + std::to_string(static_cast<short>(pos.x)) + ", " + std::to_string(static_cast<short>(pos.y)) + ", " + std::to_string(static_cast<short>(pos.z)) + ")";
 
@@ -99,7 +99,7 @@ bool ServerAPI::MapSetBlock(Net::Client* client, Map* map, Block::Position pos, 
 
 	if (!CheckPrivilege(client, "MapSetBlock")) {
 		uint8_t actualType = map->PeekBlock(pos);
-		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(pos.x, pos.y, pos.z, actualType));
+		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), actualType));
 		return false;
 	}
 

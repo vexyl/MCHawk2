@@ -10,11 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 file(GLOB SOURCES
     "include/*.hpp"
     "include/Net/*.hpp"
-    "include/Block/*.hpp"
     "include/Utils/*.hpp"
     "src/*.cpp"
     "src/Net/*.cpp"
-    "src/Block/*.cpp"
     "src/Utils/*.cpp"
 )
 

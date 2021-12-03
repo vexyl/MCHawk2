@@ -2,7 +2,8 @@
 #include "../include/Server.hpp"
 #include "../include/Net/ClassicProtocol.hpp"
 #include "../include/ServerAPI.hpp"
-#include "../include/BLock/Position.hpp"
+#include "../include/Utils/Vector.hpp"
+#include "../include/Utils/Utils.hpp"
 
 using namespace Net;
 
@@ -29,12 +30,27 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	SendLevel(client);
 
-	player->SetPosition(Utils::Vector(m_spawnPosition.x, m_spawnPosition.y, m_spawnPosition.z));
+	player->SetPosition(m_spawnPosition);
+
+	Utils::Vector convertedPosition = Utils::ConvertBlockToPlayer(m_spawnPosition);
 
 	// Spawn player
-	client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(-1, name, m_spawnPosition.x * 32, m_spawnPosition.y * 32 + 51, m_spawnPosition.z * 32, 0, 0));
+	client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
+		-1, name,
+		static_cast<int16_t>(convertedPosition.x),
+		static_cast<int16_t>(convertedPosition.y),
+		static_cast<int16_t>(convertedPosition.z),
+		0, 0
+	));
 
-	auto spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(pid, name, m_spawnPosition.x * 32, m_spawnPosition.y * 32 + 51, m_spawnPosition.z * 32, 0, 0);
+	auto spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
+		pid, name,
+		static_cast<int16_t>(convertedPosition.x),
+		static_cast<int16_t>(convertedPosition.y),
+		static_cast<int16_t>(convertedPosition.z),
+		0, 0
+	);
+
 	FOREACH_PLAYER(otherPlayer, otherClient)
 		// Send player to other players
 		otherClient->QueuePacket(spawnPacket);
@@ -140,7 +156,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	if (packet.mode == 0)
 		p->type = 0x00;
 
-	Block::Position pos(p->x, p->y, p->z);
+	Utils::Vector pos(p->x, p->y, p->z);
 
 	// TODO: Kick player
 	if (!protocolHandler.IsValidBlock(packet.type)) {

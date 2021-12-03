@@ -1,10 +1,9 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include "BLock/Position.hpp"
+#include "Utils/Vector.hpp"
 
 #include <string>
-
 #include <cstdint>
 
 #define calcMapOffset(x, y, z, xSize, zSize) ((y * zSize + z) * xSize + x) + 4
@@ -18,12 +17,12 @@ public:
 	Map(const Map&) = delete;
 	Map& operator=(const Map&) = delete;
 
-	uint8_t PeekBlock(Block::Position& pos);
+	uint8_t PeekBlock(Utils::Vector& pos);
 	uint16_t GetXSize() const { return m_xSize; }
 	uint16_t GetYSize() const { return m_ySize; }
 	uint16_t GetZSize() const { return m_zSize; }
 
-	void SetBlock(Block::Position& pos, uint8_t type);
+	void SetBlock(Utils::Vector& pos, uint8_t type);
 
 	void CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const;
 	void SaveToFile(std::string filename);

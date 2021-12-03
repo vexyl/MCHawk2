@@ -54,9 +54,9 @@ void Map::CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const
 	*outCompSize = (size_t)strm.total_out;
 }
 
-uint8_t Map::PeekBlock(Block::Position& pos)
+uint8_t Map::PeekBlock(Utils::Vector& pos)
 {
-	int offset = calcMapOffset(pos.x, pos.y, pos.z, m_xSize, m_zSize);
+	int offset = calcMapOffset(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z), m_xSize, m_zSize);
 
 	if (offset < 0 || offset >= (int)m_bufferSize) {
 		//std::cerr << "Buffer overflow in Map::PeekBlock()" << std::endl;
@@ -67,9 +67,9 @@ uint8_t Map::PeekBlock(Block::Position& pos)
 	return m_buffer[offset];
 }
 
-void Map::SetBlock(Block::Position& pos, uint8_t type)
+void Map::SetBlock(Utils::Vector& pos, uint8_t type)
 {
-	int offset = calcMapOffset(pos.x, pos.y, pos.z, m_xSize, m_zSize);
+	int offset = calcMapOffset(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z), m_xSize, m_zSize);
 
 	if (offset < 0 || offset >= (int)m_bufferSize) {
 		std::cerr << "Buffer overflow in Map::SetBlock()" << std::endl;
