@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name and version
-project(MCHawk2 VERSION 1.0)
+project(MCHawk2 VERSION 0.0.1)
 
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
