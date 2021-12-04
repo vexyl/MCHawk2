@@ -112,6 +112,14 @@ void Server::Init()
 		}
 	);
 
+	extProtocol->onPlayerClickCallback = (
+		[&](Client* client, const ExtendedProtocol::PlayerClickPacket& packet)
+		{
+			playerClickEvents.Trigger(client, packet);
+			std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
+		}
+	);
+
 	std::shared_ptr<World> world = std::make_shared<World>("default");
 	world->Init();
 	m_worlds[world->GetName()] = std::move(world);
@@ -258,8 +266,9 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
-		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, 1));
+		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, 2));
 		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("CustomBlocks"), 1));
+		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("PlayerClick"), 1));
 		client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
 	}
 

@@ -27,11 +27,12 @@
 
 class Server final {
 public:
-	// Packet handler delegates
+	// Packet events
 	Utils::Event<Net::Client*, Net::ClassicProtocol::AuthenticationPacket> authEvents;
 	Utils::Event<Net::Client*, Net::ClassicProtocol::SetBlockPacket> setBlockEvents;
 	Utils::Event<Net::Client*, Net::ClassicProtocol::PositionOrientationPacket> positionOrientationEvents;
 	Utils::Event<Net::Client*, Net::ClassicProtocol::MessagePacket> messageEvents;
+	Utils::Event<Net::Client*, Net::ExtendedProtocol::PlayerClickPacket> playerClickEvents;
 
 	Server() : m_socket(true), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
 

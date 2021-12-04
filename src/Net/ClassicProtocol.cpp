@@ -114,28 +114,34 @@ bool ClassicProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::Buffer
 void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[AuthenticationOpcodeHandler]" << std::endl;
+	
+	if (onAuthenticationCallback == nullptr)
+		return;
 
 	AuthenticationPacket packet;
 	packet.Deserialize(reader);
 
-	if (onAuthenticationCallback != nullptr)
-		onAuthenticationCallback(client, packet);
+	onAuthenticationCallback(client, packet);
 }
 
 void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[SetBlockOpcodeHandler]" << std::endl;
+	if (onSetBlockCallback == nullptr)
+		return;
 
 	SetBlockPacket packet;
 	packet.Deserialize(reader);
 
-	if (onSetBlockCallback != nullptr)
-		onSetBlockCallback(client, packet);
+	onSetBlockCallback(client, packet);
 }
 
 void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[PositionOrientationOpcodeHandler]" << std::endl;
+
+	if (onPositionOrientationCallback == nullptr)
+		return;
 
 	PositionOrientationPacket packet;
 	packet.Deserialize(reader);
@@ -150,19 +156,20 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 		<< ", pitch=" << static_cast<unsigned>(packet.pitch)
 		<< std::endl;*/
 
-	if (onPositionOrientationCallback != nullptr)
-		onPositionOrientationCallback(client, packet);
+	onPositionOrientationCallback(client, packet);
 }
 
 void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[MessageOpcodeHandler]" << std::endl;
 
+	if (onMessageCallback == nullptr)
+		return;
+
 	MessagePacket packet;
 	packet.Deserialize(reader);
 
-	if (onMessageCallback != nullptr)
-		onMessageCallback(client, packet);
+	onMessageCallback(client, packet);
 }
 
 std::shared_ptr<ClassicProtocol::PositionOrientationPacket> ClassicProtocol::MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)

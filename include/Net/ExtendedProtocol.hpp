@@ -460,6 +460,12 @@ public:
 			reader.ReadInt16(targetBlockY);
 			reader.ReadInt16(targetBlockZ);
 			reader.ReadUInt8(targetBlockFace);
+
+			yaw = ntohs(yaw);
+			pitch = ntohs(pitch);
+			targetBlockX = ntohs(targetBlockX);
+			targetBlockY = ntohs(targetBlockY);
+			targetBlockZ = ntohs(targetBlockZ);
 		}
 
 		virtual std::unique_ptr<Utils::BufferStream> Serialize() override
