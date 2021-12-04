@@ -496,6 +496,11 @@ public:
 		uint8_t fogR, uint8_t fogG, uint8_t fogB
 	);
 
+	std::function<void(Client*, const ExtInfoPacket&)> onExtInfoCallback;
+	std::function<void(Client*, const ExtEntryPacket&)> onExtEntryCallback;
+	std::function<void(Client*, const CustomBlocksPacket&)> onCustomBlocksCallback;
+	std::function<void(Client*, const PlayerClickPacket&)> onPlayerClickCallback;
+
 	ExtendedProtocol();
 
 	virtual ~ExtendedProtocol() {}

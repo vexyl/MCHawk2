@@ -67,34 +67,54 @@ void ExtendedProtocol::ExtInfoOpcodeHandler(Client* client, Utils::BufferStream&
 {
 	//std::cout << "[ExtInfo]" << std::endl;
 
+	if (onExtInfoCallback == nullptr)
+		return;
+
 	ExtInfoPacket packet;
 	packet.Deserialize(reader);
+
+	onExtInfoCallback(client, packet);
 }
 
 void ExtendedProtocol::ExtEntryOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[ExtEntry]" << std::endl;
 
+	if (onExtEntryCallback == nullptr)
+		return;
+
 	ExtEntryPacket packet;
 	packet.Deserialize(reader);
+
+	onExtEntryCallback(client, packet);
 }
 
 void ExtendedProtocol::CustomBlocksOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[CustomBlocks]" << std::endl;
 
+	if (onCustomBlocksCallback == nullptr)
+		return;
+
 	CustomBlocksPacket packet;
 	packet.Deserialize(reader);
+
+	onCustomBlocksCallback(client, packet);
 }
 
 void ExtendedProtocol::PlayerClickOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[PlayerClick]" << std::endl;
 
+	if (onPlayerClickCallback == nullptr)
+		return;
+
 	PlayerClickPacket packet;
 	packet.Deserialize(reader);
 
-	std::cout << std::to_string(packet.action) << "," << std::to_string(packet.button) << "," << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << "," << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
+	onPlayerClickCallback(client, packet);
+
+	//std::cout << std::to_string(packet.action) << "," << std::to_string(packet.button) << "," << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << "," << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 }
 
 size_t ExtendedProtocol::GetPacketSize(uint8_t opcode) const

@@ -89,6 +89,8 @@ private:
 
 	std::map<std::string, std::shared_ptr<World>> m_worlds;
 
+	std::string m_serverName, m_serverMOTD;
+
 	bool m_blockDefaultEventHandler;
 
 	void OnAuthenticationPacket(Net::Client* client, const Net::ClassicProtocol::AuthenticationPacket& packet);

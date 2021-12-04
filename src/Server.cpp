@@ -70,35 +70,54 @@ void Server::Init()
 	m_socket.Bind(25565);
 	m_socket.Listen();
 
-	auto protocol = reinterpret_cast<ClassicProtocol*>(m_protocolHandler.GetProtocol("ClassicProtocol"));
-	protocol->onAuthenticationCallback = (
+	auto classicProtocol = reinterpret_cast<ClassicProtocol*>(m_protocolHandler.GetProtocol("ClassicProtocol"));
+	auto extProtocol = reinterpret_cast<ExtendedProtocol*>(m_protocolHandler.GetProtocol("ExtendedProtocol"));
+
+	classicProtocol->onAuthenticationCallback = (
 		[&](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
 	{
 		OnAuthenticationPacket(client, packet);
 	}
 	);
-	protocol->onSetBlockCallback = (
+	classicProtocol->onSetBlockCallback = (
 		[&](Client* client, const ClassicProtocol::SetBlockPacket& packet)
 	{
 		OnSetBlockPacket(client, packet);
 	}
 	);
-	protocol->onPositionOrientationCallback = (
+	classicProtocol->onPositionOrientationCallback = (
 		[&](Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 	{
 		OnPositionOrientationPacket(client, packet);
 	}
 	);
-	protocol->onMessageCallback = (
+	classicProtocol->onMessageCallback = (
 		[&](Client* client, const ClassicProtocol::MessagePacket& packet)
-	{
-		OnMessagePacket(client, packet);
-	}
+		{
+			OnMessagePacket(client, packet);
+		}
+	);
+
+	extProtocol->onExtInfoCallback = (
+		[&](Client* client, const ExtendedProtocol::ExtInfoPacket& packet)
+		{
+			std::cout << "ExtInfo: " << packet.appName.ToString() << " | " << packet.extensionCount << std::endl;
+		}
+	);
+
+	extProtocol->onExtEntryCallback = (
+		[&](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
+		{
+			std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
+		}
 	);
 
 	std::shared_ptr<World> world = std::make_shared<World>("default");
 	world->Init();
 	m_worlds[world->GetName()] = std::move(world);
+
+	m_serverName = "MCHawk2";
+	m_serverMOTD = "Welcome to a world of blocks!";
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -227,9 +246,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	Player::PlayerPtr player = pair.first->second;
 	player->SetName(name);
 
-	std::string serverName = "MCHawk2", serverMOTD = "Welcome to a world of blocks!";
-
-	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, serverName, serverMOTD, 0));
+	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, m_serverName, m_serverMOTD, 0));
 
 	m_worlds["default"]->AddPlayer(player);
 	client->SetAuthorized(true);
@@ -238,6 +255,13 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	ServerAPI::SetUserType(nullptr, client, 0x64);
 	m_privHandler.GivePrivilege(player->GetName(), "MapSetBlock");
 	m_privHandler.GivePrivilege(player->GetName(), "chat");
+
+	if (packet.UNK0 == 0x42) {
+		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
+		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, 1));
+		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("CustomBlocks"), 1));
+		client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
+	}
 
 	authEvents.Trigger(client, packet);
 }
