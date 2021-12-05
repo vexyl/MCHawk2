@@ -35,10 +35,8 @@ void Server::SendWrappedMessage(Client* client, std::string message, int message
 		int diff = length - pos;
 		int count = std::min(diff, max);
 
-		if (lastColor != "" && count + 2 > max) {
-			std::cout << "yes" << std::endl;
+		if (lastColor != "" && count + 2 > max)
 			count -= 2;
-		}
 
 		SendClientMessage(client, lastColor + message.substr(pos, count), messageType);
 
@@ -123,14 +121,14 @@ void Server::Init()
 	extProtocol->onExtInfoCallback = (
 		[&](Client* client, const ExtendedProtocol::ExtInfoPacket& packet)
 		{
-			std::cout << "ExtInfo: " << packet.appName.ToString() << " | " << packet.extensionCount << std::endl;
+			//std::cout << "ExtInfo: " << packet.appName.ToString() << " | " << packet.extensionCount << std::endl;
 		}
 	);
 
 	extProtocol->onExtEntryCallback = (
 		[&](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
-			std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
+			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
 		}
 	);
 
@@ -138,7 +136,7 @@ void Server::Init()
 		[&](Client* client, const ExtendedProtocol::PlayerClickPacket& packet)
 		{
 			playerClickEvents.Trigger(client, packet);
-			std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
+			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 		}
 	);
 
