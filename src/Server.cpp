@@ -28,13 +28,35 @@ void Server::SendWrappedMessage(Client* client, std::string message, int message
 {
 	int max = 64;
 	int pos = 0;
-
 	int length = static_cast<int>(message.length());
+	std::string lastColor;
+
 	while (pos < length) {
 		int diff = length - pos;
 		int count = std::min(diff, max);
 
-		SendClientMessage(client, message.substr(pos, count), messageType);
+		if (lastColor != "" && count + 2 > max) {
+			std::cout << "yes" << std::endl;
+			count -= 2;
+		}
+
+		SendClientMessage(client, lastColor + message.substr(pos, count), messageType);
+
+		if (length > max) {
+			for (int i = count - 1; i >= pos; --i) {
+				if (message.at(i) == '&' && (i + 1) < count) {
+					char color = message.at(i + 1);
+					if (color != 'f') {
+						lastColor = "&";
+						lastColor += color;
+					}
+					else {
+						lastColor = "";
+					}
+					break;
+				}
+			}
+		}
 
 		pos += count;
 	}
