@@ -227,12 +227,12 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 				obj_client->QueuePacket(orientationPacket);
 		END_FOREACH_PLAYER
 
-			/*std::cout
-				<< "OrientationUpdate: " << player->GetName()
-				<< "(pid=" << static_cast<signed>(srcPid) << ")"
-				<< " yaw=" << static_cast<unsigned>(packet.yaw)
-				<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-				<< std::endl;*/
+		/*std::cout
+			<< "OrientationUpdate: " << player->GetName()
+			<< "(pid=" << static_cast<signed>(srcPid) << ")"
+			<< " yaw=" << static_cast<unsigned>(packet.yaw)
+			<< ", pitch=" << static_cast<unsigned>(packet.pitch)
+			<< std::endl;*/
 	}
 
 	// CPE Held Block uses pid field of this packet for block type

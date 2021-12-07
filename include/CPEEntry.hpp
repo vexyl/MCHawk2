@@ -1,9 +1,9 @@
-#ifndef CPEEntry_H_
-#define CPEEntry_H_
+#ifndef CPEENTRY_H_
+#define CPEENTRY_H_
 
 struct CPEEntry {
 	std::string name;
 	int version;
 };
 
-#endif // CPEEntry_H_
+#endif // CPEENTRY_H_
