@@ -310,7 +310,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
-		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, ExtendedProtocol::kVersion));
+		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, m_cpeEntries.size()));
 		for (auto& search : m_cpeEntries) {
 			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
 		}

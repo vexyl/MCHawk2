@@ -88,7 +88,7 @@ private:
 	bool m_running = true;
 
 	std::vector<Net::Client*> m_unauthorizedClients;
-	std::map<int8_t, std::shared_ptr<Player>> m_players; // FIXME: changed to shared_ptr
+	std::map<int8_t, std::shared_ptr<Player>> m_players;
 	std::map<std::string, std::shared_ptr<World>> m_worlds;
 	std::map<std::string, CPEEntry> m_cpeEntries;
 
