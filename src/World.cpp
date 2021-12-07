@@ -55,20 +55,20 @@ void World::AddPlayer(Player::PlayerPtr player)
 		// Send player to other players
 		otherClient->QueuePacket(spawnPacket);
 
-	// Send other players to player
-	int8_t spawnPlayerPid = otherPlayer->GetID();
-	Utils::Vector pos = otherPlayer->GetPosition();
-	uint8_t yaw = otherPlayer->GetYaw();
-	uint8_t pitch = otherPlayer->GetPitch();
+		// Send other players to player
+		int8_t spawnPlayerPid = otherPlayer->GetID();
+		Utils::Vector pos = otherPlayer->GetPosition();
+		uint8_t yaw = otherPlayer->GetYaw();
+		uint8_t pitch = otherPlayer->GetPitch();
 
-	client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
-		spawnPlayerPid,
-		otherPlayer->GetName(),
-		static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
-	);
+		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
+			spawnPlayerPid,
+			otherPlayer->GetName(),
+			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
+		);
 	END_FOREACH_PLAYER
 
-		player->SetWorld(this);
+	player->SetWorld(this);
 	m_players.push_back(player);
 }
 

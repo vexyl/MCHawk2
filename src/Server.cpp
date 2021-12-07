@@ -295,7 +295,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	Player::PlayerPtr player = pair.first->second;
 	player->SetName(name);
 
-	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(0x07, m_serverName, m_serverMOTD, 0));
+	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(ClassicProtocol::kVersion, m_serverName, m_serverMOTD, 0));
 
 	m_worlds["default"]->AddPlayer(player);
 	client->SetAuthorized(true);
@@ -305,13 +305,12 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	m_privHandler.GivePrivilege(player->GetName(), "MapSetBlock");
 	m_privHandler.GivePrivilege(player->GetName(), "chat");
 
-	// FIXME: iterate over cpeExtensions and send
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
-		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, 2));
-		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("CustomBlocks"), 1));
-		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("PlayerClick"), 1));
-		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("HeldBlock"), 1));
+		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, ExtendedProtocol::kVersion));
+		for (auto& search : m_cpeExtensions) {
+			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
+		}
 	}
 
 	authEvents.Trigger(client, packet);

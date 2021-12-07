@@ -21,6 +21,8 @@ class Client;
 
 class ClassicProtocol final : public IProtocol {
 public:
+	static const uint8_t kVersion = 0x07;
+
 	// Client->Server
 	static const uint32_t kAuthenticationSize       = 131;
 	static const uint32_t kSetBlockSize             = 9;

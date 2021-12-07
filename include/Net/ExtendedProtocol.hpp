@@ -21,6 +21,8 @@ namespace Net {
 
 	class ExtendedProtocol final : public IProtocol {
 	public:
+		static const uint8_t kVersion = 2;
+
 		static const uint32_t kExtInfoSize = 67;
 		static const uint32_t kExtEntrySize = 69;
 		static const uint32_t kCustomBlocksSize = 2;
