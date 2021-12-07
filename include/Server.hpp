@@ -58,10 +58,19 @@ public:
 			world = iter->second;
 		return world;
 	}
-
 	std::map<std::string, std::shared_ptr<World>> GetWorlds()
 	{
 		return m_worlds;
+	}
+	uint8_t GetCPEEntryVersion(std::string name) const
+	{
+		uint8_t version = 0;
+		auto search = m_cpeEntries.find(name);
+		if (search != m_cpeEntries.end()) {
+			return search->second.version;
+		}
+
+		return version;
 	}
 
 	void BlockDefaultEventHandler(bool blocked = true) { m_blockDefaultEventHandler = blocked; }

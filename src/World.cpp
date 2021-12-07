@@ -203,8 +203,8 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 
 		FOREACH_PLAYER(obj_player, obj_client)
 			int8_t destPid = obj_player->GetID();
-		if (srcPid != destPid)
-			obj_client->QueuePacket(positionOrientationPacket);
+			if (srcPid != destPid)
+				obj_client->QueuePacket(positionOrientationPacket);
 		END_FOREACH_PLAYER
 
 			/*std::cout
@@ -223,8 +223,8 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 
 		FOREACH_PLAYER(obj_player, obj_client)
 			int8_t destPid = obj_player->GetID();
-		if (srcPid != destPid)
-			obj_client->QueuePacket(orientationPacket);
+			if (srcPid != destPid)
+				obj_client->QueuePacket(orientationPacket);
 		END_FOREACH_PLAYER
 
 			/*std::cout
@@ -236,6 +236,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	}
 
 	// CPE Held Block uses pid field of this packet for block type
-	if (player->HasCPEEntry("HeldBlock", 1))
+	uint8_t version = Server::GetInstance()->GetCPEEntryVersion("HeldBlock");
+	if (player->HasCPEEntry("HeldBlock", version))
 		player->heldBlock = packet.pid;
 }
