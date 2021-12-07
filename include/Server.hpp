@@ -13,9 +13,10 @@
 #include "Player.hpp"
 #include "Privileges.hpp"
 #include "Utils/Event.hpp"
-#include "CPEExtension.hpp"
+#include "CPEEntry.hpp"
 
 #include <vector>
+#include <map>
 
 #pragma region LoggerMacros
 #define LOG(...) Server::GetInstance()->GetLogger().Log(__VA_ARGS__);
@@ -89,20 +90,22 @@ private:
 	std::vector<Net::Client*> m_unauthorizedClients;
 	std::map<int8_t, std::shared_ptr<Player>> m_players; // FIXME: changed to shared_ptr
 	std::map<std::string, std::shared_ptr<World>> m_worlds;
-	std::map<std::string, CPEExtension> m_cpeExtensions;
+	std::map<std::string, CPEEntry> m_cpeEntries;
 
 	std::string m_serverName, m_serverMOTD;
 
 	bool m_blockDefaultEventHandler;
 
+	void ProcessUnauthorizedClients();
+	void UpdatePlayers();
+	void CheckForConnections();
+
+	void AddCPEEntry(std::string name, uint8_t version);
+
 	void OnAuthenticationPacket(Net::Client* client, const Net::ClassicProtocol::AuthenticationPacket& packet);
 	void OnSetBlockPacket(Net::Client* client, const Net::ClassicProtocol::SetBlockPacket& packet);
 	void OnPositionOrientationPacket(Net::Client* client, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 	void OnMessagePacket(Net::Client* client, const Net::ClassicProtocol::MessagePacket& packet);
-
-	void ProcessUnauthorizedClients();
-	void UpdatePlayers();
-	void CheckForConnections();
 };
 
 #endif // SERVER_H_

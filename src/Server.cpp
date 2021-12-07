@@ -131,11 +131,11 @@ void Server::Init()
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
 			Player::PlayerPtr player = GetPlayer(client->GetID());
 			std::string extName = packet.extName.ToString();
-			auto search = m_cpeExtensions.find(extName);
-			if (search == m_cpeExtensions.end() || packet.version != search->second.version)
+			auto search = m_cpeEntries.find(extName);
+			if (search == m_cpeEntries.end() || packet.version != search->second.version)
 				return;
 
-			player->AddCPEExtension(extName, packet.version);
+			player->AddCPEEntry(extName, packet.version);
 			std::cout << player->GetName() << " CPE Ext: " << extName << " version " << packet.version << std::endl;
 
 			if (extName == "CustomBlocks") {
@@ -160,11 +160,9 @@ void Server::Init()
 	m_serverName = "MCHawk2";
 	m_serverMOTD = "Welcome to a world of blocks!";
 
-	// FIXME
-	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("CustomBlocks", { "CustomBlocks", 1 }));
-	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("PlayerClick", { "PlayerClick", 1 }));
-	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("HeldBlock", { "HeldBlock", 1 }));
-	// FIXME: PlayerClicks = PlayerClick?
+	AddCPEEntry("CustomBlocks", 1);
+	AddCPEEntry("PlayerClick", 1);
+	AddCPEEntry("HeldBlock", 1);
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -281,6 +279,12 @@ void Server::Shutdown()
 	m_running = false;
 }
 
+void Server::AddCPEEntry(std::string name, uint8_t version)
+{
+	CPEEntry entry = { name, version };
+	m_cpeEntries.insert(std::make_pair(name, entry));
+}
+
 void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::AuthenticationPacket& packet)
 {
 	std::string name = packet.name.ToString();
@@ -307,7 +311,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
 		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, ExtendedProtocol::kVersion));
-		for (auto& search : m_cpeExtensions) {
+		for (auto& search : m_cpeEntries) {
 			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
 		}
 	}

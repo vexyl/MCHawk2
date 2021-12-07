@@ -234,6 +234,6 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	}
 
 	// CPE Held Block uses pid field of this packet for block type
-	if (player->HasCPEExtension("HeldBlock", 1))
+	if (player->HasCPEEntry("HeldBlock", 1))
 		player->heldBlock = packet.pid;
 }
