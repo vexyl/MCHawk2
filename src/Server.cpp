@@ -143,9 +143,6 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
 			}
-			else if (extName == "HeldBlock") {
-				client->QueuePacket(ExtendedProtocol::MakeHoldThisPacket(45, 1)); // FIXME: temp
-			}
 		}
 	);
 
