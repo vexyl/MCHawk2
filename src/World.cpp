@@ -139,7 +139,12 @@ void World::SendLevel(Client* client)
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
 {
 	Net::Client* client = player->GetClient();
-	auto p = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, packet.type);
+
+	uint8_t blockType = packet.type;
+	if (packet.mode == 0)
+		blockType = 0x00;
+
+	auto p = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, blockType);
 
 	Net::ProtocolHandler& protocolHandler = Server::GetInstance()->GetProtocolHandler();
 	std::string blockName = protocolHandler.GetBlockNameByType(packet.type);
@@ -153,10 +158,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 		<< static_cast<short>(packet.z) << ")"
 		<< std::endl;
 
-	if (packet.mode == 0)
-		p->type = 0x00;
-
-	Utils::Vector pos(p->x, p->y, p->z);
+	Utils::Vector pos(packet.x, packet.y, packet.z);
 
 	// TODO: Kick player
 	if (!protocolHandler.IsValidBlock(packet.type)) {
@@ -165,7 +167,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 		return;
 	}
 
-	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, p->type))
+	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, blockType))
 		return;
 
 	uint8_t pid = player->GetID();

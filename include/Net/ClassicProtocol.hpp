@@ -624,17 +624,17 @@ public:
 		}
 	};
 
-	static std::shared_ptr<PositionOrientationPacket> MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
-	static std::shared_ptr<OrientationPacket> MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch);
-	static std::shared_ptr<MessagePacket> MakeMessagePacket(uint8_t flag, Utils::MCString message);
-	static std::shared_ptr<DespawnPacket> MakeDespawnPacket(int8_t pid);
-	static std::shared_ptr<ServerIdentificationPacket> MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType);
-	static std::shared_ptr<SpawnPlayerPacket> MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
-	static std::shared_ptr<LevelInitializePacket> MakeLevelInitializePacket();
-	static std::shared_ptr<LevelFinalizePacket> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
-	static std::shared_ptr<SetBlock2Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
-	static std::shared_ptr<UserTypePacket> MakeUserTypePacket(uint8_t type);
-	static std::shared_ptr<DisconnectPlayerPacket> MakeDisconnectPlayerPacket(Utils::MCString reason);
+	static std::shared_ptr<Packet> MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
+	static std::shared_ptr<Packet> MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch);
+	static std::shared_ptr<Packet> MakeMessagePacket(uint8_t flag, Utils::MCString message);
+	static std::shared_ptr<Packet> MakeDespawnPacket(int8_t pid);
+	static std::shared_ptr<Packet> MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType);
+	static std::shared_ptr<Packet> MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch);
+	static std::shared_ptr<Packet> MakeLevelInitializePacket();
+	static std::shared_ptr<Packet> MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z);
+	static std::shared_ptr<Packet> MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type);
+	static std::shared_ptr<Packet> MakeUserTypePacket(uint8_t type);
+	static std::shared_ptr<Packet> MakeDisconnectPlayerPacket(Utils::MCString reason);
 
 	std::function<void(Client*, const AuthenticationPacket&)> onAuthenticationCallback;
 	std::function<void(Client*, const SetBlockPacket&)> onSetBlockCallback;

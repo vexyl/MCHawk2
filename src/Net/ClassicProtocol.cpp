@@ -172,57 +172,57 @@ void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& 
 	onMessageCallback(client, packet);
 }
 
-std::shared_ptr<ClassicProtocol::PositionOrientationPacket> ClassicProtocol::MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakePositionOrientationPacket(int8_t pid, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)
 {
 	return std::make_shared<ClassicProtocol::PositionOrientationPacket>(pid, x, y, z, yaw, pitch);
 }
 
-std::shared_ptr<ClassicProtocol::OrientationPacket> ClassicProtocol::MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeOrientationPacket(int8_t pid, uint8_t yaw, uint8_t pitch)
 {
 	return std::make_shared<ClassicProtocol::OrientationPacket>(pid, yaw, pitch);
 }
 
-std::shared_ptr<ClassicProtocol::DespawnPacket> ClassicProtocol::MakeDespawnPacket(int8_t pid)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeDespawnPacket(int8_t pid)
 {
 	return std::make_shared<ClassicProtocol::DespawnPacket>(pid);
 }
 
-std::shared_ptr<ClassicProtocol::MessagePacket> ClassicProtocol::MakeMessagePacket(uint8_t flag, Utils::MCString message)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeMessagePacket(uint8_t flag, Utils::MCString message)
 {
 	return std::make_shared<ClassicProtocol::MessagePacket>(flag, message);
 }
 
-std::shared_ptr<ClassicProtocol::ServerIdentificationPacket> ClassicProtocol::MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeServerIdentificationPacket(uint8_t version, Utils::MCString name, Utils::MCString motd, uint8_t userType)
 {
 	return std::make_shared<ClassicProtocol::ServerIdentificationPacket>(version, name, motd, userType);
 }
 
-std::shared_ptr<ClassicProtocol::SpawnPlayerPacket> ClassicProtocol::MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeSpawnPlayerPacket(int8_t pid, Utils::MCString name, int16_t x, int16_t y, int16_t z, uint8_t yaw, uint8_t pitch)
 {
 	return std::make_shared<ClassicProtocol::SpawnPlayerPacket>(pid, name, x, y, z, yaw, pitch);
 }
 
-std::shared_ptr<ClassicProtocol::LevelInitializePacket> ClassicProtocol::MakeLevelInitializePacket()
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeLevelInitializePacket()
 {
 	return std::make_shared<ClassicProtocol::LevelInitializePacket>();
 }
 
-std::shared_ptr<ClassicProtocol::LevelFinalizePacket> ClassicProtocol::MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeLevelFinalizePacket(int16_t x, int16_t y, int16_t z)
 {
 	return std::make_shared<ClassicProtocol::LevelFinalizePacket>(x, y, z);
 }
 
-std::shared_ptr<ClassicProtocol::SetBlock2Packet> ClassicProtocol::MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeSetBlock2Packet(int16_t x, int16_t y, int16_t z, uint8_t type)
 {
 	return std::make_shared<ClassicProtocol::SetBlock2Packet>(x, y, z, type);
 }
 
-std::shared_ptr<ClassicProtocol::UserTypePacket> ClassicProtocol::MakeUserTypePacket(uint8_t type)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeUserTypePacket(uint8_t type)
 {
 	return std::make_shared<ClassicProtocol::UserTypePacket>(type);
 }
 
-std::shared_ptr<ClassicProtocol::DisconnectPlayerPacket> ClassicProtocol::MakeDisconnectPlayerPacket(Utils::MCString reason)
+std::shared_ptr<Net::Packet> ClassicProtocol::MakeDisconnectPlayerPacket(Utils::MCString reason)
 {
 	return std::make_shared<ClassicProtocol::DisconnectPlayerPacket>(reason);
 }

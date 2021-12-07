@@ -137,42 +137,42 @@ bool ExtendedProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::Buffe
 	return false;
 }
 
-std::shared_ptr<ExtendedProtocol::ExtInfoPacket> ExtendedProtocol::MakeExtInfoPacket(Utils::MCString appName, uint16_t extensionCount)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeExtInfoPacket(Utils::MCString appName, uint16_t extensionCount)
 {
 	return std::make_shared<ExtendedProtocol::ExtInfoPacket>(appName, extensionCount);
 }
 
-std::shared_ptr<ExtendedProtocol::ExtEntryPacket> ExtendedProtocol::MakeExtEntryPacket(Utils::MCString extName, uint32_t version)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeExtEntryPacket(Utils::MCString extName, uint32_t version)
 {
 	return std::make_shared<ExtendedProtocol::ExtEntryPacket>(extName, version);
 }
 
-std::shared_ptr<ExtendedProtocol::CustomBlocksPacket> ExtendedProtocol::MakeCustomBlocksPacket(uint8_t supportedLevel)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeCustomBlocksPacket(uint8_t supportedLevel)
 {
 	return std::make_shared<ExtendedProtocol::CustomBlocksPacket>(supportedLevel);
 }
 
-std::shared_ptr<ExtendedProtocol::SetTextHotkeyPacket> ExtendedProtocol::MakeSetTextHotkeyPacket(Utils::MCString label, Utils::MCString action, uint32_t keyCode, uint8_t keyMods)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeSetTextHotkeyPacket(Utils::MCString label, Utils::MCString action, uint32_t keyCode, uint8_t keyMods)
 {
 	return std::make_shared<ExtendedProtocol::SetTextHotkeyPacket>(label, action, keyCode, keyMods);
 }
 
-std::shared_ptr<ExtendedProtocol::ExtAddPlayerNamePacket> ExtendedProtocol::MakeExtAddPlayerNamePacket(uint16_t nameID, Utils::MCString playerName, Utils::MCString listName, Utils::MCString groupName, uint8_t groupRank)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeExtAddPlayerNamePacket(uint16_t nameID, Utils::MCString playerName, Utils::MCString listName, Utils::MCString groupName, uint8_t groupRank)
 {
 	return std::make_shared<ExtendedProtocol::ExtAddPlayerNamePacket>(nameID, playerName, listName, groupName, groupRank);
 }
 
-std::shared_ptr<ExtendedProtocol::ExtAddEntity2Packet> ExtendedProtocol::MakeExtAddEntity2Packet(int8_t entityID, Utils::MCString inGameName, Utils::MCString skinName, int16_t spawnX, int16_t spawnY, int16_t spawnZ, uint8_t spawnYaw, uint8_t spawnPitch)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeExtAddEntity2Packet(int8_t entityID, Utils::MCString inGameName, Utils::MCString skinName, int16_t spawnX, int16_t spawnY, int16_t spawnZ, uint8_t spawnYaw, uint8_t spawnPitch)
 {
 	return std::make_shared<ExtendedProtocol::ExtAddEntity2Packet>(entityID, inGameName, skinName, spawnX, spawnY, spawnZ, spawnYaw, spawnPitch);
 }
 
-std::shared_ptr<ExtendedProtocol::ChangeModelPacket> ExtendedProtocol::MakeChangeModelPacket(int8_t entityID, Utils::MCString modelName)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeChangeModelPacket(int8_t entityID, Utils::MCString modelName)
 {
 	return std::make_shared<ExtendedProtocol::ChangeModelPacket>(entityID, modelName);
 }
 
-std::shared_ptr<ExtendedProtocol::DefineBlockPacket> ExtendedProtocol::MakeDefineBlockPacket(
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeDefineBlockPacket(
 	uint8_t blockID,
 	Utils::MCString name,
 	uint8_t solidity,
@@ -202,7 +202,7 @@ std::shared_ptr<ExtendedProtocol::DefineBlockPacket> ExtendedProtocol::MakeDefin
 		);
 }
 
-std::shared_ptr<ExtendedProtocol::HoldThisPacket> ExtendedProtocol::MakeHoldThisPacket(uint8_t blockToHold, uint8_t preventChange)
+std::shared_ptr<Net::Packet> ExtendedProtocol::MakeHoldThisPacket(uint8_t blockToHold, uint8_t preventChange)
 {
 	return std::make_shared<ExtendedProtocol::HoldThisPacket>(blockToHold, preventChange);
 }

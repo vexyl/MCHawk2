@@ -515,14 +515,14 @@ namespace Net {
 			}
 		};
 
-		static std::shared_ptr<ExtInfoPacket> MakeExtInfoPacket(Utils::MCString appName, uint16_t extensionCount);
-		static std::shared_ptr<ExtEntryPacket> MakeExtEntryPacket(Utils::MCString extName, uint32_t version);
-		static std::shared_ptr<CustomBlocksPacket> MakeCustomBlocksPacket(uint8_t supportedLevel);
-		static std::shared_ptr<SetTextHotkeyPacket> MakeSetTextHotkeyPacket(Utils::MCString label, Utils::MCString action, uint32_t keyCode, uint8_t keyMods);
-		static std::shared_ptr<ExtAddPlayerNamePacket> MakeExtAddPlayerNamePacket(uint16_t nameID, Utils::MCString playerName, Utils::MCString listName, Utils::MCString groupName, uint8_t groupRank);
-		static std::shared_ptr<ExtAddEntity2Packet> MakeExtAddEntity2Packet(int8_t entityID, Utils::MCString inGameName, Utils::MCString skinName, int16_t spawnX, int16_t spawnY, int16_t spawnZ, uint8_t spawnYaw, uint8_t spawnPitch);
-		static std::shared_ptr<ChangeModelPacket> MakeChangeModelPacket(int8_t entityID, Utils::MCString modelName);
-		static std::shared_ptr<DefineBlockPacket> MakeDefineBlockPacket(
+		static std::shared_ptr<Packet> MakeExtInfoPacket(Utils::MCString appName, uint16_t extensionCount);
+		static std::shared_ptr<Packet> MakeExtEntryPacket(Utils::MCString extName, uint32_t version);
+		static std::shared_ptr<Packet> MakeCustomBlocksPacket(uint8_t supportedLevel);
+		static std::shared_ptr<Packet> MakeSetTextHotkeyPacket(Utils::MCString label, Utils::MCString action, uint32_t keyCode, uint8_t keyMods);
+		static std::shared_ptr<Packet> MakeExtAddPlayerNamePacket(uint16_t nameID, Utils::MCString playerName, Utils::MCString listName, Utils::MCString groupName, uint8_t groupRank);
+		static std::shared_ptr<Packet> MakeExtAddEntity2Packet(int8_t entityID, Utils::MCString inGameName, Utils::MCString skinName, int16_t spawnX, int16_t spawnY, int16_t spawnZ, uint8_t spawnYaw, uint8_t spawnPitch);
+		static std::shared_ptr<Packet> MakeChangeModelPacket(int8_t entityID, Utils::MCString modelName);
+		static std::shared_ptr<Packet> MakeDefineBlockPacket(
 			uint8_t blockID,
 			Utils::MCString name,
 			uint8_t solidity,
@@ -536,7 +536,7 @@ namespace Net {
 			uint8_t fogDensity,
 			uint8_t fogR, uint8_t fogG, uint8_t fogB
 		);
-		static std::shared_ptr<HoldThisPacket> MakeHoldThisPacket(uint8_t blockToHold, uint8_t preventChange);
+		static std::shared_ptr<Packet> MakeHoldThisPacket(uint8_t blockToHold, uint8_t preventChange);
 
 		std::function<void(Client*, const ExtInfoPacket&)> onExtInfoCallback;
 		std::function<void(Client*, const ExtEntryPacket&)> onExtEntryCallback;
