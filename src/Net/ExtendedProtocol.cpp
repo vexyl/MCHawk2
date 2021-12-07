@@ -199,5 +199,10 @@ std::shared_ptr<ExtendedProtocol::DefineBlockPacket> ExtendedProtocol::MakeDefin
 		blockDraw,
 		fogDensity,
 		fogR, fogG, fogB
-	);
+		);
+}
+
+std::shared_ptr<ExtendedProtocol::HoldThisPacket> ExtendedProtocol::MakeHoldThisPacket(uint8_t blockToHold, uint8_t preventChange)
+{
+	return std::make_shared<ExtendedProtocol::HoldThisPacket>(blockToHold, preventChange);
 }

@@ -55,20 +55,20 @@ void World::AddPlayer(Player::PlayerPtr player)
 		// Send player to other players
 		otherClient->QueuePacket(spawnPacket);
 
-		// Send other players to player
-		int8_t spawnPlayerPid = otherPlayer->GetID();
-		Utils::Vector pos = otherPlayer->GetPosition();
-		uint8_t yaw = otherPlayer->GetYaw();
-		uint8_t pitch = otherPlayer->GetPitch();
+	// Send other players to player
+	int8_t spawnPlayerPid = otherPlayer->GetID();
+	Utils::Vector pos = otherPlayer->GetPosition();
+	uint8_t yaw = otherPlayer->GetYaw();
+	uint8_t pitch = otherPlayer->GetPitch();
 
-		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
-			spawnPlayerPid,
-			otherPlayer->GetName(),
-			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
-		);
+	client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
+		spawnPlayerPid,
+		otherPlayer->GetName(),
+		static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
+	);
 	END_FOREACH_PLAYER
 
-	player->SetWorld(this);
+		player->SetWorld(this);
 	m_players.push_back(player);
 }
 
@@ -167,7 +167,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 
 	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, p->type))
 		return;
-	
+
 	uint8_t pid = player->GetID();
 	FOREACH_PLAYER(obj_player, obj_client)
 		if (obj_player->GetID() != pid)
@@ -205,17 +205,18 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 			obj_client->QueuePacket(positionOrientationPacket);
 		END_FOREACH_PLAYER
 
-		/*std::cout
-			<< "PositionOrientation: " << player->GetName()
-			<< "(pid=" << static_cast<signed>(srcPid) << ")"
-			<< " @ ("
-			<< static_cast<short>(packet.x) << ", "
-			<< static_cast<short>(packet.y) << ", "
-			<< static_cast<short>(packet.z) << ")"
-			<< ", yaw=" << static_cast<unsigned>(packet.yaw)
-			<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-			<< std::endl;*/
-	} else if (doOrientationUpdate == true) {
+			/*std::cout
+				<< "PositionOrientation: " << player->GetName()
+				<< "(pid=" << static_cast<signed>(srcPid) << ")"
+				<< " @ ("
+				<< static_cast<short>(packet.x) << ", "
+				<< static_cast<short>(packet.y) << ", "
+				<< static_cast<short>(packet.z) << ")"
+				<< ", yaw=" << static_cast<unsigned>(packet.yaw)
+				<< ", pitch=" << static_cast<unsigned>(packet.pitch)
+				<< std::endl;*/
+	}
+	else if (doOrientationUpdate == true) {
 		auto orientationPacket = ClassicProtocol::MakeOrientationPacket(srcPid, packet.yaw, packet.pitch);
 
 		FOREACH_PLAYER(obj_player, obj_client)
@@ -224,11 +225,15 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 			obj_client->QueuePacket(orientationPacket);
 		END_FOREACH_PLAYER
 
-		/*std::cout
-			<< "OrientationUpdate: " << player->GetName()
-			<< "(pid=" << static_cast<signed>(srcPid) << ")"
-			<< " yaw=" << static_cast<unsigned>(packet.yaw)
-			<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-			<< std::endl;*/
+			/*std::cout
+				<< "OrientationUpdate: " << player->GetName()
+				<< "(pid=" << static_cast<signed>(srcPid) << ")"
+				<< " yaw=" << static_cast<unsigned>(packet.yaw)
+				<< ", pitch=" << static_cast<unsigned>(packet.pitch)
+				<< std::endl;*/
 	}
+
+	// CPE Held Block uses pid field of this packet for block type
+	if (player->HasCPEExtension("HeldBlock", 1))
+		player->heldBlock = packet.pid;
 }

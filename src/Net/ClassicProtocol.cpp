@@ -114,7 +114,7 @@ bool ClassicProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::Buffer
 void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferStream& reader)
 {
 	//std::cout << "[AuthenticationOpcodeHandler]" << std::endl;
-	
+
 	if (onAuthenticationCallback == nullptr)
 		return;
 

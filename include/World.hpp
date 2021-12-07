@@ -19,12 +19,13 @@ public:
 		m_name = name;
 	}
 
-	void Init(std::string filename = "", int xSize=0, int ySize=0, int zSize=0)
+	void Init(std::string filename = "", int xSize = 0, int ySize = 0, int zSize = 0)
 	{
 		if (filename == "") {
 			m_map = MapGen::GenerateFlatMap(256, 64, 256);
 			m_spawnPosition = Utils::Vector(256 / 2, 64 / 2, 256 / 2);
-		} else {
+		}
+		else {
 			m_map = std::make_unique<Map>();
 			if (!m_map->LoadFromFile(filename, xSize, ySize, zSize)) {
 				std::cerr << "error loading map" << std::endl;

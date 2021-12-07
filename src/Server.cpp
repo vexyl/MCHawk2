@@ -95,21 +95,21 @@ void Server::Init()
 
 	classicProtocol->onAuthenticationCallback = (
 		[&](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
-	{
-		OnAuthenticationPacket(client, packet);
-	}
+		{
+			OnAuthenticationPacket(client, packet);
+		}
 	);
 	classicProtocol->onSetBlockCallback = (
 		[&](Client* client, const ClassicProtocol::SetBlockPacket& packet)
-	{
-		OnSetBlockPacket(client, packet);
-	}
+		{
+			OnSetBlockPacket(client, packet);
+		}
 	);
 	classicProtocol->onPositionOrientationCallback = (
 		[&](Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
-	{
-		OnPositionOrientationPacket(client, packet);
-	}
+		{
+			OnPositionOrientationPacket(client, packet);
+		}
 	);
 	classicProtocol->onMessageCallback = (
 		[&](Client* client, const ClassicProtocol::MessagePacket& packet)
@@ -129,6 +129,23 @@ void Server::Init()
 		[&](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
+			Player::PlayerPtr player = GetPlayer(client->GetID());
+
+			std::string extName = packet.extName.ToString();
+			// TODO: function to check name and version
+			if (m_cpeExtensions.find(extName) == m_cpeExtensions.end())
+				return;
+
+			player->AddCPEExtension(extName, packet.version);
+			std::cout << player->GetName() << " CPE Ext: " << extName << " version " << packet.version << std::endl;
+
+			if (extName == "CustomBlocks") {
+				// TODO: Have init function take care of this
+				client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
+			}
+			else if (extName == "HeldBlock") {
+				client->QueuePacket(ExtendedProtocol::MakeHoldThisPacket(45, 1)); // FIXME: temp
+			}
 		}
 	);
 
@@ -146,6 +163,12 @@ void Server::Init()
 
 	m_serverName = "MCHawk2";
 	m_serverMOTD = "Welcome to a world of blocks!";
+
+	// FIXME
+	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("CustomBlocks", { "CustomBlocks", 1 }));
+	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("PlayerClick", { "PlayerClick", 1 }));
+	m_cpeExtensions.insert(std::make_pair<std::string, CPEExtension>("HeldBlock", { "HeldBlock", 1 }));
+	// FIXME: PlayerClicks = PlayerClick?
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -181,7 +204,8 @@ void Server::ProcessUnauthorizedClients()
 				if (client->IsAuthorized()) {
 					iter = m_unauthorizedClients.erase(iter);
 					continue;
-				} else {
+				}
+				else {
 					LOG(LOGLEVEL_INFO, "Client authorization failed (%s)", socket->GetIPAddress().c_str());
 					client->Kill();
 					continue;
@@ -284,12 +308,13 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	m_privHandler.GivePrivilege(player->GetName(), "MapSetBlock");
 	m_privHandler.GivePrivilege(player->GetName(), "chat");
 
+	// FIXME: iterate over cpeExtensions and send
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
 		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, 2));
 		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("CustomBlocks"), 1));
 		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("PlayerClick"), 1));
-		client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
+		client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString("HeldBlock"), 1));
 	}
 
 	authEvents.Trigger(client, packet);

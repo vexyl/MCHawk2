@@ -13,6 +13,7 @@
 #include "Player.hpp"
 #include "Privileges.hpp"
 #include "Utils/Event.hpp"
+#include "CPEExtension.hpp"
 
 #include <vector>
 
@@ -72,7 +73,7 @@ public:
 	void BroadcastMessage(std::string message, int messageType = 0);
 
 	bool Update();
-	
+
 	void Shutdown();
 
 private:
@@ -87,8 +88,8 @@ private:
 
 	std::vector<Net::Client*> m_unauthorizedClients;
 	std::map<int8_t, std::shared_ptr<Player>> m_players; // FIXME: changed to shared_ptr
-
 	std::map<std::string, std::shared_ptr<World>> m_worlds;
+	std::map<std::string, CPEExtension> m_cpeExtensions;
 
 	std::string m_serverName, m_serverMOTD;
 
