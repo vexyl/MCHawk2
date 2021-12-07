@@ -130,10 +130,9 @@ void Server::Init()
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
 			Player::PlayerPtr player = GetPlayer(client->GetID());
-
 			std::string extName = packet.extName.ToString();
-			// TODO: function to check name and version
-			if (m_cpeExtensions.find(extName) == m_cpeExtensions.end())
+			auto search = m_cpeExtensions.find(extName);
+			if (search == m_cpeExtensions.end() || packet.version != search->second.version)
 				return;
 
 			player->AddCPEExtension(extName, packet.version);
