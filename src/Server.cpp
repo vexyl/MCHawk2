@@ -153,8 +153,7 @@ void Server::Init()
 		}
 	);
 
-	std::shared_ptr<World> world = std::make_shared<World>("default");
-	world->Init();
+	std::shared_ptr<World> world = MakeDefaultWorld();
 	m_worlds[world->GetName()] = std::move(world);
 
 	m_serverName = "MCHawk2";
@@ -349,4 +348,16 @@ void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacke
 {
 	messageEvents.Trigger(client, packet);
 	ServerAPI::BroadcastMessage(nullptr, client, packet.message.ToString());
+}
+
+std::shared_ptr<World> MakeDefaultWorld()
+{
+	std::unique_ptr<Map> map;
+	map = MapGen::GenerateFlatMap(256, 64, 256);
+
+	std::shared_ptr<World> world = std::make_shared<World>("default");
+	world->SetSpawnPosition(Utils::Vector(256 / 2, 64 / 2, 256 / 2));
+	world->SetMap(std::move(map));
+
+	return world;
 }

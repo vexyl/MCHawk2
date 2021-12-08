@@ -98,7 +98,7 @@ void World::SendLevel(Client* client)
 	uint8_t* compBuffer = nullptr;
 	size_t compSize;
 
-	m_map->CompressBuffer(&compBuffer, &compSize);
+	Utils::CompressBuffer(m_map->GetReadOnlyBufferPtr(), m_map->GetBufferSize(), &compBuffer, &compSize);
 
 	LOG(LOGLEVEL_DEBUG, "Compressed map size: %d bytes", compSize);
 

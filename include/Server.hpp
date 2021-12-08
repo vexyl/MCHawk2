@@ -117,4 +117,6 @@ private:
 	void OnMessagePacket(Net::Client* client, const Net::ClassicProtocol::MessagePacket& packet);
 };
 
+std::shared_ptr<World> MakeDefaultWorld();
+
 #endif // SERVER_H_

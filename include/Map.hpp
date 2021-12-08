@@ -17,6 +17,8 @@ public:
 	Map(const Map&) = delete;
 	Map& operator=(const Map&) = delete;
 
+	const uint8_t* GetReadOnlyBufferPtr() const { return m_buffer; }
+	size_t GetBufferSize() const { return m_bufferSize; }
 	uint8_t PeekBlock(Utils::Vector& pos);
 	uint16_t GetXSize() const { return m_xSize; }
 	uint16_t GetYSize() const { return m_ySize; }
@@ -24,7 +26,6 @@ public:
 
 	void SetBlock(Utils::Vector& pos, uint8_t type);
 
-	void CompressBuffer(uint8_t** outCompBuffer, size_t* outCompSize) const;
 	void SaveToFile(std::string filename);
 	bool LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z);
 
