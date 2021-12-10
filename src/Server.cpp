@@ -145,10 +145,10 @@ void Server::Init()
 		}
 	);
 
-	extProtocol->onPlayerClickCallback = (
-		[&](Client* client, const ExtendedProtocol::PlayerClickPacket& packet)
+	extProtocol->onPlayerClickedCallback = (
+		[&](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
-			playerClickEvents.Trigger(client, packet);
+			playerClickedEvents.Trigger(client, packet);
 			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 		}
 	);
@@ -162,6 +162,7 @@ void Server::Init()
 	AddCPEEntry("CustomBlocks", 1);
 	AddCPEEntry("PlayerClick", 1);
 	AddCPEEntry("HeldBlock", 1);
+	AddCPEEntry("SelectionCuboid", 1);
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
