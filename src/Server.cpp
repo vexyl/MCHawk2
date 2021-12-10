@@ -167,10 +167,14 @@ void Server::Init()
 	m_serverMOTD = "Welcome to a world of blocks!";
 
 	AddCPEEntry("CustomBlocks", 1);
-	AddCPEEntry("PlayerClick", 1);
 	AddCPEEntry("HeldBlock", 1);
 	AddCPEEntry("SelectionCuboid", 1);
+	AddCPEEntry("EnvWeatherType", 1);
+	AddCPEEntry("PlayerClick", 1);
 	AddCPEEntry("TwoWayPing", 1);
+
+	m_pluginHandler.InitLua();
+	m_pluginHandler.LoadPlugins();
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -275,6 +279,7 @@ bool Server::Update()
 	CheckForConnections();
 	ProcessUnauthorizedClients();
 	UpdatePlayers();
+	m_pluginHandler.Update();
 
 	for (auto& world : m_worlds)
 		world.second->Update();

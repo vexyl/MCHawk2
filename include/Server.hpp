@@ -14,6 +14,7 @@
 #include "Privileges.hpp"
 #include "Utils/Event.hpp"
 #include "CPEEntry.hpp"
+#include "LuaPlugins.hpp"
 
 #include <vector>
 #include <map>
@@ -51,6 +52,7 @@ public:
 	Utils::Logger& GetLogger() { return m_logger; }
 	PrivilegeHandler& GetPrivilegeHandler() { return m_privHandler; }
 	Net::ProtocolHandler& GetProtocolHandler() { return m_protocolHandler; }
+	PluginHandler& GetPluginHandler() { return m_pluginHandler; }
 	std::shared_ptr<World> GetWorld(std::string name)
 	{
 		std::shared_ptr<World> world;
@@ -94,6 +96,7 @@ private:
 	Net::ProtocolHandler m_protocolHandler;
 	Net::TCPSocket m_socket;
 	PrivilegeHandler m_privHandler;
+	PluginHandler m_pluginHandler;
 
 	bool m_running = true;
 
