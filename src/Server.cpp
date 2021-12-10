@@ -153,6 +153,13 @@ void Server::Init()
 		}
 	);
 
+	extProtocol->onTwoWayPingCallback = (
+		[&](Client* client, const ExtendedProtocol::TwoWayPingPacket& packet)
+		{
+			twoWayPingEvents.Trigger(client, packet);
+		}
+	);
+
 	std::shared_ptr<World> world = MakeDefaultWorld();
 	m_worlds[world->GetName()] = std::move(world);
 
@@ -163,6 +170,7 @@ void Server::Init()
 	AddCPEEntry("PlayerClick", 1);
 	AddCPEEntry("HeldBlock", 1);
 	AddCPEEntry("SelectionCuboid", 1);
+	AddCPEEntry("TwoWayPing", 1);
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }

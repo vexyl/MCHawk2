@@ -60,6 +60,15 @@ ExtendedProtocol::ExtendedProtocol()
 			kPlayerClickedSize /* packet size */
 		}
 	));
+
+	// Default callbacks
+	m_defaultPacketHandlers.insert(std::make_pair(
+		Opcodes::kTwoWayPing,
+		OpcodeHandler{
+			[&](Client* client, Utils::BufferStream& reader) { TwoWayPingOpcodeHandler(client, reader); },
+			kTwoWayPingSize /* packet size */
+		}
+	));
 }
 
 
@@ -115,6 +124,19 @@ void ExtendedProtocol::PlayerClickedOpcodeHandler(Client* client, Utils::BufferS
 	onPlayerClickedCallback(client, packet);
 
 	//std::cout << std::to_string(packet.action) << "," << std::to_string(packet.button) << "," << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << "," << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
+}
+
+void ExtendedProtocol::TwoWayPingOpcodeHandler(Client* client, Utils::BufferStream& reader)
+{
+	//std::cout << "[TwoWayPing]" << std::endl;
+
+	if (onTwoWayPingCallback == nullptr)
+		return;
+
+	TwoWayPingPacket packet;
+	packet.Deserialize(reader);
+
+	onTwoWayPingCallback(client, packet);
 }
 
 size_t ExtendedProtocol::GetPacketSize(uint8_t opcode) const

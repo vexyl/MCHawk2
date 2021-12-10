@@ -1592,6 +1592,7 @@ namespace Net {
 		std::function<void(Client*, const ExtEntryPacket&)> onExtEntryCallback;
 		std::function<void(Client*, const CustomBlocksPacket&)> onCustomBlocksCallback;
 		std::function<void(Client*, const PlayerClickedPacket&)> onPlayerClickedCallback;
+		std::function<void(Client*, const TwoWayPingPacket&)> onTwoWayPingCallback;
 
 		ExtendedProtocol();
 
@@ -1611,6 +1612,7 @@ namespace Net {
 		void ExtEntryOpcodeHandler(Client* client, Utils::BufferStream& reader);
 		void CustomBlocksOpcodeHandler(Client* client, Utils::BufferStream& reader);
 		void PlayerClickedOpcodeHandler(Client* client, Utils::BufferStream& reader);
+		void TwoWayPingOpcodeHandler(Client* client, Utils::BufferStream& reader);
 	};
 } // namespace Net
 

@@ -35,6 +35,7 @@ public:
 	Utils::Event<Net::Client*, Net::ClassicProtocol::PositionOrientationPacket> positionOrientationEvents;
 	Utils::Event<Net::Client*, Net::ClassicProtocol::MessagePacket> messageEvents;
 	Utils::Event<Net::Client*, Net::ExtendedProtocol::PlayerClickedPacket> playerClickedEvents;
+	Utils::Event<Net::Client*, Net::ExtendedProtocol::TwoWayPingPacket> twoWayPingEvents;
 
 	Server() : m_socket(true), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
 
