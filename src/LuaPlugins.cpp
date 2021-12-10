@@ -9,8 +9,6 @@
 
 void LuaPlugin::Init()
 {
-	std::cout << "Loading Lua plugin file " << m_filename << std::endl;
-
 	m_lua->script_file(m_filename, m_env);
 
 	sol::function init = m_env["Init"];
@@ -54,18 +52,20 @@ void PluginHandler::LoadPlugins()
 		const std::string filename = iter->path().string();
 		std::string pluginName = iter->path().parent_path().filename().string();
 		if (iter->path().filename().string() == "init.lua") {
-			try {
-				std::unique_ptr<IPlugin> plugin = std::make_unique<LuaPlugin>(m_lua, filename, pluginName);
-				AddPlugin(std::move(plugin));
-			}
-			catch (const std::runtime_error& e) {
-				std::cerr << e.what() << std::endl;
-			}
+			std::unique_ptr<IPlugin> plugin = std::make_unique<LuaPlugin>(m_lua, filename, pluginName);
+			AddPlugin(std::move(plugin));
 		}
 	}
 
-	for (auto& plugin : m_plugins)
-		plugin->Init();
+	for (auto& plugin : m_plugins) {
+		try {
+			plugin->Init();
+			LOG(LOGLEVEL_DEBUG, "Loaded plugin: %s", plugin->GetName());
+		}
+		catch (const std::runtime_error& e) {
+			LOG(LOGLEVEL_WARNING, "PluginHandler error (%s): %s", plugin->GetName(), e.what());
+		}
+	}
 }
 
 void PluginHandler::ReloadPlugins()
