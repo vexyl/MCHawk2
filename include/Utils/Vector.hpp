@@ -28,6 +28,14 @@ struct Vector {
 	Vector Normalized() const;
 	Vector Cross(const Vector& v) const;
 	float DotProduct(const Vector& v) const;
+
+	// For bindings
+	void SetX(float x) { this->x = x; }
+	void SetY(float y) { this->y = y; }
+	void SetZ(float z) { this->z = z; }
+	float GetX() { return x; }
+	float GetY() { return y; }
+	float GetZ() { return z; }
 };
 } // namespace Utils
 

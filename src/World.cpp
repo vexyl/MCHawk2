@@ -70,12 +70,14 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	player->SetWorld(this);
 	m_players.push_back(player);
+
+	Server::GetInstance()->GetPluginHandler().TriggerJoinEvent(player);
 }
 
 void World::RemovePlayer(int8_t pid)
 {
 	auto iter = std::find_if(m_players.begin(), m_players.end(),
-		[&](const Player::PlayerPtr player) { return player->GetClient()->GetID() == pid; });
+		[&](const Player::PlayerPtr player) { return player->GetID() == pid; });
 
 	(*iter)->SetWorld(nullptr);
 	m_players.erase(iter);

@@ -4,10 +4,11 @@
 #include "ServerAPI.hpp"
 #include "Net/Client.hpp"
 #include "Player.hpp"
-#include "Utils/Vector.hpp"
+#include "Net/ClassicProtocol.hpp"
 
 #include <sol/sol.hpp>
 #include <memory>
+#include <cstdint>
 
 #pragma comment(lib, "LuaLib.lib") 
 
@@ -37,7 +38,7 @@ private:
 	sol::environment m_env;
 	std::string m_filename;
 	std::string m_name;
-	sol::function m_Tick;
+	sol::function m_tick;
 };
 
 class PluginHandler final {
@@ -56,6 +57,14 @@ public:
 	void LoadPlugins();
 	void ReloadPlugins();
 	void AddPlugin(std::unique_ptr<IPlugin> plugin);
+
+	void TriggerAuthEvent(Player::PlayerPtr player);
+	void TriggerMessageEvent(Player::PlayerPtr player, std::string message, uint8_t flag);
+	void TriggerJoinEvent(Player::PlayerPtr player);
+	void TriggerPositionOrientationEvent(Player::PlayerPtr player, Utils::Vector position, uint8_t yaw, uint8_t pitch);
+	void TriggerSetBlockEvent(Player::PlayerPtr player, int blockType, Utils::Vector position);
+	void TriggerDisconnectEvent(Player::PlayerPtr player);
+	void TriggerPlayerClickedEvent(Player::PlayerPtr player, int8_t targetEntityID);
 
 	void Update();
 

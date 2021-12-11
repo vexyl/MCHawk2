@@ -23,7 +23,6 @@ public:
 	Utils::Vector GetSpawnPosition() const { return m_spawnPosition; }
 	std::string GetName() const { return m_name; }
 	const std::vector<Player::PlayerPtr>& GetPlayerPids() const { return m_players; }
-	Utils::Vector GetSpawnPositionVector() const { return Utils::Vector(m_spawnPosition.x, m_spawnPosition.y, m_spawnPosition.z); }
 
 	void SetMap(std::unique_ptr<Map> map) { m_map = std::move(map); }
 	void SetSpawnPosition(const Utils::Vector& position) { m_spawnPosition = position; }

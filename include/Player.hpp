@@ -34,13 +34,13 @@ public:
 
 	void SetName(std::string name) { m_name = name; }
 	void SetID(int8_t pid) { m_pid = pid; }
-	void SetPosition(const Utils::Vector& position) { m_position = position; }
 
 	void AddCPEEntry(std::string name, uint8_t version);
 
-	std::map<std::string, CPEEntry> GetCPEEntries() const { return m_cpeEntries; }
-
+	void SendPositionTeleport();
 	void SendMessage(std::string message);
+
+	std::map<std::string, CPEEntry> GetCPEEntries() const { return m_cpeEntries; }
 
 private:
 	int8_t m_pid = -1;

@@ -1,10 +1,14 @@
 #include "../include/Player.hpp"
 #include "../include/ServerAPI.hpp"
+#include "../include/Net/ClassicProtocol.hpp"
+
+#undef SendMessage
 
 void Player::SendMessage(std::string message)
 {
 	ServerAPI::SendClientMessage(nullptr, GetClient(), message);
 }
+
 
 void Player::AddCPEEntry(std::string name, uint8_t version)
 {

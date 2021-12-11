@@ -13,14 +13,14 @@ public:
 	uint8_t GetPitch() const { return m_pitch; }
 	uint8_t GetYaw() const { return m_yaw; }
 
-	void SetPosition(const Utils::Vector& position) { m_position = position; }
+	void SetPosition(const Utils::Vector& position) { m_lastPosition = position; m_position = position; }
 	void SetVelocity(const Utils::Vector& velocity) { m_velocity = velocity; }
 	void SetOrientation(uint8_t pitch, uint8_t yaw) { m_pitch = pitch;  m_yaw = yaw; }
 	void SetPitch(uint8_t pitch) { m_pitch = pitch; }
 	void SetYaw(uint8_t yaw) { m_yaw = yaw; }
 
 protected:
-	Utils::Vector m_position, m_velocity;
+	Utils::Vector m_position, m_lastPosition, m_velocity;
 	uint8_t m_pitch, m_yaw;
 };
 

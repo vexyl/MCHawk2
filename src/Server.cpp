@@ -148,15 +148,14 @@ void Server::Init()
 	extProtocol->onPlayerClickedCallback = (
 		[&](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
-			playerClickedEvents.Trigger(client, packet);
 			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
+			m_pluginHandler.TriggerPlayerClickedEvent(GetPlayer(client->GetID()), packet.targetEntityID);
 		}
 	);
 
 	extProtocol->onTwoWayPingCallback = (
 		[&](Client* client, const ExtendedProtocol::TwoWayPingPacket& packet)
 		{
-			twoWayPingEvents.Trigger(client, packet);
 		}
 	);
 
@@ -234,6 +233,7 @@ void Server::UpdatePlayers()
 		std::string name = iter->second->GetName();
 
 		if (!client->KeepAlive()) {
+			m_pluginHandler.TriggerDisconnectEvent(player);
 			iter->second->GetWorld()->RemovePlayer(client->GetID());
 			iter = m_players.erase(iter);
 			continue;
@@ -329,13 +329,12 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 		}
 	}
 
-	authEvents.Trigger(client, packet);
+	m_pluginHandler.TriggerAuthEvent(GetPlayer(client->GetID()));
 }
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
 {
-	setBlockEvents.Trigger(client, packet);
-
+	m_pluginHandler.TriggerSetBlockEvent(GetPlayer(client->GetID()), packet.type, Utils::Vector(packet.x, packet.y, packet.z));
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
@@ -347,8 +346,7 @@ void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPac
 
 void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	positionOrientationEvents.Trigger(client, packet);
-
+	m_pluginHandler.TriggerPositionOrientationEvent(GetPlayer(client->GetID()), Utils::Vector(packet.x, packet.y, packet.z), packet.yaw, packet.pitch);
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
@@ -360,7 +358,12 @@ void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::
 
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
-	messageEvents.Trigger(client, packet);
+	m_pluginHandler.TriggerMessageEvent(GetPlayer(client->GetID()), packet.message.ToString(), packet.flag);
+	if (m_blockDefaultEventHandler) {
+		m_blockDefaultEventHandler = false;
+		return;
+	}
+
 	ServerAPI::BroadcastMessage(nullptr, client, packet.message.ToString());
 }
 
