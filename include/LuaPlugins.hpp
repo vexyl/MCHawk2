@@ -64,7 +64,18 @@ public:
 	void TriggerPositionOrientationEvent(Player::PlayerPtr player, Utils::Vector position, uint8_t yaw, uint8_t pitch);
 	void TriggerSetBlockEvent(Player::PlayerPtr player, int blockType, Utils::Vector position);
 	void TriggerDisconnectEvent(Player::PlayerPtr player);
-	void TriggerPlayerClickedEvent(Player::PlayerPtr player, int8_t targetEntityID);
+	void TriggerPlayerClickedEvent(
+		Player::PlayerPtr player,
+		uint8_t button,
+		uint8_t action,
+		uint16_t yaw,
+		uint16_t pitch,
+		int8_t targetEntityID,
+		int16_t targetBlockX,
+		int16_t targetBlockY,
+		int16_t targetBlockZ,
+		uint8_t targetBlockFace
+	);
 
 	void Update();
 

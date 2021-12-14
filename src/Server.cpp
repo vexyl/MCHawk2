@@ -149,7 +149,18 @@ void Server::Init()
 		[&](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
 			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
-			m_pluginHandler.TriggerPlayerClickedEvent(GetPlayer(client->GetID()), packet.targetEntityID);
+			m_pluginHandler.TriggerPlayerClickedEvent(
+				GetPlayer(client->GetID()),
+				packet.action,
+				packet.button,
+				packet.yaw,
+				packet.pitch,
+				packet.targetEntityID,
+				packet.targetBlockX,
+				packet.targetBlockY,
+				packet.targetBlockZ,
+				packet.targetBlockFace
+			);
 		}
 	);
 

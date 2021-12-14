@@ -298,11 +298,34 @@ void PluginHandler::TriggerDisconnectEvent(Player::PlayerPtr player)
 	}
 }
 
-void PluginHandler::TriggerPlayerClickedEvent(Player::PlayerPtr player, int8_t targetEntityID)
+void PluginHandler::TriggerPlayerClickedEvent(
+	Player::PlayerPtr player,
+	uint8_t button,
+	uint8_t action,
+	uint16_t yaw,
+	uint16_t pitch,
+	int8_t targetEntityID,
+	int16_t targetBlockX,
+	int16_t targetBlockY,
+	int16_t targetBlockZ,
+	uint8_t targetBlockFace
+)
 {
+	sol::table table = m_lua->create_table_with(
+		"button", button,
+		"action", action,
+		"yaw", yaw,
+		"pitch", pitch,
+		"targetEntityID", targetEntityID,
+		"targetBlockX", targetBlockX,
+		"targetBlockY", targetBlockY,
+		"targetBlockZ", targetBlockZ,
+		"targetBlockFace", targetBlockFace
+	);
+
 	try {
 		for (auto& func : LuaPlugins::playerClickedEvent)
-			func(player, targetEntityID);
+			func(player, table);
 	}
 	catch (std::runtime_error& e) {
 		std::cerr << "TriggerPlayerClickedEvent exception: " << e.what() << std::endl;
