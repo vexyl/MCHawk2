@@ -34,6 +34,7 @@ public:
 	void SetMap(std::unique_ptr<Map> map) { m_map = std::move(map); }
 	void SetSpawnPosition(const Utils::Vector& position) { m_spawnPosition = position; }
 	void SetWeatherType(WeatherType type);
+
 	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
 

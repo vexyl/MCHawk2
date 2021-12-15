@@ -21,9 +21,11 @@ int8_t World::pid = 0;
 
 void World::SetWeatherType(WeatherType type)
 {
-	m_weatherType = type;
-	for (Player::PlayerPtr player : m_players)
-		SendWeatherType(player);
+	if (m_weatherType != type) {
+		m_weatherType = type;
+		for (Player::PlayerPtr player : m_players)
+			SendWeatherType(player);
+	}
 }
 
 void World::AddPlayer(Player::PlayerPtr player)
