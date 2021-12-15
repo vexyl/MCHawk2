@@ -12,7 +12,13 @@
 
 class World final {
 public:
-	World() : m_spawnPosition(0, 0, 0) {}
+	enum WeatherType {
+		kSunny = 0,
+		kRaining,
+		kSnowing
+	};
+
+	World() : m_spawnPosition(0, 0, 0), m_weatherType(WeatherType::kSunny) {}
 
 	World(std::string name) : World()
 	{
@@ -23,15 +29,17 @@ public:
 	Utils::Vector GetSpawnPosition() const { return m_spawnPosition; }
 	std::string GetName() const { return m_name; }
 	const std::vector<Player::PlayerPtr>& GetPlayerPids() const { return m_players; }
+	WeatherType GetWeatherType() const { return m_weatherType; }
 
 	void SetMap(std::unique_ptr<Map> map) { m_map = std::move(map); }
 	void SetSpawnPosition(const Utils::Vector& position) { m_spawnPosition = position; }
-
+	void SetWeatherType(WeatherType type);
 	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
 
 	void Update();
 
+	void SendWeatherType(Player::PlayerPtr player);
 	void SendLevel(Net::Client* client);
 
 	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
@@ -44,6 +52,7 @@ private:
 	std::string m_name;
 	Utils::Vector m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;
+	WeatherType m_weatherType;
 };
 
 #endif // WORLD_H_

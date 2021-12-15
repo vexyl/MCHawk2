@@ -142,6 +142,11 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				client->QueuePacket(ExtendedProtocol::MakeCustomBlocksPacket(1));
 			}
+
+			if (extName == "EnvWeatherType") {
+				// TODO: Have init function take care of this
+				client->QueuePacket(ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(player->GetWorld()->GetWeatherType())));
+			}
 		}
 	);
 

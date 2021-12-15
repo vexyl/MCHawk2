@@ -70,12 +70,15 @@ void PluginHandler::InitLua()
 	);
 
 	m_lua->new_usertype<World>("World",
-		"GetName", &World::GetName,
 		"AddPlayer", &World::AddPlayer,
 		"RemovePlayer", &World::RemovePlayer,
+		"GetName", &World::GetName,
 		"GetPlayerPids", &World::GetPlayerPids,
 		"GetSpawnPosition", &World::GetSpawnPosition,
-		"GetMap", &World::GetMap
+		"GetMap", &World::GetMap,
+		"GetWeatherType", &World::GetWeatherType,
+		"SetWeatherType", &World::SetWeatherType,
+		"SendWeatherType", &World::SendWeatherType
 	);
 
 	m_lua->new_usertype<Map>("Map",

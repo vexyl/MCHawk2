@@ -19,6 +19,13 @@ using namespace Net;
 
 int8_t World::pid = 0;
 
+void World::SetWeatherType(WeatherType type)
+{
+	m_weatherType = type;
+	for (Player::PlayerPtr player : m_players)
+		SendWeatherType(player);
+}
+
 void World::AddPlayer(Player::PlayerPtr player)
 {
 	Net::Client* client = player->GetClient();
@@ -90,6 +97,12 @@ void World::RemovePlayer(int8_t pid)
 void World::Update()
 {
 
+}
+
+void World::SendWeatherType(Player::PlayerPtr player)
+{
+	if (player->HasCPEEntry("EnvWeatherType", 1))
+		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
 }
 
 void World::SendLevel(Client* client)
