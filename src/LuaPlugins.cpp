@@ -66,6 +66,7 @@ void PluginHandler::InitLua()
 		"GetID", &Player::GetID,
 		"GetPosition", &Player::GetPosition,
 		"SetPosition", &Player::SetPosition,
+		"SetHotbarSlot", &Player::SetHotbarSlot,
 		"SendMessage", &Player::SendMessage
 	);
 

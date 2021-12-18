@@ -234,8 +234,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 				<< ", yaw=" << static_cast<unsigned>(packet.yaw)
 				<< ", pitch=" << static_cast<unsigned>(packet.pitch)
 				<< std::endl;*/
-	}
-	else if (doOrientationUpdate == true) {
+	} else if (doOrientationUpdate == true) {
 		auto orientationPacket = ClassicProtocol::MakeOrientationPacket(srcPid, packet.yaw, packet.pitch);
 
 		FOREACH_PLAYER(obj_player, obj_client)

@@ -14,10 +14,15 @@ class World;
 class Player final : public Entity {
 public:
 	typedef std::shared_ptr<Player> PlayerPtr;
+	static const int kMaxHotbarSlots = 9;
 
 	int heldBlock = 0;
 
-	Player(Net::Client* client) : Entity(), m_client(client) { }
+	Player(Net::Client* client) : Entity(), m_client(client)
+	{
+		for (int i = 0; i < kMaxHotbarSlots; ++i)
+			m_hotbar[i] = -1;
+	}
 
 	~Player() { delete m_client; } // FIXME
 
@@ -26,6 +31,7 @@ public:
 
 	void SetWorld(World* world) { m_world = world; }
 	World* GetWorld() { return m_world; }
+	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 
 	Net::Client* GetClient() { return m_client; }
 	std::string GetName() const { return m_name; }
@@ -47,6 +53,7 @@ private:
 	std::string m_name;
 	std::map<std::string, CPEEntry> m_cpeEntries;
 	World* m_world = nullptr;
+	int m_hotbar[9];
 };
 
 #endif // PLAYER_H_
