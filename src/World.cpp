@@ -5,6 +5,8 @@
 #include "../include/Utils/Vector.hpp"
 #include "../include/Utils/Utils.hpp"
 
+#include <memory>
+
 using namespace Net;
 
 #pragma region HelperMacros
@@ -101,12 +103,6 @@ void World::Update()
 
 }
 
-void World::SendWeatherType(Player::PlayerPtr player)
-{
-	if (player->HasCPEEntry("EnvWeatherType", 1))
-		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
-}
-
 void World::SendLevel(Client* client)
 {
 	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
@@ -151,6 +147,59 @@ void World::SendLevel(Client* client)
 	auto levelFinalizePacket = ClassicProtocol::MakeLevelFinalizePacket(m_map->GetXSize(), m_map->GetYSize(), m_map->GetZSize());
 
 	client->QueuePacket(levelFinalizePacket);
+}
+
+void World::SendWeatherType(Player::PlayerPtr player)
+{
+	if (player->HasCPEEntry("EnvWeatherType", 1))
+		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
+}
+
+void World::SendBlockDefinitions(Player::PlayerPtr player)
+{
+	uint8_t version = player->GetCPEEntryVersion("BlockDefinitions");
+	if (version == 0)
+		return;
+
+	std::shared_ptr<Net::Packet> packet;
+
+	for (auto& def : m_blockDefinitions) {
+		if (!def.useBlockDefinitionsExt || version == 1) {
+			packet = Net::ExtendedProtocol::MakeDefineBlockPacket(
+				def.blockID,
+				def.name,
+				def.solidity,
+				def.movementSpeed,
+				def.topTextureID, def.sideTextureID, def.bottomTextureID,
+				def.transmitLight,
+				def.walkSound,
+				def.fullBright,
+				def.shape,
+				def.blockDraw,
+				def.fogDensity,
+				def.fogR, def.fogG, def.fogB
+			);
+		} else if (def.useBlockDefinitionsExt && version == 2) {
+			packet = Net::ExtendedProtocol::MakeDefineBlockExtPacket(
+				def.blockID,
+				def.name,
+				def.solidity,
+				def.movementSpeed,
+				def.topTextureID, def.leftTextureID, def.rightTextureID,
+				def.frontTextureID, def.backTextureID, def.bottomTextureID,
+				def.transmitLight,
+				def.walkSound,
+				def.fullBright,
+				def.minX, def.minY, def.minZ,
+				def.maxX, def.maxY, def.maxZ,
+				def.blockDraw,
+				def.fogDensity,
+				def.fogR, def.fogG, def.fogB
+			);
+		}
+	}
+
+	player->GetClient()->QueuePacket(packet);
 }
 
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)

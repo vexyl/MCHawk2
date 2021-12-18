@@ -7,6 +7,7 @@
 #include "MapGen.hpp"
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
+#include "BlockDef.hpp"
 
 #include <vector>
 
@@ -40,8 +41,9 @@ public:
 
 	void Update();
 
-	void SendWeatherType(Player::PlayerPtr player);
 	void SendLevel(Net::Client* client);
+	void SendWeatherType(Player::PlayerPtr player);
+	void SendBlockDefinitions(Player::PlayerPtr player);
 
 	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
 	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
@@ -54,6 +56,7 @@ private:
 	Utils::Vector m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;
 	WeatherType m_weatherType;
+	std::vector<BlockDef> m_blockDefinitions;
 };
 
 #endif // WORLD_H_

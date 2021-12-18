@@ -95,8 +95,7 @@ void PluginHandler::InitLua()
 		"z", sol::property(&Utils::Vector::SetZ, &Utils::Vector::GetZ)
 	);
 
-	m_lua->new_usertype<Net::Packet>("Packet"
-	);
+	m_lua->new_usertype<Net::Packet>("Packet");
 
 	(*m_lua)["GetPlugin"] = [&](std::string name) {
 		return dynamic_cast<LuaPlugin*>(GetPlugin(name))->GetEnv();

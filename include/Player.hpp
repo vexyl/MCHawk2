@@ -42,6 +42,18 @@ public:
 	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 
 	bool HasCPEEntry(std::string name, int version) const;
+
+	uint8_t GetCPEEntryVersion(std::string name) const
+	{
+		uint8_t version = 0;
+		auto search = m_cpeEntries.find(name);
+		if (search != m_cpeEntries.end()) {
+			return search->second.version;
+		}
+
+		return version;
+	}
+
 	void AddCPEEntry(std::string name, uint8_t version);
 
 	void SendMessage(std::string message);

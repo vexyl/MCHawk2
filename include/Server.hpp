@@ -44,6 +44,7 @@ public:
 	PrivilegeHandler& GetPrivilegeHandler() { return m_privHandler; }
 	Net::ProtocolHandler& GetProtocolHandler() { return m_protocolHandler; }
 	PluginHandler& GetPluginHandler() { return m_pluginHandler; }
+
 	std::shared_ptr<World> GetWorld(std::string name)
 	{
 		std::shared_ptr<World> world;
@@ -52,10 +53,12 @@ public:
 			world = iter->second;
 		return world;
 	}
+
 	std::map<std::string, std::shared_ptr<World>> GetWorlds()
 	{
 		return m_worlds;
 	}
+
 	uint8_t GetCPEEntryVersion(std::string name) const
 	{
 		uint8_t version = 0;

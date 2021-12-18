@@ -186,6 +186,8 @@ void Server::Init()
 	AddCPEEntry("SelectionCuboid", 1);
 	AddCPEEntry("EnvWeatherType", 1);
 	AddCPEEntry("PlayerClick", 1);
+	AddCPEEntry("BlockDefinitions", 1);
+	AddCPEEntry("BlockDefinitions", 2);
 	AddCPEEntry("TwoWayPing", 1);
 
 	m_pluginHandler.InitLua();
