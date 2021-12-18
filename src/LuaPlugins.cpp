@@ -222,7 +222,7 @@ void PluginHandler::ReloadPlugins()
 	for (auto& world : worlds) {
 		auto players = world.second->GetPlayers();
 		for (auto& player : players) {
-			TriggerJoinEvent(player);
+			TriggerJoinEvent(player, player->GetWorld());
 		}
 	}
 }
@@ -267,11 +267,11 @@ void PluginHandler::TriggerMessageEvent(Player::PlayerPtr player, std::string me
 	}
 }
 
-void PluginHandler::TriggerJoinEvent(Player::PlayerPtr player)
+void PluginHandler::TriggerJoinEvent(Player::PlayerPtr player, World* world)
 {
 	try {
 		for (auto& func : LuaPlugins::joinEvent)
-			func(player);
+			func(player, world);
 	}
 	catch (std::runtime_error& e) {
 		std::cerr << "TriggerJoinEvent exception: " << e.what() << std::endl;

@@ -60,7 +60,7 @@ public:
 
 	void TriggerAuthEvent(Player::PlayerPtr player);
 	void TriggerMessageEvent(Player::PlayerPtr player, std::string message, uint8_t flag);
-	void TriggerJoinEvent(Player::PlayerPtr player);
+	void TriggerJoinEvent(Player::PlayerPtr player, World* world);
 	void TriggerPositionOrientationEvent(Player::PlayerPtr player, Utils::Vector position, uint8_t yaw, uint8_t pitch);
 	void TriggerSetBlockEvent(Player::PlayerPtr player, int blockType, Utils::Vector position);
 	void TriggerDisconnectEvent(Player::PlayerPtr player);

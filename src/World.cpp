@@ -84,7 +84,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 	player->SetWorld(this);
 	m_players.push_back(player);
 
-	Server::GetInstance()->GetPluginHandler().TriggerJoinEvent(player);
+	Server::GetInstance()->GetPluginHandler().TriggerJoinEvent(player, player->GetWorld());
 }
 
 void World::RemovePlayer(int8_t pid)
