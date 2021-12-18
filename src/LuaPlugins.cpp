@@ -75,7 +75,7 @@ void PluginHandler::InitLua()
 		"AddPlayer", &World::AddPlayer,
 		"RemovePlayer", &World::RemovePlayer,
 		"GetName", &World::GetName,
-		"GetPlayerPids", &World::GetPlayerPids,
+		"GetPlayers", &World::GetPlayers,
 		"GetSpawnPosition", &World::GetSpawnPosition,
 		"GetMap", &World::GetMap,
 		"GetWeatherType", &World::GetWeatherType,
@@ -216,6 +216,16 @@ void PluginHandler::ReloadPlugins()
 	m_lua.reset();
 	InitLua();
 	LoadPlugins();
+
+
+	// Re-trigger join events for all players
+	auto worlds = Server::GetInstance()->GetWorlds();
+	for (auto& world : worlds) {
+		auto players = world.second->GetPlayers();
+		for (auto& player : players) {
+			TriggerJoinEvent(player);
+		}
+	}
 }
 
 void PluginHandler::AddPlugin(std::unique_ptr<IPlugin> plugin)
