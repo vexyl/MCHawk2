@@ -156,8 +156,8 @@ void Server::Init()
 			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 			m_pluginHandler.TriggerPlayerClickedEvent(
 				GetPlayer(client->GetID()),
-				packet.action,
 				packet.button,
+				packet.action,
 				packet.yaw,
 				packet.pitch,
 				packet.targetEntityID,

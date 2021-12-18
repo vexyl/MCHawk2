@@ -37,7 +37,6 @@ public:
 
 	void AddCPEEntry(std::string name, uint8_t version);
 
-	void SendPositionTeleport();
 	void SendMessage(std::string message);
 
 	std::map<std::string, CPEEntry> GetCPEEntries() const { return m_cpeEntries; }
