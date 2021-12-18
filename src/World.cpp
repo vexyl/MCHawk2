@@ -200,9 +200,9 @@ void World::SendBlockDefinitions(Player::PlayerPtr player)
 				def.fogR, def.fogG, def.fogB
 			);
 		}
-	}
 
-	player->GetClient()->QueuePacket(packet);
+		player->GetClient()->QueuePacket(packet);
+	}
 }
 
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
