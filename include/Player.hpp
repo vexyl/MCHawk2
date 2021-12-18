@@ -31,16 +31,17 @@ public:
 
 	void SetWorld(World* world) { m_world = world; }
 	World* GetWorld() { return m_world; }
-	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 
 	Net::Client* GetClient() { return m_client; }
 	std::string GetName() const { return m_name; }
 	int8_t GetID() const { return m_pid; }
-	bool HasCPEEntry(std::string name, int version) const;
+	uint8_t GetHeldBlock() const { return heldBlock; }
 
 	void SetName(std::string name) { m_name = name; }
 	void SetID(int8_t pid) { m_pid = pid; }
+	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 
+	bool HasCPEEntry(std::string name, int version) const;
 	void AddCPEEntry(std::string name, uint8_t version);
 
 	void SendMessage(std::string message);

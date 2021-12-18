@@ -13,6 +13,14 @@ void Player::SetHotbarSlot(uint8_t index, uint8_t blockType)
 	}
 }
 
+bool Player::HasCPEEntry(std::string name, int version) const
+{
+	auto search = m_cpeEntries.find(name);
+	if (search != m_cpeEntries.end() && search->second.version == version)
+		return true;
+	return false;
+}
+
 void Player::AddCPEEntry(std::string name, uint8_t version)
 {
 	if (HasCPEEntry(name, version)) {
@@ -21,14 +29,6 @@ void Player::AddCPEEntry(std::string name, uint8_t version)
 	}
 
 	m_cpeEntries[name] = { name, version };
-}
-
-bool Player::HasCPEEntry(std::string name, int version) const
-{
-	auto search = m_cpeEntries.find(name);
-	if (search != m_cpeEntries.end() && search->second.version == version)
-		return true;
-	return false;
 }
 
 void Player::SendMessage(std::string message)

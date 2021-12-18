@@ -60,12 +60,13 @@ void PluginHandler::InitLua()
 	);
 
 	m_lua->new_usertype<Player>("Player",
+		"GetClient", &Player::GetClient,
 		"GetName", &Player::GetName,
 		"GetWorld", &Player::GetWorld,
-		"GetClient", &Player::GetClient,
 		"GetID", &Player::GetID,
 		"GetPosition", &Player::GetPosition,
 		"SetPosition", &Player::SetPosition,
+		"GetHeldBlock", &Player::GetHeldBlock,
 		"SetHotbarSlot", &Player::SetHotbarSlot,
 		"SendMessage", &Player::SendMessage
 	);
