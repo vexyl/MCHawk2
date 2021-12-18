@@ -79,6 +79,8 @@ void World::AddPlayer(Player::PlayerPtr player)
 		);
 	END_FOREACH_PLAYER
 
+	SendBlockDefinitions(player);
+
 	player->SetWorld(this);
 	m_players.push_back(player);
 
@@ -151,7 +153,8 @@ void World::SendLevel(Client* client)
 
 void World::SendWeatherType(Player::PlayerPtr player)
 {
-	if (player->HasCPEEntry("EnvWeatherType", 1))
+	uint8_t version = Server::GetInstance()->GetCPEEntryVersion("EnvWeatherType");
+	if (player->HasCPEEntry("EnvWeatherType", version))
 		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
 }
 
