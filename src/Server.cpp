@@ -129,7 +129,7 @@ void Server::Init()
 		[&](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
-			Player::PlayerPtr player = GetPlayer(client->GetID());
+			Player::PlayerPtr player = GetPlayer(client->GetSID());
 			std::string extName = packet.extName.ToString();
 			auto search = m_cpeEntries.find(extName);
 			if (search == m_cpeEntries.end() || packet.version != search->second.version)
@@ -147,6 +147,11 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				client->QueuePacket(ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(player->GetWorld()->GetWeatherType())));
 			}
+
+			if (extName == "BlockDefinitions") {
+				// TODO: Have init function take care of this
+				player->GetWorld()->SendBlockDefinitions(player);
+			}
 		}
 	);
 
@@ -155,7 +160,7 @@ void Server::Init()
 		{
 			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 			m_pluginHandler.TriggerPlayerClickedEvent(
-				GetPlayer(client->GetID()),
+				GetPlayer(client->GetSID()),
 				packet.button,
 				packet.action,
 				packet.yaw,
@@ -252,7 +257,7 @@ void Server::UpdatePlayers()
 
 		if (!client->KeepAlive()) {
 			m_pluginHandler.TriggerDisconnectEvent(player);
-			iter->second->GetWorld()->RemovePlayer(client->GetID());
+			iter->second->GetWorld()->RemovePlayer(client->GetSID());
 			iter = m_players.erase(iter);
 			continue;
 		}
@@ -322,7 +327,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	LOG(LOGLEVEL_INFO, "Player '%s' authorized with key %s", name.c_str(), packet.key.ToString().c_str());
 
-	auto pair = m_players.emplace(client->GetID(), std::make_shared<Player>(client));
+	auto pair = m_players.emplace(client->GetSID(), std::make_shared<Player>(client));
 
 	assert(pair.second == true);
 
@@ -347,36 +352,36 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 		}
 	}
 
-	m_pluginHandler.TriggerAuthEvent(GetPlayer(client->GetID()));
+	m_pluginHandler.TriggerAuthEvent(GetPlayer(client->GetSID()));
 }
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
 {
-	m_pluginHandler.TriggerSetBlockEvent(GetPlayer(client->GetID()), packet.type, Utils::Vector(packet.x, packet.y, packet.z));
+	m_pluginHandler.TriggerSetBlockEvent(GetPlayer(client->GetSID()), packet.type, Utils::Vector(packet.x, packet.y, packet.z));
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
 	}
 
-	Player::PlayerPtr player = GetPlayer(client->GetID());
+	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnSetBlockPacket(player, packet);
 }
 
 void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	m_pluginHandler.TriggerPositionOrientationEvent(GetPlayer(client->GetID()), Utils::Vector(packet.x, packet.y, packet.z), packet.yaw, packet.pitch);
+	m_pluginHandler.TriggerPositionOrientationEvent(GetPlayer(client->GetSID()), Utils::Vector(packet.x, packet.y, packet.z), packet.yaw, packet.pitch);
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;
 	}
 
-	Player::PlayerPtr player = GetPlayer(client->GetID());
+	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnPositionOrientationPacket(player, packet);
 }
 
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
-	m_pluginHandler.TriggerMessageEvent(GetPlayer(client->GetID()), packet.message.ToString(), packet.flag);
+	m_pluginHandler.TriggerMessageEvent(GetPlayer(client->GetSID()), packet.message.ToString(), packet.flag);
 	if (m_blockDefaultEventHandler) {
 		m_blockDefaultEventHandler = false;
 		return;

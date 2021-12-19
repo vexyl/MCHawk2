@@ -3,11 +3,13 @@
 #include "../include/Net/ClassicProtocol.hpp"
 #include "../include/Net/ExtendedProtocol.hpp"
 
-#undef SendMessage
+#undef SendMessage // bug with winsock
 
 void Player::SetHotbarSlot(uint8_t index, uint8_t blockType)
 {
-	if (index < kMaxHotbarSlots && m_hotbar[index] != blockType) {
+	// Not checking if block is already in the slot because there's
+	// no way to know which slot the player put a block in
+	if (index < kMaxHotbarSlots) {
 		m_hotbar[index] = blockType;
 		m_client->QueuePacket(Net::ExtendedProtocol::MakeSetHotbarPacket(blockType, index));
 	}

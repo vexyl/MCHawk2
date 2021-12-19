@@ -22,7 +22,7 @@ public:
 	std::string GetIPAddress() const { return m_socket->GetIPAddress(); }
 	bool KeepAlive() const { return m_keepAlive; }
 	bool IsAuthorized() const { return m_isAuthorized; }
-	int8_t GetID() const { return m_sid; }
+	int8_t GetSID() const { return m_sid; }
 
 	void SetKeepAlive(bool keepAlive) { m_keepAlive = keepAlive; }
 	void SetAuthorized(bool isAuthorized) { m_isAuthorized = isAuthorized; }

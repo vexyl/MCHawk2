@@ -51,7 +51,7 @@ void PluginHandler::InitLua()
 	m_lua->open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io, sol::lib::table, sol::lib::math, sol::lib::os, sol::lib::debug);
 
 	m_lua->new_usertype<Net::Client>("Client",
-		"GetID", &Net::Client::GetID,
+		"GetSID", &Net::Client::GetSID,
 		"QueuePacket", &Net::Client::QueuePacket
 	);
 
@@ -63,7 +63,7 @@ void PluginHandler::InitLua()
 		"GetClient", &Player::GetClient,
 		"GetName", &Player::GetName,
 		"GetWorld", &Player::GetWorld,
-		"GetID", &Player::GetID,
+		"GetPID", &Player::GetPID,
 		"GetPosition", &Player::GetPosition,
 		"SetPosition", &Player::SetPosition,
 		"GetHeldBlock", &Player::GetHeldBlock,

@@ -35,7 +35,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 	Net::Client* client = player->GetClient();
 	int8_t pid = World::pid++;
 
-	player->SetID(pid);
+	player->SetPID(pid);
 
 	std::string name = player->GetName();
 
@@ -67,7 +67,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 		otherClient->QueuePacket(spawnPacket);
 
 		// Send other players to player
-		int8_t spawnPlayerPid = otherPlayer->GetID();
+		int8_t spawnPlayerPid = otherPlayer->GetPID();
 		Utils::Vector pos = otherPlayer->GetPosition();
 		uint8_t yaw = otherPlayer->GetYaw();
 		uint8_t pitch = otherPlayer->GetPitch();
@@ -79,8 +79,6 @@ void World::AddPlayer(Player::PlayerPtr player)
 		);
 	END_FOREACH_PLAYER
 
-	SendBlockDefinitions(player);
-
 	player->SetWorld(this);
 	m_players.push_back(player);
 
@@ -90,7 +88,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 void World::RemovePlayer(int8_t pid)
 {
 	auto iter = std::find_if(m_players.begin(), m_players.end(),
-		[&](const Player::PlayerPtr player) { return player->GetID() == pid; });
+		[&](const Player::PlayerPtr player) { return player->GetPID() == pid; });
 
 	(*iter)->SetWorld(nullptr);
 	m_players.erase(iter);
@@ -239,16 +237,16 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, blockType))
 		return;
 
-	uint8_t pid = player->GetID();
+	uint8_t pid = player->GetPID();
 	FOREACH_PLAYER(obj_player, obj_client)
-		if (obj_player->GetID() != pid)
+		if (obj_player->GetPID() != pid)
 			obj_client->QueuePacket(p);
 	END_FOREACH_PLAYER
 }
 
 void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	int8_t srcPid = player->GetID();
+	int8_t srcPid = player->GetPID();
 	Utils::Vector position = player->GetPosition();
 	Utils::Vector newPosition(static_cast<float>(packet.x), static_cast<float>(packet.y), static_cast<float>(packet.z));
 
@@ -271,7 +269,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 		auto positionOrientationPacket = ClassicProtocol::MakePositionOrientationPacket(srcPid, packet.x, packet.y, packet.z, yaw, pitch);
 
 		FOREACH_PLAYER(obj_player, obj_client)
-			int8_t destPid = obj_player->GetID();
+			int8_t destPid = obj_player->GetPID();
 			if (srcPid != destPid)
 				obj_client->QueuePacket(positionOrientationPacket);
 		END_FOREACH_PLAYER
@@ -290,7 +288,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 		auto orientationPacket = ClassicProtocol::MakeOrientationPacket(srcPid, packet.yaw, packet.pitch);
 
 		FOREACH_PLAYER(obj_player, obj_client)
-			int8_t destPid = obj_player->GetID();
+			int8_t destPid = obj_player->GetPID();
 			if (srcPid != destPid)
 				obj_client->QueuePacket(orientationPacket);
 		END_FOREACH_PLAYER

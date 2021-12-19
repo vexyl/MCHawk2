@@ -34,12 +34,10 @@ public:
 	World* GetWorld() { return m_world; }
 
 	Net::Client* GetClient() { return m_client; }
-	std::string GetName() const { return m_name; }
-	int8_t GetID() const { return m_pid; }
+	int8_t GetPID() const { return m_pid; }
 	uint8_t GetHeldBlock() const { return heldBlock; }
 
-	void SetName(std::string name) { m_name = name; }
-	void SetID(int8_t pid) { m_pid = pid; }
+	void SetPID(int8_t pid) { m_pid = pid; }
 	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 
 	bool HasCPEEntry(std::string name, int version) const;
@@ -64,7 +62,6 @@ public:
 private:
 	int8_t m_pid = -1;
 	Net::Client* m_client = nullptr;
-	std::string m_name;
 	std::map<std::string, CPEEntry> m_cpeEntries;
 	World* m_world = nullptr;
 	int m_hotbar[9];

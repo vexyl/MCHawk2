@@ -8,7 +8,7 @@ using namespace Net;
 void ServerAPI::PrefixMessage(Net::Client* client, std::string& message, bool hideConsolePrefix)
 {
 		if (client != nullptr) {
-				Player::PlayerPtr player = Server::GetInstance()->GetPlayer(client->GetID());
+				Player::PlayerPtr player = Server::GetInstance()->GetPlayer(client->GetSID());
 				message = "[" + player->GetName() + "] " + message;
 		}
 		else {
@@ -24,14 +24,14 @@ bool ServerAPI::CheckPrivilege(Net::Client* client, std::string priv)
 		return true;
 
 	Server* server = Server::GetInstance();
-	Player::PlayerPtr player = server->GetPlayer(client->GetID());
+	Player::PlayerPtr player = server->GetPlayer(client->GetSID());
 
 	assert(player != nullptr);
 	
 	auto privResult = server->GetPrivilegeHandler().HasPrivilege(player->GetName(), priv);
 	if (privResult.error) {
 		SendClientMessage(nullptr, client, privResult.message);
-		std::string message = "Client " + std::to_string(client->GetID()) + " (" + client->GetIPAddress() + ") " + privResult.message;
+		std::string message = "Client " + std::to_string(client->GetSID()) + " (" + client->GetIPAddress() + ") " + privResult.message;
 		LOG(LOGLEVEL_DEBUG, message.c_str());
 		return false;
 	}
@@ -112,7 +112,7 @@ bool ServerAPI::SetUserType(Net::Client* srcClient, Net::Client* dstClient, uint
 	if (!CheckPrivilege(srcClient, "SetUserType"))
 		return false;
 
-	std::string message = "set user type of sid " + std::to_string(dstClient->GetID()) + " to " + std::to_string(type);
+	std::string message = "set user type of sid " + std::to_string(dstClient->GetSID()) + " to " + std::to_string(type);
 	PrefixMessage(srcClient, message, false);
 	LOG(LOGLEVEL_DEBUG, message.c_str());
 	dstClient->QueuePacket(ClassicProtocol::MakeUserTypePacket(type));
