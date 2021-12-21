@@ -24,6 +24,7 @@ public:
 
 protected:
 	std::string m_name;
+	std::string skinName;
 	Utils::Vector m_position, m_lastPosition, m_velocity;
 	uint8_t m_pitch, m_yaw, m_lastPitch, m_lastYaw;
 };

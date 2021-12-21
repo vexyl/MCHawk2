@@ -15,6 +15,11 @@ void Player::SetHotbarSlot(uint8_t index, uint8_t blockType)
 	}
 }
 
+void Player::SetInventoryOrder(uint8_t order, uint8_t blockType)
+{
+	m_client->QueuePacket(Net::ExtendedProtocol::MakeSetInventoryOrderPacket(order, blockType));
+}
+
 bool Player::HasCPEEntry(std::string name, int version) const
 {
 	auto search = m_cpeEntries.find(name);

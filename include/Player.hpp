@@ -7,7 +7,7 @@
 #include "Utils/Vector.hpp"
 
 #include <string>
-
+#include <memory>
 #include <map>
 
 class World;
@@ -39,6 +39,7 @@ public:
 
 	void SetPID(int8_t pid) { m_pid = pid; }
 	void SetHotbarSlot(uint8_t index, uint8_t blockType);
+	void SetInventoryOrder(uint8_t order, uint8_t blockType);
 
 	bool HasCPEEntry(std::string name, int version) const;
 

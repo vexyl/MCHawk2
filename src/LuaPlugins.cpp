@@ -68,6 +68,7 @@ void PluginHandler::InitLua()
 		"SetPosition", &Player::SetPosition,
 		"GetHeldBlock", &Player::GetHeldBlock,
 		"SetHotbarSlot", &Player::SetHotbarSlot,
+		"SetInventoryOrder", &Player::SetInventoryOrder,
 		"SendMessage", &Player::SendMessage
 	);
 
@@ -215,7 +216,6 @@ void PluginHandler::ReloadPlugins()
 	m_lua.reset();
 	InitLua();
 	LoadPlugins();
-
 
 	// Re-trigger join events for all players
 	auto worlds = Server::GetInstance()->GetWorlds();
