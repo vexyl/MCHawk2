@@ -21,6 +21,7 @@ namespace LuaPlugins {
 
 void LuaPlugin::Init()
 {
+	m_lua->script("function include(filename) dofile(\"plugins/" + m_name + "/\" .. filename) end", m_env);
 	m_lua->script_file(m_filename, m_env);
 
 	sol::function init = m_env["Init"];
