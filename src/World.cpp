@@ -83,6 +83,8 @@ void World::AddPlayer(Player::PlayerPtr player)
 	m_players.push_back(player);
 
 	Server::GetInstance()->GetPluginHandler().TriggerJoinEvent(player, player->GetWorld());
+
+	SendBlockPermissions(player);
 }
 
 void World::RemovePlayer(int8_t pid)
@@ -200,6 +202,25 @@ void World::SendBlockDefinitions(Player::PlayerPtr player)
 		}
 
 		player->GetClient()->QueuePacket(packet);
+	}
+}
+
+void World::SendBlockPermissions(Player::PlayerPtr player)
+{
+	if (player->HasCPEEntry("BlockPermissions", 1)) {
+		Net::Client* client = player->GetClient();
+		auto result = Server::GetInstance()->GetPrivilegeHandler().HasPrivilege(player->GetName(), "MapSetBlock");
+		if (result.error) {
+			for (auto& def : m_blockDefinitions) {
+				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(def.blockID, 0, 0));
+			}
+			for (auto iter = ClassicProtocol::blockTypes.begin(); iter != ClassicProtocol::blockTypes.end(); ++iter) {
+				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(iter->first, 0, 0));
+			}
+			for (auto iter = ExtendedProtocol::blockTypes.begin(); iter != ExtendedProtocol::blockTypes.end(); ++iter) {
+				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(iter->first, 0, 0));
+			}
+		}
 	}
 }
 

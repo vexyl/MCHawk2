@@ -11,13 +11,15 @@ void Player::SetHotbarSlot(uint8_t index, uint8_t blockType)
 	// no way to know which slot the player put a block in
 	if (index < kMaxHotbarSlots) {
 		m_hotbar[index] = blockType;
-		m_client->QueuePacket(Net::ExtendedProtocol::MakeSetHotbarPacket(blockType, index));
+		if (HasCPEEntry("HeldBlock", 1))
+			m_client->QueuePacket(Net::ExtendedProtocol::MakeSetHotbarPacket(blockType, index));
 	}
 }
 
 void Player::SetInventoryOrder(uint8_t order, uint8_t blockType)
 {
-	m_client->QueuePacket(Net::ExtendedProtocol::MakeSetInventoryOrderPacket(order, blockType));
+	if (HasCPEEntry("InventoryOrder", 1))
+		m_client->QueuePacket(Net::ExtendedProtocol::MakeSetInventoryOrderPacket(order, blockType));
 }
 
 bool Player::HasCPEEntry(std::string name, int version) const

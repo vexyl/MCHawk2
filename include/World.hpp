@@ -44,6 +44,7 @@ public:
 	void SendLevel(Net::Client* client);
 	void SendWeatherType(Player::PlayerPtr player);
 	void SendBlockDefinitions(Player::PlayerPtr player);
+	void SendBlockPermissions(Player::PlayerPtr player);
 
 	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
 	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);

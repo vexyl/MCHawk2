@@ -152,6 +152,11 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				player->GetWorld()->SendBlockDefinitions(player);
 			}
+
+			if (extName == "BlockPermissions") {
+				// TODO: Have init function take care of this
+				player->GetWorld()->SendBlockPermissions(player);
+			}
 		}
 	);
 
@@ -188,12 +193,15 @@ void Server::Init()
 
 	AddCPEEntry("CustomBlocks", 1);
 	AddCPEEntry("HeldBlock", 1);
+	AddCPEEntry("InventoryOrder", 1);
 	AddCPEEntry("SelectionCuboid", 1);
 	AddCPEEntry("EnvWeatherType", 1);
 	AddCPEEntry("PlayerClick", 1);
 	AddCPEEntry("BlockDefinitions", 1);
 	AddCPEEntry("BlockDefinitions", 2);
 	AddCPEEntry("TwoWayPing", 1);
+	AddCPEEntry("MessageTypes", 1);
+	AddCPEEntry("BlockPermissions", 1);
 
 	m_pluginHandler.InitLua();
 	m_pluginHandler.LoadPlugins();
