@@ -39,6 +39,8 @@ public:
 	void AddPlayer(Player::PlayerPtr player);
 	void RemovePlayer(int8_t pid);
 
+	void AddBlockDef(BlockDef def);
+
 	void Update();
 
 	void SendLevel(Net::Client* client);

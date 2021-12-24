@@ -100,6 +100,11 @@ void World::RemovePlayer(int8_t pid)
 	END_FOREACH_PLAYER
 }
 
+void World::AddBlockDef(BlockDef def)
+{
+	m_blockDefinitions.push_back(def);
+}
+
 void World::Update()
 {
 

@@ -17,6 +17,7 @@ namespace LuaPlugins {
 	std::vector<sol::function> setBlockEvent;
 	std::vector<sol::function> disconnectEvent;
 	std::vector<sol::function> playerClickedEvent;
+	std::vector<sol::function> extEntryEvent;
 } // namespace LuaPlugins
 
 void LuaPlugin::Init()
@@ -119,12 +120,14 @@ void PluginHandler::InitLua()
 				LuaPlugins::disconnectEvent.push_back(func);
 			else if (name == "OnPlayerClicked")
 				LuaPlugins::playerClickedEvent.push_back(func);
+			else if (name == "OnExtEntry")
+				LuaPlugins::extEntryEvent.push_back(func);
 			else
 				LOG(LOGLEVEL_WARNING, "RegisterEvent: Invalid event %s", name.c_str());
 		}
 	);
 
-	(*m_lua)["ReloadPlugins"] = [&]() { ReloadPlugins(); };
+	(*m_lua)["ReloadPlugins"] = [&]() { m_reloadPlugins = true; };
 	(*m_lua)["BlockDefaultEventHandler"] = [&]() { Server::GetInstance()->BlockDefaultEventHandler(); };
 	(*m_lua)["GetWorld"] = [&](std::string name) { return Server::GetInstance()->GetWorld(name); };
 	(*m_lua)["GetPlayer"] = [&](int8_t pid) { return Server::GetInstance()->GetPlayer(pid); };
@@ -212,17 +215,19 @@ void PluginHandler::ReloadPlugins()
 	LuaPlugins::setBlockEvent.clear();
 	LuaPlugins::disconnectEvent.clear();
 	LuaPlugins::playerClickedEvent.clear();
+	LuaPlugins::extEntryEvent.clear();
 
 	m_plugins.clear();
 	m_lua.reset();
 	InitLua();
 	LoadPlugins();
 
-	// Re-trigger join events for all players
+	// Re-trigger auth/join events for all players
 	auto worlds = Server::GetInstance()->GetWorlds();
 	for (auto& world : worlds) {
 		auto players = world.second->GetPlayers();
 		for (auto& player : players) {
+			TriggerAuthEvent(player);
 			TriggerJoinEvent(player, player->GetWorld());
 		}
 	}
@@ -235,6 +240,12 @@ void PluginHandler::AddPlugin(std::unique_ptr<IPlugin> plugin)
 
 void PluginHandler::Update()
 {
+	if (m_reloadPlugins) {
+		m_reloadPlugins = false;
+		ReloadPlugins();
+		return;
+	}
+
 	// TODO: update at regular intervals (tick rate)
 	for (auto& plugin : m_plugins) {
 		try {
@@ -344,5 +355,21 @@ void PluginHandler::TriggerPlayerClickedEvent(
 	}
 	catch (std::runtime_error& e) {
 		std::cerr << "TriggerPlayerClickedEvent exception: " << e.what() << std::endl;
+	}
+}
+
+void PluginHandler::TriggerExtEntryEvent(Player::PlayerPtr player, std::string name, uint32_t version)
+{
+	sol::table table = m_lua->create_table_with(
+		"name", name,
+		"version", version
+	);
+
+	try {
+		for (auto& func : LuaPlugins::extEntryEvent)
+			func(player, table);
+	}
+	catch (std::runtime_error& e) {
+		std::cerr << "TriggerExtEntryEvent exception: " << e.what() << std::endl;
 	}
 }

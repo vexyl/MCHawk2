@@ -76,12 +76,14 @@ public:
 		int16_t targetBlockZ,
 		uint8_t targetBlockFace
 	);
+	void TriggerExtEntryEvent(Player::PlayerPtr player, std::string name, uint32_t version);
 
 	void Update();
 
 private:
 	std::shared_ptr<sol::state> m_lua;
 	std::vector<std::unique_ptr<IPlugin>> m_plugins;
+	bool m_reloadPlugins = false;
 };
 
 #endif // LUAPLUGINS_H_

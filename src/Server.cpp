@@ -157,6 +157,8 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				player->GetWorld()->SendBlockPermissions(player);
 			}
+
+			m_pluginHandler.TriggerExtEntryEvent(player, packet.extName.ToString(), packet.version);
 		}
 	);
 
@@ -202,6 +204,7 @@ void Server::Init()
 	AddCPEEntry("TwoWayPing", 1);
 	AddCPEEntry("MessageTypes", 1);
 	AddCPEEntry("BlockPermissions", 1);
+	AddCPEEntry("SetHotbar", 1);
 
 	m_pluginHandler.InitLua();
 	m_pluginHandler.LoadPlugins();
