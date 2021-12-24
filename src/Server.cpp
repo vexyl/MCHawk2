@@ -352,7 +352,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	// FIXME: TEMPORARY
 	ServerAPI::SetUserType(nullptr, client, 0x64);
-	m_privHandler.GivePrivilege(player->GetName(), "MapSetBlock");
+	m_privHandler.GivePrivilege(player->GetName(), "build");
 	m_privHandler.GivePrivilege(player->GetName(), "chat");
 
 	if (packet.UNK0 == 0x42) {

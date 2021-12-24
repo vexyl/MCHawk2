@@ -15,9 +15,9 @@ struct priv_result {
 class PrivilegeHandler final {
 public:
 	void GivePrivilege(std::string name, std::string priv);
-	// RemovePrivilege()
+	void TakePrivilege(std::string name, std::string priv);
 
-	priv_result HasPrivilege(std::string name, std::string priv);
+	priv_result HasPrivilege(std::string name, std::string priv) const;
 	// FlushPrivilegeCache
 
 private:

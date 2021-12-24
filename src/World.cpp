@@ -214,7 +214,7 @@ void World::SendBlockPermissions(Player::PlayerPtr player)
 {
 	if (player->HasCPEEntry("BlockPermissions", 1)) {
 		Net::Client* client = player->GetClient();
-		auto result = Server::GetInstance()->GetPrivilegeHandler().HasPrivilege(player->GetName(), "MapSetBlock");
+		auto result = Server::GetInstance()->GetPrivilegeHandler().HasPrivilege(player->GetName(), "build");
 		if (result.error) {
 			for (auto& def : m_blockDefinitions) {
 				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(def.blockID, 0, 0));

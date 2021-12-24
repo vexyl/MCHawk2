@@ -13,7 +13,14 @@ void PrivilegeHandler::GivePrivilege(std::string name, std::string priv)
 	}
 }
 
-priv_result PrivilegeHandler::HasPrivilege(std::string name, std::string priv)
+void PrivilegeHandler::TakePrivilege(std::string name, std::string priv)
+{
+	auto iter = m_privs.find(name);
+	if (iter != m_privs.end())
+		m_privs.erase(name);
+}
+
+priv_result PrivilegeHandler::HasPrivilege(std::string name, std::string priv) const
 {
 	priv_result result{ "Missing priv: " + priv, -1 };
 

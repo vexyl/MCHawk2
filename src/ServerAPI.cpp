@@ -97,7 +97,7 @@ bool ServerAPI::MapSetBlock(Net::Client* client, Map* map, Utils::Vector pos, ui
 	//PrefixMessage(client, message);
 	//LOG(LOGLEVEL_DEBUG, message.c_str());
 
-	if (!CheckPrivilege(client, "MapSetBlock")) {
+	if (!CheckPrivilege(client, "build")) {
 		uint8_t actualType = map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), actualType));
 		return false;
