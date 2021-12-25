@@ -130,6 +130,7 @@ void PluginHandler::InitLua()
 	(*m_lua)["ReloadPlugins"] = [&]() { m_reloadPlugins = true; };
 	(*m_lua)["BlockDefaultEventHandler"] = [&]() { Server::GetInstance()->BlockDefaultEventHandler(); };
 	(*m_lua)["GetWorld"] = [&](std::string name) { return Server::GetInstance()->GetWorld(name); };
+	(*m_lua)["GetWorlds"] = [&]() { return Server::GetInstance()->GetWorlds(); };
 	(*m_lua)["GetPlayer"] = [&](int8_t pid) { return Server::GetInstance()->GetPlayer(pid); };
 	(*m_lua)["GivePrivilege"] = [&](std::string name, std::string priv) { return Server::GetInstance()->GetPrivilegeHandler().GivePrivilege(name, priv); };
 	(*m_lua)["TakePrivilege"] = [&](std::string name, std::string priv) { return Server::GetInstance()->GetPrivilegeHandler().TakePrivilege(name, priv); };
