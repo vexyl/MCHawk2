@@ -1,6 +1,7 @@
 #include "../include/Server.hpp"
 #include "../include/Net/Socket.hpp"
 #include "../include/ServerAPI.hpp"
+#include "../include/Utils/Utils.hpp"
 
 using namespace Net;
 
@@ -205,6 +206,7 @@ void Server::Init()
 	AddCPEEntry("MessageTypes", 1);
 	AddCPEEntry("BlockPermissions", 1);
 	AddCPEEntry("SetHotbar", 1);
+	AddCPEEntry("ExtPlayerList", 2);
 
 	m_pluginHandler.InitLua();
 	m_pluginHandler.LoadPlugins();
@@ -346,8 +348,6 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	player->SetName(name);
 
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(ClassicProtocol::kVersion, m_serverName, m_serverMOTD, 0));
-
-	m_worlds["default"]->AddPlayer(player);
 	client->SetAuthorized(true);
 
 	// FIXME: TEMPORARY
@@ -357,11 +357,14 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
+		player->SetCPEEnabled(true);
 		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, m_cpeEntries.size()));
 		for (auto& search : m_cpeEntries) {
 			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
 		}
 	}
+
+	m_worlds["default"]->AddPlayer(player);
 
 	m_pluginHandler.TriggerAuthEvent(GetPlayer(client->GetSID()));
 }

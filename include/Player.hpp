@@ -38,9 +38,11 @@ public:
 	uint8_t GetHeldBlock() const { return heldBlock; }
 
 	void SetPID(int8_t pid) { m_pid = pid; }
+	void SetCPEEnabled(bool enabled) { m_cpe = enabled; }
 	void SetHotbarSlot(uint8_t index, uint8_t blockType);
 	void SetInventoryOrder(uint8_t order, uint8_t blockType);
 
+	bool CPEEnabled() const { return m_cpe; }
 	bool HasCPEEntry(std::string name, int version) const;
 
 	uint8_t GetCPEEntryVersion(std::string name) const
@@ -63,6 +65,7 @@ public:
 private:
 	int8_t m_pid = -1;
 	Net::Client* m_client = nullptr;
+	bool m_cpe = false;
 	std::map<std::string, CPEEntry> m_cpeEntries;
 	World* m_world = nullptr;
 	int m_hotbar[9];

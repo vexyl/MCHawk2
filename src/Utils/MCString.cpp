@@ -6,7 +6,7 @@ using namespace Utils;
 
 MCString::MCString() : m_stringLength(0)
 {
-
+	InitializeFromString("");
 }
 
 MCString::MCString(const std::string& str)

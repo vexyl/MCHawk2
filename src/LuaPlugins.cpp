@@ -55,11 +55,11 @@ void PluginHandler::InitLua()
 	m_lua->new_usertype<Net::Client>("Client",
 		"GetSID", &Net::Client::GetSID,
 		"QueuePacket", &Net::Client::QueuePacket
-	);
+		);
 
 	m_lua->new_usertype<Utils::MCString>("MCString",
 		sol::constructors<Utils::MCString(const std::string&)>()
-	);
+		);
 
 	m_lua->new_usertype<Player>("Player",
 		"GetClient", &Player::GetClient,
@@ -72,7 +72,7 @@ void PluginHandler::InitLua()
 		"SetHotbarSlot", &Player::SetHotbarSlot,
 		"SetInventoryOrder", &Player::SetInventoryOrder,
 		"SendMessage", &Player::SendMessage
-	);
+		);
 
 	m_lua->new_usertype<World>("World",
 		"AddPlayer", &World::AddPlayer,
@@ -84,11 +84,11 @@ void PluginHandler::InitLua()
 		"GetWeatherType", &World::GetWeatherType,
 		"SetWeatherType", &World::SetWeatherType,
 		"SendWeatherType", &World::SendWeatherType
-	);
+		);
 
 	m_lua->new_usertype<Map>("Map",
 		"PeekBlock", &Map::PeekBlock
-	);
+		);
 
 	m_lua->new_usertype<Utils::Vector>("Vector",
 		sol::constructors<Utils::Vector(float, float, float)>(),
@@ -96,7 +96,7 @@ void PluginHandler::InitLua()
 		"x", sol::property(&Utils::Vector::SetX, &Utils::Vector::GetX),
 		"y", sol::property(&Utils::Vector::SetY, &Utils::Vector::GetY),
 		"z", sol::property(&Utils::Vector::SetZ, &Utils::Vector::GetZ)
-	);
+		);
 
 	m_lua->new_usertype<Net::Packet>("Packet");
 
