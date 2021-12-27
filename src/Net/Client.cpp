@@ -31,7 +31,8 @@ void Client::ProcessPacketsInQueue()
 		// TODO
 		if (result < static_cast<int>((*iter)->GetSize())) {
 			std::cerr << "Sent partial message" << std::endl;
-			std::exit(1);
+			Kill();
+			break;
 		}
 
 		iter = m_packetQueue.erase(iter);
