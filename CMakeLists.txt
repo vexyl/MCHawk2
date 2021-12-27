@@ -19,12 +19,9 @@ file(GLOB SOURCES
 # add the executable
 add_executable(MCHawk2 ${SOURCES})
 
-add_subdirectory(deps/zlib-1.2.11)
-add_subdirectory(deps/lua-5.3.5)
-
-include_directories(MCHawk2 ${ZLIB_DEPS_DIR})
 include_directories(MCHawk2 deps/sol2/include)
-include_directories(MCHawk2 deps/lua-5.3.5/src)
+find_package(Lua REQUIRED)
+include_directories(/usr/local/include ${LUA_INCLUDE_DIR})
 
-target_link_libraries(MCHawk2 PUBLIC zlib)
-target_link_libraries(MCHawk2 PUBLIC LuaLib)
+target_link_libraries(MCHawk2 PUBLIC z)
+target_link_libraries(MCHawk2 PUBLIC lua5.4)

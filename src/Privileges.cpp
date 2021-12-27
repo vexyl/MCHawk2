@@ -1,5 +1,7 @@
 #include "../include/Privileges.hpp"
 
+#include <algorithm>
+
 void PrivilegeHandler::GivePrivilege(std::string name, std::string priv)
 {
 	auto iter = m_privs.find(name);

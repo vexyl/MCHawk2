@@ -1,6 +1,6 @@
 #include "../../include/Utils/Utils.hpp"
 
-#include "../include/Server.hpp"
+#include "../../include/Server.hpp"
 
 #include <cstring>
 #include <cassert>
@@ -10,7 +10,8 @@
 #pragma comment(lib, "zlib.lib")
 #endif
 
-void Utils::CompressBuffer(const uint8_t* buffer, size_t bufferSize, uint8_t** outCompBuffer, size_t* outCompSize)
+namespace Utils {
+void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** outCompBuffer, std::size_t* outCompSize)
 {
 	assert(*outCompBuffer == nullptr && buffer != nullptr);
 
@@ -52,25 +53,26 @@ void Utils::CompressBuffer(const uint8_t* buffer, size_t bufferSize, uint8_t** o
 
 	deflateEnd(&strm);
 
-	*outCompSize = (size_t)strm.total_out;
+	*outCompSize = (std::size_t)strm.total_out;
 }
 
-Utils::Vector Utils::ConvertVectorToBlock(Utils::Vector& v)
+Vector ConvertVectorToBlock(Vector& v)
 {
-	return Utils::Vector(v.x / 32, v.y / 32, v.z / 32);
+	return Vector(v.x / 32, v.y / 32, v.z / 32);
 }
 
-Utils::Vector Utils::ConvertBlockToVector(Utils::Vector& pos)
+Vector ConvertBlockToVector(Vector& pos)
 {
-	return Utils::Vector(pos.x * 32, pos.y * 32, pos.z * 32);
+	return Vector(pos.x * 32, pos.y * 32, pos.z * 32);
 }
 
-Utils::Vector Utils::ConvertBlockToPlayer(Utils::Vector& pos)
+Vector ConvertBlockToPlayer(Vector& pos)
 {
-	return Utils::Vector(pos.x * 32, pos.y * 32 + 51, pos.z * 32);
+	return Vector(pos.x * 32, pos.y * 32 + 51, pos.z * 32);
 }
 
-Utils::Vector Utils::ConvertPlayerToBlock(Utils::Vector& pos)
+Vector ConvertPlayerToBlock(Vector& pos)
 {
-	return Utils::Vector(pos.x / 32, (pos.y - 51) / 32, pos.z / 32);
+	return Vector(pos.x / 32, (pos.y - 51) / 32, pos.z / 32);
 }
+} // namespace Utils
