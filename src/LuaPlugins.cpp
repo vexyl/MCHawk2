@@ -101,7 +101,9 @@ void PluginHandler::InitLua()
 	m_lua->new_usertype<Net::Packet>("Packet");
 
 	(*m_lua)["GetPlugin"] = [&](std::string name) {
-		return dynamic_cast<LuaPlugin*>(GetPlugin(name))->GetEnv();
+		auto plugin = dynamic_cast<LuaPlugin*>(GetPlugin(name));
+		assert(plugin != nullptr);
+		return plugin->GetEnv();
 	};
 
 	m_lua->set_function("RegisterEvent", [&](std::string name, sol::function func)
@@ -198,13 +200,25 @@ void PluginHandler::LoadPlugins()
 		}
 	}
 
+	auto iter = std::find_if(
+		m_plugins.begin(), m_plugins.end(),
+		[&](std::unique_ptr<IPlugin>& plugin)
+		{
+			return plugin->GetName() == "Core";
+		}
+	);
+
+	if (iter != m_plugins.end())
+		std::rotate(m_plugins.begin(), iter, iter + 1);
+
 	for (auto& plugin : m_plugins) {
+		std::string pluginName = plugin->GetName();
 		try {
 			plugin->Init();
-			LOG(LOGLEVEL_DEBUG, "Loaded plugin: %s", plugin->GetName());
+			LOG(LOGLEVEL_DEBUG, "Loaded plugin: %s", pluginName.c_str());
 		}
 		catch (const std::runtime_error& e) {
-			LOG(LOGLEVEL_WARNING, "PluginHandler error (%s): %s", plugin->GetName(), e.what());
+			LOG(LOGLEVEL_WARNING, "PluginHandler error (%s): %s", pluginName.c_str(), e.what());
 		}
 	}
 }
