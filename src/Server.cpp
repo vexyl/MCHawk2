@@ -366,7 +366,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 
 	m_worlds["default"]->AddPlayer(player);
 
-	m_pluginHandler.TriggerAuthEvent(GetPlayer(client->GetSID()));
+	m_pluginHandler.TriggerAuthEvent(player);
 }
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)

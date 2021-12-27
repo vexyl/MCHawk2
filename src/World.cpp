@@ -58,7 +58,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 			0, 0
 		));
 
-		client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
+		client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(-1, name, name, Utils::MCString(), 0));
 	} else {
 		// Spawn player
 		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
