@@ -104,7 +104,7 @@ void PluginHandler::InitLua()
 	m_lua->new_usertype<Net::Packet>("Packet");
 
 	(*m_lua)["GetPlugin"] = [&](std::string name) {
-		auto plugin = dynamic_cast<LuaPlugin*>(GetPlugin(name));
+		std::shared_ptr<LuaPlugin> plugin = std::dynamic_pointer_cast<LuaPlugin>(GetPlugin(name));
 		assert(plugin != nullptr);
 		return plugin->GetEnv();
 	};
@@ -200,7 +200,7 @@ void PluginHandler::LoadPlugins()
 		const std::string filename = iter->path().string();
 		std::string pluginName = iter->path().parent_path().filename().string();
 		if (iter->path().filename().string() == "init.lua") {
-			std::unique_ptr<IPlugin> plugin = std::make_unique<LuaPlugin>(m_lua, filename, pluginName);
+			std::shared_ptr<IPlugin> plugin = std::make_shared<LuaPlugin>(m_lua, filename, pluginName);
 			AddPlugin(std::move(plugin));
 		}
 	}
@@ -208,7 +208,7 @@ void PluginHandler::LoadPlugins()
 	// FIXME: Add priorities instead?
 	auto iter = std::find_if(
 		m_plugins.begin(), m_plugins.end(),
-		[&](std::unique_ptr<IPlugin>& plugin)
+		[&](std::shared_ptr<IPlugin>& plugin)
 		{
 			return plugin->GetName() == "Core";
 		}
@@ -256,7 +256,7 @@ void PluginHandler::ReloadPlugins()
 	}
 }
 
-void PluginHandler::AddPlugin(std::unique_ptr<IPlugin> plugin)
+void PluginHandler::AddPlugin(std::shared_ptr<IPlugin> plugin)
 {
 	m_plugins.push_back(std::move(plugin));
 }

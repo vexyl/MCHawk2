@@ -266,19 +266,17 @@ void Server::UpdatePlayers()
 	while (iter != m_players.end()) {
 		Player::PlayerPtr player = iter->second;
 		Net::Client* client = player->GetClient();
+		Net::Socket* socket = client->GetSocket();
 		std::string name = iter->second->GetName();
 
+		if (!socket->IsActive())
+			client->Kill();
+
 		if (!client->KeepAlive()) {
+			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
 			m_pluginHandler.TriggerDisconnectEvent(player);
 			iter->second->GetWorld()->RemovePlayer(player->GetPID());
 			iter = m_players.erase(iter);
-			continue;
-		}
-
-		Net::Socket* socket = client->GetSocket();
-		if (!socket->IsActive()) {
-			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
-			client->Kill();
 			continue;
 		}
 

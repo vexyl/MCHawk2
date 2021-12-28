@@ -46,17 +46,17 @@ public:
 
 	void InitLua();
 
-	IPlugin* GetPlugin(std::string name)
+	std::shared_ptr<IPlugin> GetPlugin(std::string name)
 	{
 		for (auto& obj : m_plugins) {
 			if (obj->GetName() == name)
-				return obj.get();
+				return obj;
 		}
 		return nullptr;
 	}
 	void LoadPlugins();
 	void ReloadPlugins();
-	void AddPlugin(std::unique_ptr<IPlugin> plugin);
+	void AddPlugin(std::shared_ptr<IPlugin> plugin);
 
 	void TriggerAuthEvent(Player::PlayerPtr player);
 	void TriggerMessageEvent(Player::PlayerPtr player, std::string message, uint8_t flag);
@@ -81,8 +81,8 @@ public:
 	void Update();
 
 private:
-	std::shared_ptr<sol::state> m_lua;
-	std::vector<std::unique_ptr<IPlugin>> m_plugins;
+	std::shared_ptr<sol::state> m_lua = nullptr;
+	std::vector<std::shared_ptr<IPlugin>> m_plugins;
 	bool m_reloadPlugins = false;
 };
 
