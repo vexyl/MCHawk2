@@ -3,9 +3,9 @@
 #include "../include/Map.hpp"
 #include "../include/Server.hpp"
 
-std::unique_ptr<Map> MapGen::GenerateFlatMap(uint16_t x, uint16_t y, uint16_t z)
+std::shared_ptr<Map> MapGen::GenerateFlatMap(uint16_t x, uint16_t y, uint16_t z)
 {
-	auto map = std::make_unique<Map>();
+	auto map = std::make_shared<Map>();
 
 	map->m_bufferSize = x * y * z + 4;
 	map->m_buffer = new uint8_t[map->m_bufferSize];

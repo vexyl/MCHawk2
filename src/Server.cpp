@@ -405,7 +405,7 @@ void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacke
 
 std::shared_ptr<World> MakeDefaultWorld()
 {
-	std::unique_ptr<Map> map;
+	std::shared_ptr<Map> map;
 	map = MapGen::GenerateFlatMap(256, 64, 256);
 
 	std::shared_ptr<World> world = std::make_shared<World>("default");

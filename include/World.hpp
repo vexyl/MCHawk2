@@ -26,13 +26,13 @@ public:
 		m_name = name;
 	}
 
-	Map* GetMap() { return m_map.get(); }
+	std::shared_ptr<Map> GetMap() { return m_map; }
 	Utils::Vector GetSpawnPosition() const { return m_spawnPosition; }
 	std::string GetName() const { return m_name; }
 	const std::vector<Player::PlayerPtr>& GetPlayers() const { return m_players; }
 	WeatherType GetWeatherType() const { return m_weatherType; }
 
-	void SetMap(std::unique_ptr<Map> map) { m_map = std::move(map); }
+	void SetMap(std::shared_ptr<Map> map) { m_map = std::move(map); }
 	void SetSpawnPosition(const Utils::Vector& position) { m_spawnPosition = position; }
 	void SetWeatherType(WeatherType type);
 
@@ -54,7 +54,7 @@ public:
 private:
 	static int8_t pid;
 
-	std::unique_ptr<Map> m_map;
+	std::shared_ptr<Map> m_map;
 	std::string m_name;
 	Utils::Vector m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;
