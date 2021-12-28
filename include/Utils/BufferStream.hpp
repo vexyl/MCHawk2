@@ -9,6 +9,10 @@
 
 #include "MCString.hpp"
 
+namespace Net {
+	class Client;
+}
+
 namespace Utils {
 class BufferStream final {
 public:
@@ -157,6 +161,8 @@ public:
 	}
 
 private:
+	friend Net::Client;
+
 	uint8_t* m_buffer = nullptr;
 	size_t m_bufferSize = 0, m_readHead, m_writeHead = 0;
 

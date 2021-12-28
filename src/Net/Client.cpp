@@ -6,6 +6,21 @@ using namespace Net;
 
 int8_t Client::sid = 0;
 
+class PartialPacket final : public Net::Packet
+{
+public:
+	std::unique_ptr<Utils::BufferStream> bufferStream = nullptr;
+
+	virtual void Deserialize(Utils::BufferStream& reader) override
+	{
+	}
+
+	virtual std::unique_ptr<Utils::BufferStream> Serialize() override
+	{
+		return std::move(bufferStream);
+	}
+};
+
 void Client::QueuePacket(std::shared_ptr<Net::Packet> packet)
 {
 	assert(packet != nullptr);
@@ -28,10 +43,11 @@ void Client::ProcessPacketsInQueue()
 			break;
 		}
 
-		// TODO
+		// Partial packet, requeue remaining
 		if (result < static_cast<int>((*iter)->GetSize())) {
-			std::cerr << "Sent partial message" << std::endl;
-			Kill();
+			std::shared_ptr<PartialPacket> packet = std::make_shared<PartialPacket>();
+			packet->bufferStream->Write(bufferStreamPtr->GetBufferPtr() + result, bufferStreamPtr->GetBufferSize() - result);
+			*iter = packet;
 			break;
 		}
 

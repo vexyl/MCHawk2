@@ -136,6 +136,8 @@ void World::RemovePlayer(int8_t pid)
 	auto iter = std::find_if(m_players.begin(), m_players.end(),
 		[&](const Player::PlayerPtr player) { return player->GetPID() == pid; });
 
+	assert(iter != m_players.end());
+
 	(*iter)->SetWorld(nullptr);
 	m_players.erase(iter);
 

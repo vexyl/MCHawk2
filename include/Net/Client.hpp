@@ -3,7 +3,7 @@
 
 #include "../Net/Socket.hpp"
 
-#include <vector>
+#include <list>
 #include <memory>
 
 namespace Net {
@@ -36,7 +36,7 @@ private:
 	static int8_t sid;
 
 	Net::Socket* m_socket = nullptr;
-	std::vector<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryQueue;
+	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryQueue;
 	bool m_keepAlive = true, m_isAuthorized = false;
 
 	int8_t m_sid = 0;

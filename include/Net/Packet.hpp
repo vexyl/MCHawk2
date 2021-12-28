@@ -11,6 +11,7 @@ namespace Net {
 class Packet {
 public:
 	Packet(uint8_t opcode, size_t packetSize) : m_opcode(opcode), m_packetSize(packetSize) {}
+	Packet() {}
 
 	virtual ~Packet() {}
 

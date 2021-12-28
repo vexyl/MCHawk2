@@ -141,13 +141,16 @@ size_t TCPSocket::Poll()
 	if (bytesReceived == SOCKETERROR) {
 #ifdef _WIN32
 		int result = WSAGetLastError();
-
 		if (result == WSAEWOULDBLOCK) {
 			return 0;
 		} else if (result == WSAECONNRESET) {
 			m_active = false;
 			return 0;
+		} else {
+			std::cerr << "WSAGetLastError: " << result << std::endl;
 		}
+
+		return 0;
 #else
 		return 0;
 #endif

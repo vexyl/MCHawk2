@@ -270,7 +270,7 @@ void Server::UpdatePlayers()
 
 		if (!client->KeepAlive()) {
 			m_pluginHandler.TriggerDisconnectEvent(player);
-			iter->second->GetWorld()->RemovePlayer(client->GetSID());
+			iter->second->GetWorld()->RemovePlayer(player->GetPID());
 			iter = m_players.erase(iter);
 			continue;
 		}
