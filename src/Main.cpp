@@ -22,7 +22,8 @@ BOOL WINAPI windowsHandler(DWORD signal)
 #else
 void linuxHandler(int sig)
 {
-	Shutdown();
+	if (sig == SIGINT)
+		Shutdown();
 }
 #endif
 
@@ -32,6 +33,7 @@ int main()
 	SetConsoleCtrlHandler(windowsHandler, TRUE);
 #else
 	signal(SIGINT, linuxHandler);
+	signal(SIGPIPE, linuxHandler);
 #endif
 
 	std::cout << "Starting server..." << std::endl;

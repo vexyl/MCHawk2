@@ -207,6 +207,7 @@ void Server::Init()
 	AddCPEEntry("BlockPermissions", 1);
 	AddCPEEntry("SetHotbar", 1);
 	AddCPEEntry("ExtPlayerList", 2);
+	AddCPEEntry("ChangeModel", 1);
 
 	m_pluginHandler.InitLua();
 	m_pluginHandler.LoadPlugins();

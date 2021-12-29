@@ -79,7 +79,7 @@ bool ServerAPI::SendClientMessage(Client* srcClient, Client* dstClient, std::str
 {
 	assert(dstClient != nullptr);
 
-	if (!CheckPrivilege(srcClient, "SendClientMessage"))
+	if (!CheckPrivilege(srcClient, "chat"))
 		return false;
 
 	if (!hideConsolePrefix)

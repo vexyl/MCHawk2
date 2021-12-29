@@ -45,6 +45,7 @@ void Client::ProcessPacketsInQueue()
 
 		// Partial packet, requeue remaining
 		if (result < static_cast<int>((*iter)->GetSize())) {
+			std::cerr << "partial packet, queueing remaining" << std::endl;
 			std::shared_ptr<PartialPacket> packet = std::make_shared<PartialPacket>();
 			packet->bufferStream->Write(bufferStreamPtr->GetBufferPtr() + result, bufferStreamPtr->GetBufferSize() - result);
 			*iter = packet;
