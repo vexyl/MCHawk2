@@ -1,6 +1,8 @@
 #ifndef VECTOR_H_
 #define VECTOR_H_
 
+#include <stdint.h>
+
 // Learned from Math for Game Developers youtube series by Jorge Rodriguez
 
 namespace Utils {
@@ -33,9 +35,9 @@ struct Vector {
 	void SetX(float x) { this->x = x; }
 	void SetY(float y) { this->y = y; }
 	void SetZ(float z) { this->z = z; }
-	float GetX() { return x; }
-	float GetY() { return y; }
-	float GetZ() { return z; }
+	int16_t GetX() { return static_cast<int16_t>(x); }
+	int16_t GetY() { return static_cast<int16_t>(y); }
+	int16_t GetZ() { return static_cast<int16_t>(z); }
 };
 } // namespace Utils
 

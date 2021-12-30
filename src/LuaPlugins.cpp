@@ -23,12 +23,17 @@ namespace LuaPlugins {
 void LuaPlugin::Init()
 {
 
-	m_env["include"] = [&](std::string filename)
-	{
-		m_lua->script_file("plugins/" + m_name + "/" + filename, m_env);
-	};
+	try {
+		m_env["include"] = [&](std::string filename)
+		{
+			m_lua->script_file("plugins/" + m_name + "/" + filename, m_env);
+		};
 
-	m_lua->script_file(m_filename, m_env);
+		m_lua->script_file(m_filename, m_env);
+	} catch (std::runtime_error &e) {
+		std::cerr << "LuaPlugin::Init(): " << e.what() << std::endl;
+	}
+
 
 	sol::function init = m_env["Init"];
 	if (!init.valid())
