@@ -43,7 +43,7 @@ public:
 		environment_setting skyboxColor;
 	};
 
-	void World::SetEnvironmentSetting(EnvironmentType type, Utils::Color color)
+	void SetEnvironmentSetting(EnvironmentType type, Utils::Color color)
 	{
 		switch (type) {
 		case EnvironmentType::kSkyColor:
