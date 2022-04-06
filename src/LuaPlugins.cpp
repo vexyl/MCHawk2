@@ -1,6 +1,7 @@
 #include "../include/LuaPlugins.hpp"
 #include "../include/Server.hpp"
 #include "../include/Utils/Vector.hpp"
+#include "../include/BlockDef.hpp"
 
 #include <iostream>
 #include <vector>
@@ -10,20 +11,22 @@
 #undef SendMessage
 
 namespace LuaPlugins {
-	std::vector<sol::function> authEvent;
-	std::vector<sol::function> messageEvent;
-	std::vector<sol::function> joinEvent;
-	std::vector<sol::function> positionOrientationEvent;
-	std::vector<sol::function> setBlockEvent;
-	std::vector<sol::function> disconnectEvent;
-	std::vector<sol::function> playerClickedEvent;
-	std::vector<sol::function> extEntryEvent;
+	std::vector<sol::protected_function> authEvent;
+	std::vector<sol::protected_function> messageEvent;
+	std::vector<sol::protected_function> joinEvent;
+	std::vector<sol::protected_function> positionOrientationEvent;
+	std::vector<sol::protected_function> setBlockEvent;
+	std::vector<sol::protected_function> disconnectEvent;
+	std::vector<sol::protected_function> playerClickedEvent;
+	std::vector<sol::protected_function> extEntryEvent;
 } // namespace LuaPlugins
 
 void LuaPlugin::Init()
 {
 
 	try {
+		m_lua->script("function got_problems(msg) print(\"ERROR!!! \" .. msg) end");
+
 		m_env["include"] = [&](std::string filename)
 		{
 			m_lua->script_file("plugins/" + m_name + "/" + filename, m_env);
@@ -34,16 +37,30 @@ void LuaPlugin::Init()
 		std::cerr << "LuaPlugin::Init(): " << e.what() << std::endl;
 	}
 
-
-	sol::function init = m_env["Init"];
-	if (!init.valid())
-		throw std::runtime_error(std::string("LuaPlugin: " + m_name + " (" + m_filename + ") Init function not found"));
-
-	sol::function tick = m_env["Tick"];
+	sol::protected_function tick = m_env["Tick"];
+	tick.set_error_handler((*m_lua)["got_problems"]);
 	if (tick.valid())
 		m_tick = tick;
 
+	m_lua->script("\
+			setmetatable(_G, { \
+			  __newindex = function(_, n) \
+				error(\"attempt to write to undeclared variable \"..n, 2) \
+			  end, \
+			  __index = function(_, n) \
+				if n ~= \"Tick\" then \
+					error(\"attempt to read undeclared variable \"..n, 2) \
+				end \
+			  end, \
+				}) \
+		", m_env);
+
 	try {
+		sol::protected_function init = m_env["Init"];
+		init.set_error_handler(m_env["got_problems"]);
+
+		if (!init.valid())
+			throw std::runtime_error(std::string("LuaPlugin: " + m_name + " (" + m_filename + ") Init function not found"));
 		init();
 	}
 	catch (std::runtime_error& e) {
@@ -53,8 +70,13 @@ void LuaPlugin::Init()
 
 void LuaPlugin::Tick()
 {
-	if (m_tick != sol::nil)
-		m_tick();
+	if (m_tick != sol::nil) {
+		try {
+			m_tick();
+		} catch (std::runtime_error& e) {
+			std::cout << e.what() << std::endl;
+		}
+	}
 }
 
 void PluginHandler::InitLua()
@@ -65,11 +87,11 @@ void PluginHandler::InitLua()
 	m_lua->new_usertype<Net::Client>("Client",
 		"GetSID", &Net::Client::GetSID,
 		"QueuePacket", &Net::Client::QueuePacket
-		);
+	);
 
 	m_lua->new_usertype<Utils::MCString>("MCString",
 		sol::constructors<Utils::MCString(const std::string&)>()
-		);
+	);
 
 	m_lua->new_usertype<Player>("Player",
 		"GetClient", &Player::GetClient,
@@ -82,7 +104,7 @@ void PluginHandler::InitLua()
 		"SetHotbarSlot", &Player::SetHotbarSlot,
 		"SetInventoryOrder", &Player::SetInventoryOrder,
 		"SendMessage", &Player::SendMessage
-		);
+	);
 
 	m_lua->new_usertype<World>("World",
 		"AddPlayer", &World::AddPlayer,
@@ -95,13 +117,14 @@ void PluginHandler::InitLua()
 		"SetSpawnPosition", &World::SetSpawnPosition,
 		"SetMap", &World::SetMap,
 		"SetWeatherType", &World::SetWeatherType,
-		"SendWeatherType", &World::SendWeatherType
-		);
+		"SendWeatherType", &World::SendWeatherType,
+		"NewBlockDef", &World::NewBlockDef
+	);
 
 	m_lua->new_usertype<Map>("Map",
 		"PeekBlock", &Map::PeekBlock,
 		"LoadFromFile", &Map::LoadFromFile
-		);
+	);
 
 	m_lua->new_usertype<Utils::Vector>("Vector",
 		sol::constructors<Utils::Vector(float, float, float)>(),
@@ -109,7 +132,7 @@ void PluginHandler::InitLua()
 		"x", sol::property(&Utils::Vector::SetX, &Utils::Vector::GetX),
 		"y", sol::property(&Utils::Vector::SetY, &Utils::Vector::GetY),
 		"z", sol::property(&Utils::Vector::SetZ, &Utils::Vector::GetZ)
-		);
+	);
 
 	m_lua->new_usertype<Net::Packet>("Packet");
 
@@ -119,8 +142,10 @@ void PluginHandler::InitLua()
 		return plugin->GetEnv();
 	};
 
-	m_lua->set_function("RegisterEvent", [&](std::string name, sol::function func)
+	m_lua->set_function("RegisterEvent", [&](std::string name, sol::protected_function func)
 		{
+			func.set_error_handler((*m_lua)["got_problems"]);
+
 			if (name == "OnAuthentication")
 				LuaPlugins::authEvent.push_back(func);
 			else if (name == "OnMessage")

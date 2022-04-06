@@ -6,6 +6,9 @@
 #include "Player.hpp"
 #include "Net/ClassicProtocol.hpp"
 
+#define SOL_ALL_SAFETIES_ON 1
+#define SOL_PRINT_ERRORS 1
+
 #include <sol/sol.hpp>
 #include <memory>
 #include <cstdint>
@@ -38,7 +41,7 @@ private:
 	sol::environment m_env;
 	std::string m_filename;
 	std::string m_name;
-	sol::function m_tick;
+	sol::protected_function m_tick;
 };
 
 class PluginHandler final {

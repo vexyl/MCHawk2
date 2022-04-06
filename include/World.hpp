@@ -5,6 +5,7 @@
 #include "Net/ClassicProtocol.hpp"
 #include "Map.hpp"
 #include "MapGen.hpp"
+#include "Utils/Utils.hpp"
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
 #include "BlockDef.hpp"
@@ -18,6 +19,53 @@ public:
 		kRaining,
 		kSnowing
 	};
+
+	enum EnvironmentType {
+		kSkyColor = 0,
+		kCloudColor,
+		kFogColor,
+		kAmbientLight,
+		kDiffuseLight,
+		kSkyboxColor
+	};
+
+	struct environment_setting {
+		Utils::Color color;
+		bool modified = false;
+	};
+
+	struct environment {
+		environment_setting skyColor;
+		environment_setting cloudColor;
+		environment_setting fogColor;
+		environment_setting ambientLight;
+		environment_setting diffuseLight;
+		environment_setting skyboxColor;
+	};
+
+	void World::SetEnvironmentSetting(EnvironmentType type, Utils::Color color)
+	{
+		switch (type) {
+		case EnvironmentType::kSkyColor:
+			m_env.skyColor.color = color;
+			break;
+		case EnvironmentType::kCloudColor:
+			m_env.cloudColor.color = color;
+			break;
+		case EnvironmentType::kFogColor:
+			m_env.fogColor.color = color;
+			break;
+		case EnvironmentType::kAmbientLight:
+			m_env.ambientLight.color = color;
+			break;
+		case EnvironmentType::kDiffuseLight:
+			m_env.diffuseLight.color = color;
+			break;
+		case EnvironmentType::kSkyboxColor:
+			m_env.skyboxColor.color = color;
+			break;
+		}
+	}
 
 	World() : m_spawnPosition(0, 0, 0), m_weatherType(WeatherType::kSunny) {}
 
@@ -51,6 +99,21 @@ public:
 	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
 	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 
+	void NewBlockDef(
+		uint8_t blockID,
+		std::string name,
+		uint8_t solidity,
+		uint8_t movementSpeed,
+		uint8_t topTextureID, uint8_t sideTextureID, uint8_t bottomTextureID,
+		uint8_t transmitLight,
+		uint8_t walkSound,
+		uint8_t fullBright,
+		uint8_t shape,
+		uint8_t blockDraw,
+		uint8_t fogDensity,
+		uint8_t fogR, uint8_t fogG, uint8_t fogB
+	);
+
 private:
 	static int8_t pid;
 
@@ -60,6 +123,7 @@ private:
 	std::vector<Player::PlayerPtr> m_players;
 	WeatherType m_weatherType;
 	std::vector<BlockDef> m_blockDefinitions;
+	environment m_env;
 };
 
 #endif // WORLD_H_

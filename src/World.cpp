@@ -380,3 +380,40 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	if (player->HasCPEEntry("HeldBlock", version))
 		player->heldBlock = packet.pid;
 }
+
+// FIXME
+void World::NewBlockDef(
+	uint8_t blockID,
+	std::string name,
+	uint8_t solidity,
+	uint8_t movementSpeed,
+	uint8_t topTextureID, uint8_t sideTextureID, uint8_t bottomTextureID,
+	uint8_t transmitLight,
+	uint8_t walkSound,
+	uint8_t fullBright,
+	uint8_t shape,
+	uint8_t blockDraw,
+	uint8_t fogDensity,
+	uint8_t fogR, uint8_t fogG, uint8_t fogB
+)
+{
+	BlockDef def;
+	def.blockID = blockID;
+	def.name = name;
+	def.solidity = solidity;
+	def.movementSpeed = movementSpeed;
+	def.topTextureID = topTextureID;
+	def.sideTextureID = sideTextureID;
+	def.bottomTextureID = bottomTextureID;
+	def.transmitLight = transmitLight;
+	def.walkSound = walkSound;
+	def.fullBright = fullBright;
+	def.shape = shape;
+	def.blockDraw = blockDraw;
+	def.fogDensity = fogDensity;
+	def.fogR = fogR;
+	def.fogG = fogG;
+	def.fogB = fogB;
+
+	AddBlockDef(def);
+}
