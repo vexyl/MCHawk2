@@ -26,6 +26,8 @@ public:
 	TCPSocket() : m_port(0) {};
 	TCPSocket(SocketType socket) : TCPSocket() { m_socket = socket; }
 
+	~TCPSocket();
+
 	static void Initialize();
 	static void Cleanup();
 

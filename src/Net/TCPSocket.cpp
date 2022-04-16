@@ -15,6 +15,19 @@ using namespace Net;
 #include <netinet/tcp.h>
 #endif
 
+#ifdef _WIN32
+#define errno WSAGetLastError()
+#endif
+
+TCPSocket::~TCPSocket()
+{
+#ifdef _WIN32
+	closesocket(m_socket);
+#else
+	close(m_socket);
+#endif
+}
+
 void TCPSocket::Initialize()
 {
 #ifdef _WIN32
@@ -75,15 +88,19 @@ void TCPSocket::Bind(uint16_t port)
 
 	// Disable Nagle's algorithm
 	int flag = 1;
-	setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag));
+	if (setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0) {
+		std::cerr << "Failed to setsockopt() TCP_NODELAY, errno=" << errno << std::endl;
+		std::exit(1);
+	}
+
+	if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, sizeof(flag)) < 0) {
+		std::cerr << "Failed to setsockopt() SO_REUSEADDR, errno=" << errno << std::endl;
+		std::exit(1);
+	}
 
 	iResult = bind(m_socket, addrInfoResult->ai_addr, static_cast<int>(addrInfoResult->ai_addrlen));
 	if (iResult == SOCKETERROR) {
-#ifdef _WIN32
-		std::cerr << "Failed to initialize TCPSocket: bind() failed (" << WSAGetLastError() << ")" << std::endl;
-#else
-		std::cerr << "Failed to initialize TCPSocket: bind() failed" << std::endl;
-#endif
+		std::cerr << "Failed to initialize TCPSocket: bind() failed, errno=" << errno << std::endl;
 		std::exit(1);
 	}
 

@@ -6,6 +6,7 @@
 #include "../include/Utils/Utils.hpp"
 
 #include <memory>
+#include <thread>
 
 using namespace Net;
 
@@ -39,6 +40,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	std::string name = player->GetName();
 
+	//client->thread = new std::thread(&SendLevel, client);
 	SendLevel(client);
 
 	player->SetPosition(m_spawnPosition);
@@ -50,75 +52,75 @@ void World::AddPlayer(Player::PlayerPtr player)
 	// otherwise, send normal SpawnPlayer
 	if (player->CPEEnabled()) {
 		// Spawn player
-		client->QueuePacket(ExtendedProtocol::MakeExtAddEntity2Packet(
-			-1, name, name,
-			static_cast<int16_t>(convertedPosition.x),
-			static_cast<int16_t>(convertedPosition.y),
-			static_cast<int16_t>(convertedPosition.z),
-			0, 0
+		client->QueuePacketHold(ExtendedProtocol::MakeExtAddEntity2Packet(
+		-1, name, name,
+		static_cast<int16_t>(convertedPosition.x),
+		static_cast<int16_t>(convertedPosition.y),
+		static_cast<int16_t>(convertedPosition.z),
+		0, 0
 		));
 
-		client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(-1, name, name, Utils::MCString(), 0));
+		client->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(-1, name, name, Utils::MCString(), 0));
 	} else {
 		// Spawn player
-		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
-			-1, name,
-			static_cast<int16_t>(convertedPosition.x),
-			static_cast<int16_t>(convertedPosition.y),
-			static_cast<int16_t>(convertedPosition.z),
-			0, 0
+		client->QueuePacketHold(ClassicProtocol::MakeSpawnPlayerPacket(
+		-1, name,
+		static_cast<int16_t>(convertedPosition.x),
+		static_cast<int16_t>(convertedPosition.y),
+		static_cast<int16_t>(convertedPosition.z),
+		0, 0
 		));
 	}
 
 	std::shared_ptr<Net::Packet> spawnPacket = nullptr, spawnPacketCPE = nullptr;
 
 	FOREACH_PLAYER(otherPlayer, otherClient)
-		if (otherPlayer->CPEEnabled()) {
-			if (spawnPacketCPE == nullptr) {
-				spawnPacketCPE = ExtendedProtocol::MakeExtAddEntity2Packet(
-					pid, name, name,
-					static_cast<int16_t>(convertedPosition.x),
-					static_cast<int16_t>(convertedPosition.y),
-					static_cast<int16_t>(convertedPosition.z),
-					0, 0
-				);
-			}
-
-			// Send player to other players
-			otherClient->QueuePacket(spawnPacketCPE);
-			otherClient->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
-		} else {
-			spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
-				pid, name,
+	if (otherPlayer->CPEEnabled()) {
+		if (spawnPacketCPE == nullptr) {
+			spawnPacketCPE = ExtendedProtocol::MakeExtAddEntity2Packet(
+				pid, name, name,
 				static_cast<int16_t>(convertedPosition.x),
 				static_cast<int16_t>(convertedPosition.y),
 				static_cast<int16_t>(convertedPosition.z),
 				0, 0
-			);
-
-			// Send player to other players
-			otherClient->QueuePacket(spawnPacket);
+				);
 		}
 
-		// Send other players to player
-		int8_t spawnPlayerPid = otherPlayer->GetPID();
-		Utils::Vector pos = otherPlayer->GetPosition();
+		// Send player to other players
+		otherClient->QueuePacketHold(spawnPacketCPE);
+			otherClient->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
+	} else {
+		spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
+		pid, name,
+		static_cast<int16_t>(convertedPosition.x),
+		static_cast<int16_t>(convertedPosition.y),
+		static_cast<int16_t>(convertedPosition.z),
+		0, 0
+		);
+
+		// Send player to other players
+		otherClient->QueuePacketHold(spawnPacket);
+	}
+
+	// Send other players to player
+	int8_t spawnPlayerPid = otherPlayer->GetPID();
+	Utils::Vector pos = otherPlayer->GetPosition();
 		uint8_t yaw = otherPlayer->GetYaw();
 		uint8_t pitch = otherPlayer->GetPitch();
 
 		if (player->CPEEnabled()) {
-			client->QueuePacket(ExtendedProtocol::MakeExtAddEntity2Packet(
-				spawnPlayerPid,
-				otherPlayer->GetName(), otherPlayer->GetName(),
-				static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
+			client->QueuePacketHold(ExtendedProtocol::MakeExtAddEntity2Packet(
+			spawnPlayerPid,
+			otherPlayer->GetName(), otherPlayer->GetName(),
+			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
 			);
 
-			client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(spawnPlayerPid, otherPlayer->GetName(), otherPlayer->GetName(), Utils::MCString(), 0));
+			client->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(spawnPlayerPid, otherPlayer->GetName(), otherPlayer->GetName(), Utils::MCString(), 0));
 		} else {
-			client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
-				spawnPlayerPid,
-				otherPlayer->GetName(),
-				static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
+			client->QueuePacketHold(ClassicProtocol::MakeSpawnPlayerPacket(
+			spawnPlayerPid,
+			otherPlayer->GetName(),
+			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
 			);
 		}
 	END_FOREACH_PLAYER

@@ -5,12 +5,15 @@
 
 #include <list>
 #include <memory>
+#include <thread>
 
 namespace Net {
 class Packet;
 
 class Client final {
 public:
+	std::thread* thread;
+
 	Client(Net::Socket* socket) : m_socket(socket) { assert(sid != 255); m_sid = sid++; }
 
 	~Client() { delete m_socket; }
@@ -30,15 +33,16 @@ public:
 	void Kill() { m_keepAlive = false; }
 
 	void QueuePacket(std::shared_ptr<Net::Packet> packet);
+	void QueuePacketHold(std::shared_ptr<Net::Packet> packet);
+	void FlushPacketQueueHold();
 	void ProcessPacketsInQueue();
 
 private:
 	static int8_t sid;
 
 	Net::Socket* m_socket = nullptr;
-	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryQueue;
+	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_packetQueueHold;
 	bool m_keepAlive = true, m_isAuthorized = false;
-
 	int8_t m_sid = 0;
 };
 } // namespace Net

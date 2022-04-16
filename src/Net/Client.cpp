@@ -2,10 +2,6 @@
 
 #include "../../include/Net/Packet.hpp"
 
-#ifdef _WIN32
-#define errno WSAGetLastError()
-#endif
-
 using namespace Net;
 
 int8_t Client::sid = 0;
@@ -14,6 +10,17 @@ void Client::QueuePacket(std::shared_ptr<Net::Packet> packet)
 {
 	assert(packet != nullptr);
 	m_packetQueue.push_back(packet);
+}
+
+void Client::QueuePacketHold(std::shared_ptr<Net::Packet> packet)
+{
+	assert(packet != nullptr);
+	m_packetQueueHold.push_back(packet);
+}
+
+void Client::FlushPacketQueueHold()
+{
+
 }
 
 void Client::ProcessPacketsInQueue()
@@ -44,7 +51,7 @@ void Client::ProcessPacketsInQueue()
 		// Partial packet, requeue remaining
 		if (result < static_cast<int>((*iter)->GetSize())) {
 			size_t packetSize = bufferStreamPtr->GetBufferSize() - result;
-			std::cerr << "partial packet, queueing remaining " << packetSize << " bytes" << std::endl;
+			//std::cerr << "partial packet, queueing remaining " << packetSize << " bytes" << std::endl;
 			std::shared_ptr<PartialPacket> packet = std::make_shared<PartialPacket>(bufferStreamPtr->GetBufferPtr() + result, packetSize);
 			*iter = packet;
 			break;
