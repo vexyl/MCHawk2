@@ -27,6 +27,34 @@ protected:
 	size_t m_packetSize = 0;
 	uint8_t m_opcode = 0;
 };
+
+class PartialPacket final : public Net::Packet
+{
+public:
+	uint8_t* buffer;
+
+	PartialPacket(void* inData, size_t inSize) : Packet(0, inSize)
+	{
+		buffer = new uint8_t[m_packetSize];
+		memcpy(buffer, inData, inSize);
+	}
+
+	~PartialPacket()
+	{
+		delete[] buffer;
+	}
+
+	virtual void Deserialize(Utils::BufferStream& reader) override
+	{
+	}
+
+	virtual std::unique_ptr<Utils::BufferStream> Serialize() override
+	{
+		auto writer = std::make_unique<Utils::BufferStream>(m_packetSize);
+		writer->Write(buffer, m_packetSize);
+		return std::move(writer);
+	}
+};
 } // namespace Net
 
 #endif // PACKET_H_

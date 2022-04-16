@@ -71,7 +71,7 @@ public:
 
 	bool Read(Utils::BufferStream& bufferStream)
 	{
-		bufferStream.AllocateIfNeeded();
+		bufferStream.AllocateIfNeeded(); // FIXME: What is this doing?
 		return Read(bufferStream.GetBufferPtr(), bufferStream.GetBufferSize());
 	}
 

@@ -160,7 +160,7 @@ namespace Net {
 					writer->WriteUInt16(htons(extensionCount));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server <-> Client
@@ -197,7 +197,7 @@ namespace Net {
 					writer->WriteUInt32(htonl(version));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -224,7 +224,7 @@ namespace Net {
 					writer->WriteUInt16(htons(distance));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server <-> Client
@@ -255,7 +255,7 @@ namespace Net {
 					writer->WriteUInt8(supportLevel);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -285,7 +285,7 @@ namespace Net {
 					writer->WriteUInt8(preventChange);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -321,7 +321,7 @@ namespace Net {
 					writer->WriteUInt8(keyMods);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -360,7 +360,7 @@ namespace Net {
 					writer->WriteUInt8(groupRank);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -408,7 +408,7 @@ namespace Net {
 					writer->WriteUInt8(spawnPitch);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -435,7 +435,7 @@ namespace Net {
 					writer->WriteUInt16(htons(nameID));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -471,7 +471,7 @@ namespace Net {
 					writer->WriteUInt16(htons(blue));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -531,7 +531,7 @@ namespace Net {
 					writer->WriteUInt16(htons(opacity));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -558,7 +558,7 @@ namespace Net {
 					writer->WriteUInt8(selectionID);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -591,7 +591,7 @@ namespace Net {
 					writer->WriteUInt8(allowDeletion);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -621,7 +621,7 @@ namespace Net {
 					writer->WriteMCString(modelName);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -648,7 +648,7 @@ namespace Net {
 					writer->WriteUInt8(weatherType);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -690,7 +690,7 @@ namespace Net {
 					writer->WriteInt16(htons(jumpHeight));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Client -> Server
@@ -816,7 +816,7 @@ namespace Net {
 					writer->WriteUInt8(fogB);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -843,7 +843,7 @@ namespace Net {
 					writer->WriteUInt8(blockID);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -939,7 +939,7 @@ namespace Net {
 					writer->WriteUInt8(fogB);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -978,7 +978,7 @@ namespace Net {
 					writer->WriteUInt8(code);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1005,7 +1005,7 @@ namespace Net {
 					writer->WriteMCString(texturePackURL);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1035,7 +1035,7 @@ namespace Net {
 					writer->WriteInt32(htonl(propertyValue));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1068,7 +1068,7 @@ namespace Net {
 					writer->WriteInt32(htonl(propertyValue));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server <-> Client
@@ -1105,7 +1105,7 @@ namespace Net {
 					writer->WriteUInt16(htons(data));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1135,7 +1135,7 @@ namespace Net {
 					writer->WriteUInt8(blockID);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1165,7 +1165,7 @@ namespace Net {
 					writer->WriteUInt8(hotbarIndex);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1204,7 +1204,7 @@ namespace Net {
 					writer->WriteUInt8(spawnPitch);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1246,7 +1246,7 @@ namespace Net {
 					writer->WriteUInt8(modeZ);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1327,7 +1327,7 @@ namespace Net {
 					writer->WriteUInt8(fullBright);
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 		// Server -> Client
@@ -1372,7 +1372,7 @@ namespace Net {
 					writer->WriteInt32(htonl(originZ));
 				}
 
-				return writer;
+				return std::move(writer);
 			}
 		};
 

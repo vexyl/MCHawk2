@@ -11,6 +11,7 @@
 
 namespace Net {
 	class Client;
+	class PartialPacket;
 }
 
 namespace Utils {
@@ -162,6 +163,7 @@ public:
 
 private:
 	friend Net::Client;
+	friend Net::PartialPacket;
 
 	uint8_t* m_buffer = nullptr;
 	size_t m_bufferSize = 0, m_readHead, m_writeHead = 0;

@@ -210,7 +210,7 @@ public:
 				writer->WriteUInt8(type);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -266,7 +266,7 @@ public:
 				writer->WriteUInt8(pitch);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -300,7 +300,7 @@ public:
 				writer->WriteUInt8(pitch);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -328,7 +328,7 @@ public:
 				writer->WriteInt8(pid);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -364,7 +364,7 @@ public:
 				writer->WriteMCString(message);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -401,7 +401,7 @@ public:
 				writer->WriteUInt8(userType);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -423,7 +423,7 @@ public:
 				writer->WriteUInt8(m_opcode);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -456,7 +456,7 @@ public:
 				writer->WriteUInt8(percent);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -490,7 +490,7 @@ public:
 				writer->WriteInt16(htons(z));
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -527,7 +527,7 @@ public:
 				writer->WriteUInt8(type);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -573,7 +573,7 @@ public:
 				writer->WriteUInt8(pitch);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -601,7 +601,7 @@ public:
 				writer->WriteUInt8(type);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
@@ -629,7 +629,7 @@ public:
 				writer->WriteMCString(reason);
 			}
 
-			return writer;
+			return std::move(writer);
 		}
 	};
 
