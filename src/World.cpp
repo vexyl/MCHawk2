@@ -40,8 +40,9 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	std::string name = player->GetName();
 
-	//client->thread = new std::thread(&SendLevel, client);
-	SendLevel(client);
+	client->UseTemporaryPacketQueue(true);
+	client->thread = new std::thread(&World::SendLevel, this, client);
+	//SendLevel(client);
 
 	player->SetPosition(m_spawnPosition);
 
@@ -52,7 +53,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 	// otherwise, send normal SpawnPlayer
 	if (player->CPEEnabled()) {
 		// Spawn player
-		client->QueuePacketHold(ExtendedProtocol::MakeExtAddEntity2Packet(
+		client->QueuePacket(ExtendedProtocol::MakeExtAddEntity2Packet(
 		-1, name, name,
 		static_cast<int16_t>(convertedPosition.x),
 		static_cast<int16_t>(convertedPosition.y),
@@ -60,10 +61,10 @@ void World::AddPlayer(Player::PlayerPtr player)
 		0, 0
 		));
 
-		client->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(-1, name, name, Utils::MCString(), 0));
+		client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(-1, name, name, Utils::MCString(), 0));
 	} else {
 		// Spawn player
-		client->QueuePacketHold(ClassicProtocol::MakeSpawnPlayerPacket(
+		client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
 		-1, name,
 		static_cast<int16_t>(convertedPosition.x),
 		static_cast<int16_t>(convertedPosition.y),
@@ -87,8 +88,8 @@ void World::AddPlayer(Player::PlayerPtr player)
 		}
 
 		// Send player to other players
-		otherClient->QueuePacketHold(spawnPacketCPE);
-			otherClient->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
+		otherClient->QueuePacket(spawnPacketCPE);
+		otherClient->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
 	} else {
 		spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
 		pid, name,
@@ -99,7 +100,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 		);
 
 		// Send player to other players
-		otherClient->QueuePacketHold(spawnPacket);
+		otherClient->QueuePacket(spawnPacket);
 	}
 
 	// Send other players to player
@@ -109,15 +110,15 @@ void World::AddPlayer(Player::PlayerPtr player)
 		uint8_t pitch = otherPlayer->GetPitch();
 
 		if (player->CPEEnabled()) {
-			client->QueuePacketHold(ExtendedProtocol::MakeExtAddEntity2Packet(
+			client->QueuePacket(ExtendedProtocol::MakeExtAddEntity2Packet(
 			spawnPlayerPid,
 			otherPlayer->GetName(), otherPlayer->GetName(),
 			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
 			);
 
-			client->QueuePacketHold(ExtendedProtocol::MakeExtAddPlayerNamePacket(spawnPlayerPid, otherPlayer->GetName(), otherPlayer->GetName(), Utils::MCString(), 0));
+			client->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(spawnPlayerPid, otherPlayer->GetName(), otherPlayer->GetName(), Utils::MCString(), 0));
 		} else {
-			client->QueuePacketHold(ClassicProtocol::MakeSpawnPlayerPacket(
+			client->QueuePacket(ClassicProtocol::MakeSpawnPlayerPacket(
 			spawnPlayerPid,
 			otherPlayer->GetName(),
 			static_cast<int16_t>(pos.x), static_cast<int16_t>(pos.y), static_cast<int16_t>(pos.z), yaw, pitch)
@@ -163,7 +164,7 @@ void World::Update()
 void World::SendLevel(Client* client)
 {
 	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
-	client->QueuePacket(levelInitializePacket);
+	client->QueuePacketForcePrimary(levelInitializePacket);
 
 	uint8_t* compBuffer = nullptr;
 	size_t compSize;
@@ -195,15 +196,17 @@ void World::SendLevel(Client* client)
 
 		chunkPacket->percent = static_cast<uint8_t>((((float)bytes / (float)compSize) * 100.0f));
 
-		client->QueuePacket(chunkPacket);
-		client->ProcessPacketsInQueue();
+		client->QueuePacketForcePrimary(chunkPacket);
+		client->ProcessPacketsInQueue(true /* force primary packet queue */);
 	}
 
 	delete compBuffer;
 
 	auto levelFinalizePacket = ClassicProtocol::MakeLevelFinalizePacket(m_map->GetXSize(), m_map->GetYSize(), m_map->GetZSize());
 
-	client->QueuePacket(levelFinalizePacket);
+	client->QueuePacketForcePrimary(levelFinalizePacket);
+
+	client->UseTemporaryPacketQueue(false);
 }
 
 void World::SendWeatherType(Player::PlayerPtr player)

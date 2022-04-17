@@ -19,9 +19,9 @@ file(GLOB SOURCES
 # add the executable
 add_executable(MCHawk2 ${SOURCES})
 
+target_link_libraries(MCHawk2 PUBLIC pthread)
 
 include_directories(MCHawk2 deps/sol2/include)
-
 find_package(Lua)
 if (${Lua_FOUND})
 	include_directories(/usr/local/include ${LUA_INCLUDE_DIR})

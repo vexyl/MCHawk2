@@ -30,19 +30,21 @@ public:
 	void SetKeepAlive(bool keepAlive) { m_keepAlive = keepAlive; }
 	void SetAuthorized(bool isAuthorized) { m_isAuthorized = isAuthorized; }
 
+	void UseTemporaryPacketQueue(bool use);
+
 	void Kill() { m_keepAlive = false; }
 
 	void QueuePacket(std::shared_ptr<Net::Packet> packet);
-	void QueuePacketHold(std::shared_ptr<Net::Packet> packet);
-	void FlushPacketQueueHold();
-	void ProcessPacketsInQueue();
+	void QueuePacketForcePrimary(std::shared_ptr<Net::Packet> packet);
+	void FlushTemporaryPacketQueue();
+	void ProcessPacketsInQueue(bool forcePrimaryQueue = false);
 
 private:
 	static int8_t sid;
 
 	Net::Socket* m_socket = nullptr;
-	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_packetQueueHold;
-	bool m_keepAlive = true, m_isAuthorized = false;
+	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryPacketQueue;
+	bool m_keepAlive = true, m_isAuthorized = false, m_useTemporaryPacketQueue = false;
 	int8_t m_sid = 0;
 };
 } // namespace Net
