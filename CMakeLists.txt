@@ -19,7 +19,9 @@ file(GLOB SOURCES
 # add the executable
 add_executable(MCHawk2 ${SOURCES})
 
-target_link_libraries(MCHawk2 PUBLIC pthread)
+IF (!WIN32)
+	target_link_libraries(MCHawk2 PUBLIC pthread)
+ENDIF()
 
 include_directories(MCHawk2 deps/sol2/include)
 find_package(Lua)
