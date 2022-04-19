@@ -19,7 +19,7 @@ file(GLOB SOURCES
 # add the executable
 add_executable(MCHawk2 ${SOURCES})
 
-IF (!WIN32)
+IF (UNIX)
 	target_link_libraries(MCHawk2 PUBLIC pthread)
 ENDIF()
 

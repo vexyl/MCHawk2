@@ -48,8 +48,7 @@ void Server::SendWrappedMessage(Client* client, std::string message, int message
 					if (color != 'f') {
 						lastColor = "&";
 						lastColor += color;
-					}
-					else {
+					} else {
 						lastColor = "";
 					}
 					break;

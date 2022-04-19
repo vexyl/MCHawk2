@@ -52,7 +52,6 @@ void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
 		assert(bufferStreamPtr != nullptr);
 
 		int result = m_socket->Send(*bufferStreamPtr);
-
 		if (result < 0) {
 			if (errno != EWOULDBLOCK) {
 				std::cerr << "Failed to send packet with " << bufferStreamPtr->GetBufferSize() << " bytes, result=" << result << ", errno=" << errno << std::endl;
@@ -61,7 +60,6 @@ void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
 
 			break;
 		}
-
 
 		// Partial packet, requeue remaining
 		if (result < static_cast<int>((*iter)->GetSize())) {
