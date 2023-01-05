@@ -4,14 +4,6 @@
 
 using namespace Net;
 
-#pragma region HelperMacros
-#define FOREACH_PLAYER(player_arg, client_arg) \
-	for (auto& obj : m_players) { \
-			Player::PlayerPtr player_arg = obj.second; \
-			Client* client_arg = obj_player->GetClient();
-#define END_FOREACH_PLAYER }
-#pragma endregion
-
 Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 {
 	auto iter = m_players.find(pid);
@@ -61,9 +53,9 @@ void Server::SendWrappedMessage(Client* client, std::string message, int message
 
 void Server::BroadcastMessage(std::string message, int messageType)
 {
-	FOREACH_PLAYER(obj_player, obj_client)
-		SendWrappedMessage(obj_client, message, messageType);
-	END_FOREACH_PLAYER
+	for (auto& player : m_players) {
+		SendWrappedMessage(player.second->GetClient(), message, messageType);
+	}
 }
 
 Server* Server::thisPtr = nullptr;

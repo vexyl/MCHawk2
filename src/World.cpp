@@ -9,9 +9,6 @@
 using namespace Net;
 
 #pragma region HelperMacros
-#define GET_PLAYER_VARIABLES(pid_arg, player_arg, client_arg) \
-	Player::PlayerPtr player_arg = Server::GetInstance()->GetPlayer(pid_arg); \
-	Client* client_arg = player_arg->GetClient();
 #define FOREACH_PLAYER(player_arg, client_arg) \
 	for (Player::PlayerPtr player_arg : m_players)  { \
 			Client* client_arg = player_arg->GetClient();
@@ -72,36 +69,36 @@ void World::AddPlayer(Player::PlayerPtr player)
 	std::shared_ptr<Net::Packet> spawnPacket = nullptr, spawnPacketCPE = nullptr;
 
 	FOREACH_PLAYER(otherPlayer, otherClient)
-	if (otherPlayer->CPEEnabled()) {
-		if (spawnPacketCPE == nullptr) {
-			spawnPacketCPE = ExtendedProtocol::MakeExtAddEntity2Packet(
-				pid, name, name,
+		if (otherPlayer->CPEEnabled()) {
+			if (spawnPacketCPE == nullptr) {
+				spawnPacketCPE = ExtendedProtocol::MakeExtAddEntity2Packet(
+					pid, name, name,
+					static_cast<int16_t>(convertedPosition.x),
+					static_cast<int16_t>(convertedPosition.y),
+					static_cast<int16_t>(convertedPosition.z),
+					0, 0
+				);
+			}
+
+			// Send player to other players
+			otherClient->QueuePacket(spawnPacketCPE);
+			otherClient->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
+		} else {
+			spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
+				pid, name,
 				static_cast<int16_t>(convertedPosition.x),
 				static_cast<int16_t>(convertedPosition.y),
 				static_cast<int16_t>(convertedPosition.z),
 				0, 0
 			);
+
+			// Send player to other players
+			otherClient->QueuePacket(spawnPacket);
 		}
 
-		// Send player to other players
-		otherClient->QueuePacket(spawnPacketCPE);
-		otherClient->QueuePacket(ExtendedProtocol::MakeExtAddPlayerNamePacket(pid, name, name, Utils::MCString(), 0));
-	} else {
-		spawnPacket = ClassicProtocol::MakeSpawnPlayerPacket(
-			pid, name,
-			static_cast<int16_t>(convertedPosition.x),
-			static_cast<int16_t>(convertedPosition.y),
-			static_cast<int16_t>(convertedPosition.z),
-			0, 0
-		);
-
-		// Send player to other players
-		otherClient->QueuePacket(spawnPacket);
-	}
-
-	// Send other players to player
-	int8_t spawnPlayerPid = otherPlayer->GetPID();
-	Utils::Vector pos = otherPlayer->GetPosition();
+		// Send other players to player
+		int8_t spawnPlayerPid = otherPlayer->GetPID();
+		Utils::Vector pos = otherPlayer->GetPosition();
 		uint8_t yaw = otherPlayer->GetYaw();
 		uint8_t pitch = otherPlayer->GetPitch();
 
@@ -185,9 +182,6 @@ void World::SendLevel(Client* client)
 		}
 
 		bytes += count;
-
-		// std::cout << bytes << "/" << compSize << " bytes" << std::endl;
-
 		chunkPacket->percent = static_cast<uint8_t>((((float)bytes / (float)compSize) * 100.0f));
 
 		client->QueuePacket(chunkPacket);
@@ -257,23 +251,7 @@ void World::SendBlockDefinitions(Player::PlayerPtr player)
 
 void World::SendBlockPermissions(Player::PlayerPtr player)
 {
-	/* TODO
-	if (player->HasCPEEntry("BlockPermissions", 1)) {
-		Net::Client* client = player->GetClient();
-		auto result = Server::GetInstance()->GetPrivilegeHandler().HasPrivilege(player->GetName(), "build");
-		if (result.error) {
-			for (auto& def : m_blockDefinitions) {
-				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(def.blockID, 0, 0));
-			}
-			for (auto iter = ClassicProtocol::blockTypes.begin(); iter != ClassicProtocol::blockTypes.end(); ++iter) {
-				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(iter->first, 0, 0));
-			}
-			for (auto iter = ExtendedProtocol::blockTypes.begin(); iter != ExtendedProtocol::blockTypes.end(); ++iter) {
-				client->QueuePacket(ExtendedProtocol::MakeSetBlockPermissionPacket(iter->first, 0, 0));
-			}
-		}
-	}
-	*/
+	// TODO
 }
 
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
@@ -346,16 +324,6 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 				obj_client->QueuePacket(positionOrientationPacket);
 		END_FOREACH_PLAYER
 
-			/*std::cout
-				<< "PositionOrientation: " << player->GetName()
-				<< "(pid=" << static_cast<signed>(srcPid) << ")"
-				<< " @ ("
-				<< static_cast<short>(packet.x) << ", "
-				<< static_cast<short>(packet.y) << ", "
-				<< static_cast<short>(packet.z) << ")"
-				<< ", yaw=" << static_cast<unsigned>(packet.yaw)
-				<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-				<< std::endl;*/
 	} else if (doOrientationUpdate == true) {
 		auto orientationPacket = ClassicProtocol::MakeOrientationPacket(srcPid, packet.yaw, packet.pitch);
 
@@ -364,13 +332,6 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 			if (srcPid != destPid)
 				obj_client->QueuePacket(orientationPacket);
 		END_FOREACH_PLAYER
-
-		/*std::cout
-			<< "OrientationUpdate: " << player->GetName()
-			<< "(pid=" << static_cast<signed>(srcPid) << ")"
-			<< " yaw=" << static_cast<unsigned>(packet.yaw)
-			<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-			<< std::endl;*/
 	}
 
 	// CPE Held Block uses pid field of this packet for block type

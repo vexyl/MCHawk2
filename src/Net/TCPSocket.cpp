@@ -93,11 +93,6 @@ void TCPSocket::Bind(uint16_t port)
 		std::exit(1);
 	}
 
-	if (setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, sizeof(flag)) < 0) {
-		std::cerr << "Failed to setsockopt() SO_REUSEADDR, errno=" << errno << std::endl;
-		std::exit(1);
-	}
-
 	iResult = bind(m_socket, addrInfoResult->ai_addr, static_cast<int>(addrInfoResult->ai_addrlen));
 	if (iResult == SOCKETERROR) {
 		std::cerr << "Failed to initialize TCPSocket: bind() failed, errno=" << errno << std::endl;
