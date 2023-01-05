@@ -158,7 +158,7 @@ void World::Update()
 void World::SendLevel(Client* client)
 {
 	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
-	client->QueuePacketForcePrimary(levelInitializePacket);
+	client->QueuePacket(levelInitializePacket);
 
 	uint8_t* compBuffer = nullptr;
 	size_t compSize;
@@ -190,6 +190,7 @@ void World::SendLevel(Client* client)
 
 		chunkPacket->percent = static_cast<uint8_t>((((float)bytes / (float)compSize) * 100.0f));
 
+		client->QueuePacket(chunkPacket);
 		client->ProcessPacketsInQueue();
 	}
 
@@ -197,9 +198,7 @@ void World::SendLevel(Client* client)
 
 	auto levelFinalizePacket = ClassicProtocol::MakeLevelFinalizePacket(m_map->GetXSize(), m_map->GetYSize(), m_map->GetZSize());
 
-	client->QueuePacketForcePrimary(levelFinalizePacket);
-
-	client->UseTemporaryPacketQueue(false);
+	client->QueuePacket(levelFinalizePacket);
 }
 
 void World::SendWeatherType(Player::PlayerPtr player)
@@ -302,11 +301,13 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	Utils::Vector pos(packet.x, packet.y, packet.z);
 
 	// TODO: Kick player
-	if (!protocolHandler.IsValidBlock(packet.type)) {
+	if (!protocolHandler.IsValidBlock(blockType)) {
 		uint8_t actualType = m_map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
 		return;
 	}
+
+	m_map->SetBlock(pos, blockType);
 
 	uint8_t pid = player->GetPID();
 	FOREACH_PLAYER(obj_player, obj_client)
