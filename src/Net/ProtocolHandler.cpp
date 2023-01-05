@@ -13,6 +13,7 @@ ProtocolHandler::ProtocolHandler()
 
 ProtocolHandler::~ProtocolHandler()
 {
+	// FIXME: Use a unique ptr and get rid of destructor; violates rule of 5
 	for (auto& entry : m_protocols)
 		delete entry.second;
 }

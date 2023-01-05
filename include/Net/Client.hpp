@@ -5,15 +5,12 @@
 
 #include <list>
 #include <memory>
-#include <thread>
 
 namespace Net {
 class Packet;
 
 class Client final {
 public:
-	std::thread* thread;
-
 	Client(Net::Socket* socket) : m_socket(socket) { assert(sid != 255); m_sid = sid++; }
 
 	~Client() { delete m_socket; }
