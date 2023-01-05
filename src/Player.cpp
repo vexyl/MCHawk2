@@ -1,5 +1,4 @@
 #include "../include/Player.hpp"
-#include "../include/ServerAPI.hpp"
 #include "../include/Net/ClassicProtocol.hpp"
 #include "../include/Net/ExtendedProtocol.hpp"
 
@@ -42,5 +41,5 @@ void Player::AddCPEEntry(std::string name, uint8_t version)
 
 void Player::SendMessage(std::string message)
 {
-	ServerAPI::SendClientMessage(nullptr, GetClient(), message);
+	// TODO
 }

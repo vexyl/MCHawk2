@@ -1,6 +1,5 @@
 #include "../include/Server.hpp"
 #include "../include/Net/Socket.hpp"
-#include "../include/ServerAPI.hpp"
 #include "../include/Utils/Utils.hpp"
 
 using namespace Net;
@@ -157,27 +156,13 @@ void Server::Init()
 				// TODO: Have init function take care of this
 				player->GetWorld()->SendBlockPermissions(player);
 			}
-
-			m_pluginHandler.TriggerExtEntryEvent(player, packet.extName.ToString(), packet.version);
 		}
 	);
 
 	extProtocol->onPlayerClickedCallback = (
 		[&](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
-			//std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
-			m_pluginHandler.TriggerPlayerClickedEvent(
-				GetPlayer(client->GetSID()),
-				packet.button,
-				packet.action,
-				packet.yaw,
-				packet.pitch,
-				packet.targetEntityID,
-				packet.targetBlockX,
-				packet.targetBlockY,
-				packet.targetBlockZ,
-				packet.targetBlockFace
-			);
+			std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 		}
 	);
 
@@ -207,9 +192,6 @@ void Server::Init()
 	AddCPEEntry("SetHotbar", 1);
 	AddCPEEntry("ExtPlayerList", 2);
 	AddCPEEntry("ChangeModel", 1);
-
-	m_pluginHandler.InitLua();
-	m_pluginHandler.LoadPlugins();
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
@@ -274,7 +256,6 @@ void Server::UpdatePlayers()
 
 		if (!client->KeepAlive()) {
 			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
-			m_pluginHandler.TriggerDisconnectEvent(player);
 			iter->second->GetWorld()->RemovePlayer(player->GetPID());
 			iter = m_players.erase(iter);
 			continue;
@@ -313,7 +294,6 @@ bool Server::Update()
 	CheckForConnections();
 	ProcessUnauthorizedClients();
 	UpdatePlayers();
-	m_pluginHandler.Update();
 
 	for (auto& world : m_worlds)
 		world.second->Update();
@@ -348,11 +328,6 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(ClassicProtocol::kVersion, m_serverName, m_serverMOTD, 0));
 	client->SetAuthorized(true);
 
-	// FIXME: TEMPORARY
-	ServerAPI::SetUserType(nullptr, client, 0x64);
-	m_privHandler.GivePrivilege(player->GetName(), "build");
-	m_privHandler.GivePrivilege(player->GetName(), "chat");
-
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
 		player->SetCPEEnabled(true);
@@ -362,43 +337,24 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 		}
 	}
 
-	m_pluginHandler.TriggerAuthEvent(player);
 	m_worlds["default"]->AddPlayer(player);
 }
 
 void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
 {
-	m_pluginHandler.TriggerSetBlockEvent(GetPlayer(client->GetSID()), packet.type, Utils::Vector(packet.x, packet.y, packet.z));
-	if (m_blockDefaultEventHandler) {
-		m_blockDefaultEventHandler = false;
-		return;
-	}
-
 	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnSetBlockPacket(player, packet);
 }
 
 void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	m_pluginHandler.TriggerPositionOrientationEvent(GetPlayer(client->GetSID()), Utils::Vector(packet.x, packet.y, packet.z), packet.yaw, packet.pitch);
-	if (m_blockDefaultEventHandler) {
-		m_blockDefaultEventHandler = false;
-		return;
-	}
-
 	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnPositionOrientationPacket(player, packet);
 }
 
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
-	m_pluginHandler.TriggerMessageEvent(GetPlayer(client->GetSID()), packet.message.ToString(), packet.flag);
-	if (m_blockDefaultEventHandler) {
-		m_blockDefaultEventHandler = false;
-		return;
-	}
-
-	ServerAPI::BroadcastMessage(nullptr, client, packet.message.ToString());
+	// TODO
 }
 
 std::shared_ptr<World> MakeDefaultWorld()

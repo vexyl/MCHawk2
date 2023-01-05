@@ -11,9 +11,7 @@
 #include "Net/Client.hpp"
 #include "World.hpp"
 #include "Player.hpp"
-#include "Privileges.hpp"
 #include "CPEEntry.hpp"
-#include "LuaPlugins.hpp"
 
 #include <vector>
 #include <map>
@@ -41,9 +39,7 @@ public:
 	Player::PlayerPtr GetPlayer(uint8_t pid);
 
 	Utils::Logger& GetLogger() { return m_logger; }
-	PrivilegeHandler& GetPrivilegeHandler() { return m_privHandler; }
 	Net::ProtocolHandler& GetProtocolHandler() { return m_protocolHandler; }
-	PluginHandler& GetPluginHandler() { return m_pluginHandler; }
 
 	std::shared_ptr<World> GetWorld(std::string name)
 	{
@@ -89,8 +85,6 @@ private:
 	Utils::Logger m_logger;
 	Net::ProtocolHandler m_protocolHandler;
 	Net::TCPSocket m_socket;
-	PrivilegeHandler m_privHandler;
-	PluginHandler m_pluginHandler;
 
 	bool m_running = true;
 

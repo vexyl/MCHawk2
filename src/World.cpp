@@ -1,7 +1,6 @@
 #include "../include/World.hpp"
 #include "../include/Server.hpp"
 #include "../include/Net/ClassicProtocol.hpp"
-#include "../include/ServerAPI.hpp"
 #include "../include/Utils/Vector.hpp"
 #include "../include/Utils/Utils.hpp"
 
@@ -128,8 +127,6 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	player->SetWorld(this);
 	m_players.push_back(player);
-
-	Server::GetInstance()->GetPluginHandler().TriggerJoinEvent(player, player->GetWorld());
 
 	SendBlockPermissions(player);
 }
@@ -265,6 +262,7 @@ void World::SendBlockDefinitions(Player::PlayerPtr player)
 
 void World::SendBlockPermissions(Player::PlayerPtr player)
 {
+	/* TODO
 	if (player->HasCPEEntry("BlockPermissions", 1)) {
 		Net::Client* client = player->GetClient();
 		auto result = Server::GetInstance()->GetPrivilegeHandler().HasPrivilege(player->GetName(), "build");
@@ -280,6 +278,7 @@ void World::SendBlockPermissions(Player::PlayerPtr player)
 			}
 		}
 	}
+	*/
 }
 
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
@@ -312,9 +311,6 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
 		return;
 	}
-
-	if (!ServerAPI::MapSetBlock(client, m_map.get(), pos, blockType))
-		return;
 
 	uint8_t pid = player->GetPID();
 	FOREACH_PLAYER(obj_player, obj_client)
