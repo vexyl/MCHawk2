@@ -2,6 +2,8 @@
 
 #include "../../include/Net/Packet.hpp"
 
+#include <iostream>
+
 using namespace Net;
 
 int8_t Client::sid = 0;
@@ -38,7 +40,6 @@ void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
 		// Partial packet, requeue remaining
 		if (result < static_cast<int>((*iter)->GetSize())) {
 			size_t packetSize = bufferStreamPtr->GetBufferSize() - result;
-			//std::cerr << "partial packet, queueing remaining " << packetSize << " bytes" << std::endl;
 			std::shared_ptr<PartialPacket> packet = std::make_shared<PartialPacket>(bufferStreamPtr->GetBufferPtr() + result, packetSize);
 			*iter = packet;
 			break;

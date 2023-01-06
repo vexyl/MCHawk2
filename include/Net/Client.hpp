@@ -6,6 +6,8 @@
 #include <list>
 #include <memory>
 
+#include <cassert>
+
 namespace Net {
 class Packet;
 

@@ -1,6 +1,6 @@
 #include "../../include/Net/TCPSocket.hpp"
 
-using namespace Net;
+#include <iostream>
 
 #ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
@@ -18,6 +18,8 @@ using namespace Net;
 #ifdef _WIN32
 #define errno WSAGetLastError()
 #endif
+
+using namespace Net;
 
 TCPSocket::~TCPSocket()
 {
@@ -176,12 +178,9 @@ size_t TCPSocket::Poll()
 	return head; // Bytes available to read in buffer
 }
 
-int TCPSocket::Receive(Utils::BufferStream& bufferStream)
+bool TCPSocket::Receive(Utils::BufferStream& bufferStream)
 {
-	if (!m_socketBuffer.Read(bufferStream))
-		return -1;
-	else
-		return static_cast<int>(bufferStream.GetBufferSize());
+	return m_socketBuffer.Read(bufferStream);
 }
 
 int TCPSocket::Send(const Utils::BufferStream& bufferStream)

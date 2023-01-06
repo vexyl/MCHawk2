@@ -74,7 +74,7 @@ ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(Net::Client* clien
 
 		Utils::BufferStream reader(packetSize);
 
-		if (socket->Receive(reader) < 0)
+		if (!socket->Receive(reader))
 			return MessageStatus::kNotReady;
 
 		handledOpcode = entry.second->HandleOpcode(opcode, client, reader);

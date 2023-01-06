@@ -1,5 +1,5 @@
-#ifndef TCPSocketType_H_
-#define TCPSocketType_H_
+#ifndef TCPSOCKET_H_
+#define TCPSOCKET_H_
 
 #include "Socket.hpp"
 
@@ -28,6 +28,11 @@ public:
 
 	~TCPSocket();
 
+	TCPSocket(const TCPSocket&) = default;
+	TCPSocket(TCPSocket&&) = default;
+	TCPSocket& operator=(const TCPSocket&) = default;
+	TCPSocket& operator=(TCPSocket&&) = default;
+
 	static void Initialize();
 	static void Cleanup();
 
@@ -40,7 +45,7 @@ public:
 	virtual void Listen();
 	virtual Socket* Accept() const override;
 	virtual size_t Poll() override;
-	virtual int Receive(Utils::BufferStream& bufferStream) override;
+	virtual bool Receive(Utils::BufferStream& bufferStream) override;
 	virtual int Send(const Utils::BufferStream& bufferStream) override;
 
 private:
@@ -50,4 +55,4 @@ private:
 };
 } // namespace Net
 
-#endif // TCPSocketType_H_
+#endif // TCPSOCKET_H_

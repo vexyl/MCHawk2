@@ -10,6 +10,8 @@
 #include <memory>
 #include <map>
 
+typedef std::map<std::string, CPEEntry> CPEEntryMap;
+
 class World;
 
 class Player final : public Entity {
@@ -30,13 +32,14 @@ public:
 	Player(const Player::PlayerPtr) = delete;
 	Player::PlayerPtr operator=(const Player::PlayerPtr) = delete;
 
-	void SetWorld(World* world) { m_world = world; }
+	CPEEntryMap GetCPEEntries() const { return m_cpeEntries; }
 	World* GetWorld() { return m_world; }
-
 	Net::Client* GetClient() { return m_client; }
 	int8_t GetPID() const { return m_pid; }
 	uint8_t GetHeldBlock() const { return heldBlock; }
 
+	void AddCPEEntry(std::string name, uint8_t version);
+	void SetWorld(World* world) { m_world = world; }
 	void SetPID(int8_t pid) { m_pid = pid; }
 	void SetCPEEnabled(bool enabled) { m_cpe = enabled; }
 	void SetHotbarSlot(uint8_t index, uint8_t blockType);
@@ -55,12 +58,6 @@ public:
 
 		return version;
 	}
-
-	void AddCPEEntry(std::string name, uint8_t version);
-
-	void SendMessage(std::string message);
-
-	std::map<std::string, CPEEntry> GetCPEEntries() const { return m_cpeEntries; }
 
 private:
 	int8_t m_pid = -1;

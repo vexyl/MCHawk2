@@ -27,7 +27,7 @@
 
 class Server final {
 public:
-	Server() : m_socket(true), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
+	Server() : m_socket(), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
 
 	Server(const Server&) = delete;
 	Server& operator=(const Server&) = delete;

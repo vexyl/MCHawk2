@@ -27,19 +27,17 @@ void World::SetWeatherType(WeatherType type)
 	}
 }
 
+// FIXME: Too long, break up into multiple functions
 void World::AddPlayer(Player::PlayerPtr player)
 {
 	Net::Client* client = player->GetClient();
 	int8_t pid = World::pid++;
 
 	player->SetPID(pid);
-
-	std::string name = player->GetName();
-
+	player->SetPosition(m_spawnPosition);
 	SendLevel(client);
 
-	player->SetPosition(m_spawnPosition);
-
+	std::string name = player->GetName();
 	Utils::Vector convertedPosition = Utils::ConvertBlockToPlayer(m_spawnPosition);
 
 	// Server doesn't know when last CPE entry is received

@@ -53,9 +53,8 @@ void Server::SendWrappedMessage(Client* client, std::string message, int message
 
 void Server::BroadcastMessage(std::string message, int messageType)
 {
-	for (auto& player : m_players) {
+	for (auto& player : m_players)
 		SendWrappedMessage(player.second->GetClient(), message, messageType);
-	}
 }
 
 Server* Server::thisPtr = nullptr;
@@ -81,8 +80,8 @@ void Server::Init()
 	m_socket.Bind(25565);
 	m_socket.Listen();
 
-	auto classicProtocol = reinterpret_cast<ClassicProtocol*>(m_protocolHandler.GetProtocol("ClassicProtocol"));
-	auto extProtocol = reinterpret_cast<ExtendedProtocol*>(m_protocolHandler.GetProtocol("ExtendedProtocol"));
+	auto classicProtocol = static_cast<ClassicProtocol*>(m_protocolHandler.GetProtocol("ClassicProtocol"));
+	auto extProtocol = static_cast<ExtendedProtocol*>(m_protocolHandler.GetProtocol("ExtendedProtocol"));
 
 	classicProtocol->onAuthenticationCallback = (
 		[this](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
@@ -250,9 +249,10 @@ void Server::UpdatePlayers()
 			client->Kill();
 
 		if (!client->KeepAlive()) {
-			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
 			iter->second->GetWorld()->RemovePlayer(player->GetPID());
 			iter = m_players.erase(iter);
+			BroadcastMessage("&e" + name + " disconnected");
+			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
 			continue;
 		}
 
@@ -312,6 +312,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	std::string name = packet.name.ToString();
 
 	LOG(LOGLEVEL_INFO, "Player '%s' authorized with key %s", name.c_str(), packet.key.ToString().c_str());
+	BroadcastMessage("&e" + name + " connected");
 
 	auto pair = m_players.emplace(client->GetSID(), std::make_shared<Player>(client));
 
@@ -350,7 +351,9 @@ void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
 	std::string playerName = GetPlayer(client->GetSID())->GetName();
-	BroadcastMessage(playerName + ": " + packet.message.ToString());
+	std::string message = playerName + ": " + packet.message.ToString();
+	LOG(LOGLEVEL_NORMAL, message.c_str());
+	BroadcastMessage(message);
 }
 
 std::shared_ptr<World> MakeDefaultWorld()
