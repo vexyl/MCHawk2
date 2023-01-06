@@ -5,6 +5,8 @@
 #include <signal.h>
 #endif
 
+constexpr unsigned int kTickRate = 33;
+
 static Server* server = nullptr;
 
 void Shutdown()
@@ -50,8 +52,8 @@ int main()
 		running = server->Update();
 
 		auto ms = clock.GetElapsedTime().AsMilliseconds();
-		if (ms < 33)
-			Utils::Sleep(33 - ms);
+		if (ms < kTickRate)
+			Utils::Sleep(kTickRate - ms);
 	}
 
 	delete server;

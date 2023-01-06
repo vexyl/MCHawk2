@@ -148,7 +148,7 @@ size_t TCPSocket::Poll()
 
 	size_t max_bytes = bufferSize - head;
 
-	int bytesReceived = recv(m_socket, reinterpret_cast<char*>(buffer+head), max_bytes, 0);
+	int bytesReceived = recv(m_socket, reinterpret_cast<char*>(buffer+head), static_cast<int>(max_bytes), 0);
 
 	if (bytesReceived == SOCKETERROR) {
 #ifdef _WIN32
@@ -173,9 +173,6 @@ size_t TCPSocket::Poll()
 	head += static_cast<size_t>(bytesReceived);
 	m_socketBuffer.SetHead(head);
 
-	//if (bytesReceived > 0)
-		//std::cout << "Poll() - " << bytesReceived << " received" << std::endl;
-
 	return head; // Bytes available to read in buffer
 }
 
@@ -184,10 +181,10 @@ int TCPSocket::Receive(Utils::BufferStream& bufferStream)
 	if (!m_socketBuffer.Read(bufferStream))
 		return -1;
 	else
-		return bufferStream.GetBufferSize(); // Not actually doing much, just make a bool?
+		return static_cast<int>(bufferStream.GetBufferSize());
 }
 
 int TCPSocket::Send(const Utils::BufferStream& bufferStream)
 {
-	return send(m_socket, reinterpret_cast<const char*>(bufferStream.GetReadOnlyBufferPtr()), bufferStream.GetBufferSize(), 0);
+	return send(m_socket, reinterpret_cast<const char*>(bufferStream.GetReadOnlyBufferPtr()), static_cast<int>(bufferStream.GetBufferSize()), 0);
 }

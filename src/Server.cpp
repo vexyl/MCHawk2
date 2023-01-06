@@ -85,39 +85,42 @@ void Server::Init()
 	auto extProtocol = reinterpret_cast<ExtendedProtocol*>(m_protocolHandler.GetProtocol("ExtendedProtocol"));
 
 	classicProtocol->onAuthenticationCallback = (
-		[&](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
+		[this](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
 		{
 			OnAuthenticationPacket(client, packet);
 		}
 	);
+
 	classicProtocol->onSetBlockCallback = (
-		[&](Client* client, const ClassicProtocol::SetBlockPacket& packet)
+		[this](Client* client, const ClassicProtocol::SetBlockPacket& packet)
 		{
 			OnSetBlockPacket(client, packet);
 		}
 	);
+
 	classicProtocol->onPositionOrientationCallback = (
-		[&](Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
+		[this](Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
 		{
 			OnPositionOrientationPacket(client, packet);
 		}
 	);
+
 	classicProtocol->onMessageCallback = (
-		[&](Client* client, const ClassicProtocol::MessagePacket& packet)
+		[this](Client* client, const ClassicProtocol::MessagePacket& packet)
 		{
 			OnMessagePacket(client, packet);
 		}
 	);
 
 	extProtocol->onExtInfoCallback = (
-		[&](Client* client, const ExtendedProtocol::ExtInfoPacket& packet)
+		[this](Client* client, const ExtendedProtocol::ExtInfoPacket& packet)
 		{
 			//std::cout << "ExtInfo: " << packet.appName.ToString() << " | " << packet.extensionCount << std::endl;
 		}
 	);
 
 	extProtocol->onExtEntryCallback = (
-		[&](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
+		[this](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
 			Player::PlayerPtr player = GetPlayer(client->GetSID());
@@ -152,20 +155,20 @@ void Server::Init()
 	);
 
 	extProtocol->onPlayerClickedCallback = (
-		[&](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
+		[this](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
 			std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 		}
 	);
 
 	extProtocol->onTwoWayPingCallback = (
-		[&](Client* client, const ExtendedProtocol::TwoWayPingPacket& packet)
+		[this](Client* client, const ExtendedProtocol::TwoWayPingPacket& packet)
 		{
+			// TODO
 		}
 	);
 
-	std::shared_ptr<World> world = MakeDefaultWorld();
-	m_worlds[world->GetName()] = std::move(world);
+	m_worlds["default"] = MakeDefaultWorld();
 
 	m_serverName = "MCHawk2";
 	m_serverMOTD = "Welcome to a world of blocks!";
@@ -323,7 +326,7 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	if (packet.UNK0 == 0x42) {
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
 		player->SetCPEEnabled(true);
-		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, m_cpeEntries.size()));
+		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, GetExtensionCount()));
 		for (auto& search : m_cpeEntries) {
 			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
 		}
@@ -346,7 +349,8 @@ void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::
 
 void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
 {
-	// TODO
+	std::string playerName = GetPlayer(client->GetSID())->GetName();
+	BroadcastMessage(playerName + ": " + packet.message.ToString());
 }
 
 std::shared_ptr<World> MakeDefaultWorld()

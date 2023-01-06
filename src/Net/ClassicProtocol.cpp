@@ -61,7 +61,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kAuthentication,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { AuthenticationOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { AuthenticationOpcodeHandler(client, reader); },
 			kAuthenticationSize /* packet size */
 		}
 	));
@@ -69,7 +69,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kSetBlock,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { SetBlockOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { SetBlockOpcodeHandler(client, reader); },
 			kSetBlockSize /* packet size */
 		}
 	));
@@ -77,7 +77,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kPositionOrientation,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { PositionOrientationOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { PositionOrientationOpcodeHandler(client, reader); },
 			kPositionOrientationSize /* packet size */
 		}
 	));
@@ -85,7 +85,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kMessage,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { MessageOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { MessageOpcodeHandler(client, reader); },
 			kMessageSize /* packet size */
 		}
 	));

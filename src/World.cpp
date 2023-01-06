@@ -8,6 +8,7 @@
 
 using namespace Net;
 
+// FIXME
 #pragma region HelperMacros
 #define FOREACH_PLAYER(player_arg, client_arg) \
 	for (Player::PlayerPtr player_arg : m_players)  { \
@@ -128,7 +129,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 void World::RemovePlayer(int8_t pid)
 {
 	auto iter = std::find_if(m_players.begin(), m_players.end(),
-		[&](const Player::PlayerPtr player) { return player->GetPID() == pid; });
+		[pid](const Player::PlayerPtr player) { return player->GetPID() == pid; });
 
 	assert(iter != m_players.end());
 
@@ -262,7 +263,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	if (packet.mode == 0)
 		blockType = 0x00;
 
-	auto p = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, blockType);
+	auto blockPacket = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, blockType);
 
 	Net::ProtocolHandler& protocolHandler = Server::GetInstance()->GetProtocolHandler();
 	std::string blockName = protocolHandler.GetBlockNameByType(packet.type);
@@ -279,6 +280,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	Utils::Vector pos(packet.x, packet.y, packet.z);
 
 	// TODO: Kick player
+	// FIXME: Put in a private World::ReverseBlock function
 	if (!protocolHandler.IsValidBlock(blockType)) {
 		uint8_t actualType = m_map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
@@ -290,7 +292,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	uint8_t pid = player->GetPID();
 	FOREACH_PLAYER(obj_player, obj_client)
 		if (obj_player->GetPID() != pid)
-			obj_client->QueuePacket(p);
+			obj_client->QueuePacket(blockPacket);
 	END_FOREACH_PLAYER
 }
 
@@ -340,7 +342,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 		player->heldBlock = packet.pid;
 }
 
-// FIXME
+// FIXME: Shouldn't be in world, make it a free function in BlockDef namespace
 void World::NewBlockDef(
 	uint8_t blockID,
 	std::string name,

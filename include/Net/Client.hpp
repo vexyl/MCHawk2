@@ -24,7 +24,6 @@ public:
 	bool IsAuthorized() const { return m_isAuthorized; }
 	int8_t GetSID() const { return m_sid; }
 
-	void SetKeepAlive(bool keepAlive) { m_keepAlive = keepAlive; }
 	void SetAuthorized(bool isAuthorized) { m_isAuthorized = isAuthorized; }
 
 	void Kill() { m_keepAlive = false; }

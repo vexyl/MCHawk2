@@ -29,7 +29,7 @@ ExtendedProtocol::ExtendedProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kExtInfo,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { ExtInfoOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { ExtInfoOpcodeHandler(client, reader); },
 			kExtInfoSize /* packet size */
 		}
 	));
@@ -38,7 +38,7 @@ ExtendedProtocol::ExtendedProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kExtEntry,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { ExtEntryOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { ExtEntryOpcodeHandler(client, reader); },
 			kExtEntrySize /* packet size */
 		}
 	));
@@ -47,7 +47,7 @@ ExtendedProtocol::ExtendedProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kCustomBlocks,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { CustomBlocksOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { CustomBlocksOpcodeHandler(client, reader); },
 			kCustomBlocksSize /* packet size */
 		}
 	));
@@ -56,7 +56,7 @@ ExtendedProtocol::ExtendedProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kPlayerClicked,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { PlayerClickedOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { PlayerClickedOpcodeHandler(client, reader); },
 			kPlayerClickedSize /* packet size */
 		}
 	));
@@ -65,7 +65,7 @@ ExtendedProtocol::ExtendedProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kTwoWayPing,
 		OpcodeHandler{
-			[&](Client* client, Utils::BufferStream& reader) { TwoWayPingOpcodeHandler(client, reader); },
+			[this](Client* client, Utils::BufferStream& reader) { TwoWayPingOpcodeHandler(client, reader); },
 			kTwoWayPingSize /* packet size */
 		}
 	));

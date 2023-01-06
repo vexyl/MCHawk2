@@ -66,8 +66,7 @@ public:
 		return version;
 	}
 
-	void BlockDefaultEventHandler(bool blocked = true) { m_blockDefaultEventHandler = blocked; }
-	bool IsDefaultEventHandlerBlocked() const { return m_blockDefaultEventHandler; }
+	uint16_t GetExtensionCount() const { return static_cast<uint16_t>(m_cpeEntries.size()); }
 
 	void Init();
 
