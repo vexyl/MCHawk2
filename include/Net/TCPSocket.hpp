@@ -43,7 +43,7 @@ public:
 
 	virtual void Bind(uint16_t port) override;
 	virtual void Listen();
-	virtual Socket* Accept() const override;
+	virtual std::unique_ptr<Socket> Accept() const override;
 	virtual size_t Poll() override;
 	virtual bool Receive(Utils::BufferStream& bufferStream) override;
 	virtual int Send(const Utils::BufferStream& bufferStream) override;

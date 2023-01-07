@@ -112,7 +112,7 @@ void TCPSocket::Listen()
 	}
 }
 
-Socket* TCPSocket::Accept() const
+std::unique_ptr<Socket> TCPSocket::Accept() const
 {
 	SocketType raw_socket = accept(m_socket, NULL, NULL);
 
@@ -136,10 +136,10 @@ Socket* TCPSocket::Accept() const
 
 	std::string address(inet_ntoa(client_info.sin_addr));
 
-	Socket* socket = new TCPSocket(raw_socket);
+	std::unique_ptr<Socket> socket = std::make_unique<TCPSocket>(raw_socket);
 	socket->SetIPAddress(address);
 
-	return socket;
+	return std::move(socket);
 }
 
 size_t TCPSocket::Poll()

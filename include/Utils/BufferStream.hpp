@@ -23,7 +23,9 @@ public:
 	~BufferStream();
 
 	BufferStream(const BufferStream&) = delete;
+	BufferStream(BufferStream&&) = delete;
 	BufferStream& operator=(const BufferStream&) = delete;
+	BufferStream& operator=(BufferStream&&) = delete;
 
 	const uint8_t* GetReadOnlyBufferPtr() const { return m_buffer; }
 	uint8_t* GetBufferPtr() { return m_buffer; }

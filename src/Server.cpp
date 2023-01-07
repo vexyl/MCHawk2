@@ -11,12 +11,12 @@ Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 	return iter->second;
 }
 
-void Server::SendClientMessage(Client* client, std::string message, int messageType)
+void Server::SendClientMessage(std::shared_ptr<Client> client, std::string message, int messageType)
 {
 	client->QueuePacket(ClassicProtocol::MakeMessagePacket(messageType, message));
 }
 
-void Server::SendWrappedMessage(Client* client, std::string message, int messageType)
+void Server::SendWrappedMessage(std::shared_ptr<Client> client, std::string message, int messageType)
 {
 	int max = 64;
 	int pos = 0;
@@ -61,9 +61,6 @@ Server* Server::thisPtr = nullptr;
 
 Server::~Server()
 {
-	for (auto& client : m_unauthorizedClients)
-		delete client;
-
 	TCPSocket::Cleanup();
 }
 
@@ -84,42 +81,42 @@ void Server::Init()
 	auto extProtocol = static_cast<ExtendedProtocol*>(m_protocolHandler.GetProtocol("ExtendedProtocol"));
 
 	classicProtocol->onAuthenticationCallback = (
-		[this](Client* client, const ClassicProtocol::AuthenticationPacket& packet)
+		[this](std::shared_ptr<Client> client, const ClassicProtocol::AuthenticationPacket& packet)
 		{
 			OnAuthenticationPacket(client, packet);
 		}
 	);
 
 	classicProtocol->onSetBlockCallback = (
-		[this](Client* client, const ClassicProtocol::SetBlockPacket& packet)
+		[this](std::shared_ptr<Client> client, const ClassicProtocol::SetBlockPacket& packet)
 		{
 			OnSetBlockPacket(client, packet);
 		}
 	);
 
 	classicProtocol->onPositionOrientationCallback = (
-		[this](Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
+		[this](std::shared_ptr<Client> client, const ClassicProtocol::PositionOrientationPacket& packet)
 		{
 			OnPositionOrientationPacket(client, packet);
 		}
 	);
 
 	classicProtocol->onMessageCallback = (
-		[this](Client* client, const ClassicProtocol::MessagePacket& packet)
+		[this](std::shared_ptr<Client> client, const ClassicProtocol::MessagePacket& packet)
 		{
 			OnMessagePacket(client, packet);
 		}
 	);
 
 	extProtocol->onExtInfoCallback = (
-		[this](Client* client, const ExtendedProtocol::ExtInfoPacket& packet)
+		[this](std::shared_ptr<Client> client, const ExtendedProtocol::ExtInfoPacket& packet)
 		{
 			//std::cout << "ExtInfo: " << packet.appName.ToString() << " | " << packet.extensionCount << std::endl;
 		}
 	);
 
 	extProtocol->onExtEntryCallback = (
-		[this](Client* client, const ExtendedProtocol::ExtEntryPacket& packet)
+		[this](std::shared_ptr<Client> client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
 			Player::PlayerPtr player = GetPlayer(client->GetSID());
@@ -154,14 +151,14 @@ void Server::Init()
 	);
 
 	extProtocol->onPlayerClickedCallback = (
-		[this](Client* client, const ExtendedProtocol::PlayerClickedPacket& packet)
+		[this](std::shared_ptr<Client> client, const ExtendedProtocol::PlayerClickedPacket& packet)
 		{
 			std::cout << "[PlayerClick] " << std::to_string(packet.action) << ", " << std::to_string(packet.button) << "," << " | " << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << ", " << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 		}
 	);
 
 	extProtocol->onTwoWayPingCallback = (
-		[this](Client* client, const ExtendedProtocol::TwoWayPingPacket& packet)
+		[this](std::shared_ptr<Client> client, const ExtendedProtocol::TwoWayPingPacket& packet)
 		{
 			// TODO
 		}
@@ -194,24 +191,22 @@ void Server::ProcessUnauthorizedClients()
 {
 	auto iter = m_unauthorizedClients.begin();
 	while (iter != m_unauthorizedClients.end()) {
-		Net::Client* client = *iter;
+		std::shared_ptr<Client> client = *iter;
 
 		if (!client->KeepAlive()) {
-			delete client;
 			iter = m_unauthorizedClients.erase(iter);
 			continue;
 		}
 
-		Net::Socket* socket = client->GetSocket();
-		if (!socket->IsActive()) {
-			LOG(LOGLEVEL_INFO, "Unauthorized client disconnected (%s)", socket->GetIPAddress().c_str());
+		if (!client->IsSocketActive()) {
+			LOG(LOGLEVEL_INFO, "Unauthorized client disconnected (%s)", client->GetIPAddress().c_str());
 			client->Kill();
 			continue;
 		}
 
-		if (socket->Poll()) {
-			if (socket->PeekFirstByte() != ClassicProtocol::kAuthentication) {
-				LOG(LOGLEVEL_INFO, "Unauthorized client sent packet before authenticating (%s)", socket->GetIPAddress().c_str());
+		if (client->PollSocket()) {
+			if (client->GetCurrentOpcode() != ClassicProtocol::kAuthentication) {
+				LOG(LOGLEVEL_INFO, "Unauthorized client sent packet before authenticating (%s)", client->GetIPAddress().c_str());
 				client->Kill();
 				continue;
 			}
@@ -223,7 +218,7 @@ void Server::ProcessUnauthorizedClients()
 					continue;
 				}
 				else {
-					LOG(LOGLEVEL_INFO, "Client authorization failed (%s)", socket->GetIPAddress().c_str());
+					LOG(LOGLEVEL_INFO, "Client authorization failed (%s)", client->GetIPAddress().c_str());
 					client->Kill();
 					continue;
 				}
@@ -241,27 +236,26 @@ void Server::UpdatePlayers()
 	auto iter = m_players.begin();
 	while (iter != m_players.end()) {
 		Player::PlayerPtr player = iter->second;
-		Net::Client* client = player->GetClient();
-		Net::Socket* socket = client->GetSocket();
+		std::shared_ptr<Client> client = player->GetClient();
 		std::string name = iter->second->GetName();
 
-		if (!socket->IsActive())
+		if (!client->IsSocketActive())
 			client->Kill();
 
 		if (!client->KeepAlive()) {
 			iter->second->GetWorld()->RemovePlayer(player->GetPID());
 			iter = m_players.erase(iter);
 			BroadcastMessage("&e" + name + " disconnected");
-			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), socket->GetIPAddress().c_str());
+			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), client->GetIPAddress().c_str());
 			continue;
 		}
 
-		if (socket->Poll()) {
+		if (client->PollSocket()) {
 			ProtocolHandler::MessageStatus result;
 			do {
 				result = m_protocolHandler.HandleMessage(client);
 				if (result == ProtocolHandler::MessageStatus::kUnknownOpcode) {
-					LOG(LOGLEVEL_INFO, "Player %s sent unknown packet '%d' (%s)", name.c_str(), socket->PeekFirstByte(), socket->GetIPAddress().c_str());
+					LOG(LOGLEVEL_INFO, "Player %s sent unknown packet '%d' (%s)", name.c_str(), client->GetCurrentOpcode(), client->GetIPAddress().c_str());
 					client->Kill();
 					continue;
 				}
@@ -276,11 +270,11 @@ void Server::UpdatePlayers()
 
 void Server::CheckForConnections()
 {
-	Net::Socket* new_socket = m_socket.Accept();
+	std::unique_ptr<Net::Socket> new_socket = m_socket.Accept();
 	if (new_socket != nullptr) {
-		Net::Client* client = new Client(new_socket);
-		m_unauthorizedClients.push_back(client);
+		std::shared_ptr<Client> client = std::make_shared<Client>(new_socket);
 		LOG(LOGLEVEL_INFO, "New connection (%s)", client->GetIPAddress().c_str());
+		m_unauthorizedClients.push_back(std::move(client));
 	}
 }
 
@@ -307,7 +301,7 @@ void Server::AddCPEEntry(std::string name, uint8_t version)
 	m_cpeEntries.insert(std::make_pair(name, entry));
 }
 
-void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::AuthenticationPacket& packet)
+void Server::OnAuthenticationPacket(std::shared_ptr<Client> client, const ClassicProtocol::AuthenticationPacket& packet)
 {
 	std::string name = packet.name.ToString();
 
@@ -336,19 +330,19 @@ void Server::OnAuthenticationPacket(Client* client, const ClassicProtocol::Authe
 	m_worlds["default"]->AddPlayer(player);
 }
 
-void Server::OnSetBlockPacket(Client* client, const ClassicProtocol::SetBlockPacket& packet)
+void Server::OnSetBlockPacket(std::shared_ptr<Client> client, const ClassicProtocol::SetBlockPacket& packet)
 {
 	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnSetBlockPacket(player, packet);
 }
 
-void Server::OnPositionOrientationPacket(Client* client, const ClassicProtocol::PositionOrientationPacket& packet)
+void Server::OnPositionOrientationPacket(std::shared_ptr<Client> client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
 	Player::PlayerPtr player = GetPlayer(client->GetSID());
 	player->GetWorld()->OnPositionOrientationPacket(player, packet);
 }
 
-void Server::OnMessagePacket(Client* client, const ClassicProtocol::MessagePacket& packet)
+void Server::OnMessagePacket(std::shared_ptr<Client> client, const ClassicProtocol::MessagePacket& packet)
 {
 	std::string playerName = GetPlayer(client->GetSID())->GetName();
 	std::string message = playerName + ": " + packet.message.ToString();

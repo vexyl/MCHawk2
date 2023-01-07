@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <map>
+#include <memory>
 
 #pragma region LoggerMacros
 #define LOG(...) Server::GetInstance()->GetLogger().Log(__VA_ARGS__);
@@ -70,8 +71,8 @@ public:
 
 	void Init();
 
-	static void SendClientMessage(Net::Client* client, std::string message, int messageType = 0);
-	static void SendWrappedMessage(Net::Client* client, std::string message, int messageType = 0);
+	static void SendClientMessage(std::shared_ptr<Net::Client> client, std::string message, int messageType = 0);
+	static void SendWrappedMessage(std::shared_ptr<Net::Client> client, std::string message, int messageType = 0);
 	void BroadcastMessage(std::string message, int messageType = 0);
 
 	bool Update();
@@ -79,7 +80,7 @@ public:
 	void Shutdown();
 
 private:
-	static Server* thisPtr; // Singleton
+	static Server* thisPtr; // FIXME: Singleton
 
 	Utils::Logger m_logger;
 	Net::ProtocolHandler m_protocolHandler;
@@ -87,7 +88,7 @@ private:
 
 	bool m_running = true;
 
-	std::vector<Net::Client*> m_unauthorizedClients;
+	std::vector<std::shared_ptr<Net::Client>> m_unauthorizedClients;
 	std::map<int8_t, std::shared_ptr<Player>> m_players;
 	std::map<std::string, std::shared_ptr<World>> m_worlds;
 	std::map<std::string, CPEEntry> m_cpeEntries;
@@ -102,10 +103,10 @@ private:
 
 	void AddCPEEntry(std::string name, uint8_t version);
 
-	void OnAuthenticationPacket(Net::Client* client, const Net::ClassicProtocol::AuthenticationPacket& packet);
-	void OnSetBlockPacket(Net::Client* client, const Net::ClassicProtocol::SetBlockPacket& packet);
-	void OnPositionOrientationPacket(Net::Client* client, const Net::ClassicProtocol::PositionOrientationPacket& packet);
-	void OnMessagePacket(Net::Client* client, const Net::ClassicProtocol::MessagePacket& packet);
+	void OnAuthenticationPacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::AuthenticationPacket& packet);
+	void OnSetBlockPacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::SetBlockPacket& packet);
+	void OnPositionOrientationPacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::PositionOrientationPacket& packet);
+	void OnMessagePacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::MessagePacket& packet);
 };
 
 std::shared_ptr<World> MakeDefaultWorld();

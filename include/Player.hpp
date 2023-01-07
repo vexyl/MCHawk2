@@ -21,20 +21,15 @@ public:
 
 	int heldBlock = 0;
 
-	Player(Net::Client* client) : Entity(), m_client(client)
+	Player(std::shared_ptr<Net::Client> client) : Entity(), m_client(client)
 	{
 		for (int i = 0; i < kMaxHotbarSlots; ++i)
 			m_hotbar[i] = -1;
 	}
 
-	~Player() { delete m_client; } // FIXME
-
-	Player(const Player::PlayerPtr) = delete;
-	Player::PlayerPtr operator=(const Player::PlayerPtr) = delete;
-
 	CPEEntryMap GetCPEEntries() const { return m_cpeEntries; }
 	World* GetWorld() { return m_world; }
-	Net::Client* GetClient() { return m_client; }
+	std::shared_ptr<Net::Client> GetClient() { return m_client; }
 	int8_t GetPID() const { return m_pid; }
 	uint8_t GetHeldBlock() const { return heldBlock; }
 
@@ -61,7 +56,7 @@ public:
 
 private:
 	int8_t m_pid = -1;
-	Net::Client* m_client = nullptr;
+	std::shared_ptr<Net::Client> m_client;
 	bool m_cpe = false;
 	std::map<std::string, CPEEntry> m_cpeEntries;
 	World* m_world = nullptr;

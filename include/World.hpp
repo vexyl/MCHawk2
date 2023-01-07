@@ -91,7 +91,7 @@ public:
 
 	void Update();
 
-	void SendLevel(Net::Client* client);
+	void SendLevel(std::shared_ptr<Net::Client> client);
 	void SendWeatherType(Player::PlayerPtr player);
 	void SendBlockDefinitions(Player::PlayerPtr player);
 	void SendBlockPermissions(Player::PlayerPtr player);

@@ -28,7 +28,7 @@ public:
 	std::string GetBlockNameByType(uint8_t type);
 
 	void RegisterProtocol(std::string name, IProtocolPtr protocol);
-	MessageStatus HandleMessage(Net::Client* client) const;
+	MessageStatus HandleMessage(std::shared_ptr<Net::Client> client) const;
 
 private:
 	std::map<std::string, IProtocolPtr> m_protocols;

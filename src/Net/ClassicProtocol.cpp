@@ -61,7 +61,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kAuthentication,
 		OpcodeHandler{
-			[this](Client* client, Utils::BufferStream& reader) { AuthenticationOpcodeHandler(client, reader); },
+			[this](std::shared_ptr<Client> client, Utils::BufferStream& reader) { AuthenticationOpcodeHandler(client, reader); },
 			kAuthenticationSize /* packet size */
 		}
 	));
@@ -69,7 +69,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kSetBlock,
 		OpcodeHandler{
-			[this](Client* client, Utils::BufferStream& reader) { SetBlockOpcodeHandler(client, reader); },
+			[this](std::shared_ptr<Client> client, Utils::BufferStream& reader) { SetBlockOpcodeHandler(client, reader); },
 			kSetBlockSize /* packet size */
 		}
 	));
@@ -77,7 +77,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kPositionOrientation,
 		OpcodeHandler{
-			[this](Client* client, Utils::BufferStream& reader) { PositionOrientationOpcodeHandler(client, reader); },
+			[this](std::shared_ptr<Client> client, Utils::BufferStream& reader) { PositionOrientationOpcodeHandler(client, reader); },
 			kPositionOrientationSize /* packet size */
 		}
 	));
@@ -85,7 +85,7 @@ ClassicProtocol::ClassicProtocol()
 	m_defaultPacketHandlers.insert(std::make_pair(
 		Opcodes::kMessage,
 		OpcodeHandler{
-			[this](Client* client, Utils::BufferStream& reader) { MessageOpcodeHandler(client, reader); },
+			[this](std::shared_ptr<Client> client, Utils::BufferStream& reader) { MessageOpcodeHandler(client, reader); },
 			kMessageSize /* packet size */
 		}
 	));
@@ -100,7 +100,7 @@ size_t ClassicProtocol::GetPacketSize(uint8_t opcode) const
 		return 0;
 }
 
-bool ClassicProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::BufferStream& reader) const
+bool ClassicProtocol::HandleOpcode(uint8_t opcode, std::shared_ptr<Client> client, Utils::BufferStream& reader) const
 {
 	auto packetHandlerEntry = m_defaultPacketHandlers.find(static_cast<Opcodes>(opcode));
 	if (packetHandlerEntry != m_defaultPacketHandlers.end()) {
@@ -111,7 +111,7 @@ bool ClassicProtocol::HandleOpcode(uint8_t opcode, Client* client, Utils::Buffer
 	return false;
 }
 
-void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferStream& reader)
+void ClassicProtocol::AuthenticationOpcodeHandler(std::shared_ptr<Client> client, Utils::BufferStream& reader)
 {
 	//std::cout << "[AuthenticationOpcodeHandler]" << std::endl;
 
@@ -124,7 +124,7 @@ void ClassicProtocol::AuthenticationOpcodeHandler(Client* client, Utils::BufferS
 	onAuthenticationCallback(client, packet);
 }
 
-void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream& reader)
+void ClassicProtocol::SetBlockOpcodeHandler(std::shared_ptr<Client> client, Utils::BufferStream& reader)
 {
 	//std::cout << "[SetBlockOpcodeHandler]" << std::endl;
 	if (onSetBlockCallback == nullptr)
@@ -136,7 +136,7 @@ void ClassicProtocol::SetBlockOpcodeHandler(Client* client, Utils::BufferStream&
 	onSetBlockCallback(client, packet);
 }
 
-void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::BufferStream& reader)
+void ClassicProtocol::PositionOrientationOpcodeHandler(std::shared_ptr<Client> client, Utils::BufferStream& reader)
 {
 	//std::cout << "[PositionOrientationOpcodeHandler]" << std::endl;
 
@@ -159,7 +159,7 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(Client* client, Utils::Bu
 	onPositionOrientationCallback(client, packet);
 }
 
-void ClassicProtocol::MessageOpcodeHandler(Client* client, Utils::BufferStream& reader)
+void ClassicProtocol::MessageOpcodeHandler(std::shared_ptr<Client> client, Utils::BufferStream& reader)
 {
 	//std::cout << "[MessageOpcodeHandler]" << std::endl;
 

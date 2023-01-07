@@ -12,7 +12,7 @@ using namespace Net;
 #pragma region HelperMacros
 #define FOREACH_PLAYER(player_arg, client_arg) \
 	for (Player::PlayerPtr player_arg : m_players)  { \
-			Client* client_arg = player_arg->GetClient();
+			std::shared_ptr<Client> client_arg = player_arg->GetClient();
 #define END_FOREACH_PLAYER }
 #pragma endregion
 
@@ -30,7 +30,7 @@ void World::SetWeatherType(WeatherType type)
 // FIXME: Too long, break up into multiple functions
 void World::AddPlayer(Player::PlayerPtr player)
 {
-	Net::Client* client = player->GetClient();
+	std::shared_ptr<Client> client = player->GetClient();
 	int8_t pid = World::pid++;
 
 	player->SetPID(pid);
@@ -151,7 +151,7 @@ void World::Update()
 
 }
 
-void World::SendLevel(Client* client)
+void World::SendLevel(std::shared_ptr<Client> client)
 {
 	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
 	client->QueuePacket(levelInitializePacket);
@@ -255,7 +255,7 @@ void World::SendBlockPermissions(Player::PlayerPtr player)
 
 void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
 {
-	Net::Client* client = player->GetClient();
+	std::shared_ptr<Client> client = player->GetClient();
 
 	uint8_t blockType = packet.type;
 	if (packet.mode == 0)

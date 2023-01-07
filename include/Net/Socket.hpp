@@ -3,6 +3,8 @@
 
 #include "SocketBuffer.hpp"
 
+#include <memory>
+
 namespace Net {
 class Socket {
 public:
@@ -25,7 +27,7 @@ public:
 
 	virtual void Bind(uint16_t port) = 0;
 	virtual void Listen() = 0;
-	virtual Socket* Accept() const = 0;
+	virtual std::unique_ptr<Socket> Accept() const = 0;
 	virtual size_t Poll() = 0;
 	virtual bool Receive(Utils::BufferStream& bufferStream) = 0;
 	virtual int Send(const Utils::BufferStream& bufferStream) = 0;

@@ -61,10 +61,9 @@ void ProtocolHandler::RegisterProtocol(std::string name, IProtocolPtr protocol)
 	m_protocols.insert(std::make_pair(name, std::move(protocol)));
 }
 
-ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(Net::Client* client) const
+ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(std::shared_ptr<Net::Client> client) const
 {
-	Net::Socket* socket = client->GetSocket();
-	uint8_t opcode = socket->PeekFirstByte();
+	uint8_t opcode = client->GetCurrentOpcode();
 	bool handledOpcode = false;
 
 	for (const auto& entry : m_protocols) {
@@ -74,7 +73,7 @@ ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(Net::Client* clien
 
 		Utils::BufferStream reader(packetSize);
 
-		if (!socket->Receive(reader))
+		if (!client->TrySocketReceive(packetSize, reader))
 			return MessageStatus::kNotReady;
 
 		handledOpcode = entry.second->HandleOpcode(opcode, client, reader);
