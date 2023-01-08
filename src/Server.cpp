@@ -1,8 +1,20 @@
 #include "../include/Server.hpp"
+
 #include "../include/Net/Socket.hpp"
 #include "../include/Utils/Utils.hpp"
 
 using namespace Net;
+
+Server::Server() : m_socket(), m_blockDefaultEventHandler(false)
+{
+	m_logger = std::make_shared<Utils::Logger>("log.txt");
+}
+
+Server::~Server()
+{
+	TCPSocket::Cleanup();
+}
+
 
 Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 {
@@ -39,7 +51,8 @@ void Server::SendWrappedMessage(std::shared_ptr<Client> client, std::string mess
 					if (color != 'f') {
 						lastColor = "&";
 						lastColor += color;
-					} else {
+					}
+					else {
 						lastColor = "";
 					}
 					break;
@@ -55,20 +68,6 @@ void Server::BroadcastMessage(std::string message, int messageType)
 {
 	for (auto& player : m_players)
 		SendWrappedMessage(player.second->GetClient(), message, messageType);
-}
-
-Server* Server::thisPtr = nullptr;
-
-Server::~Server()
-{
-	TCPSocket::Cleanup();
-}
-
-Server* Server::GetInstance()
-{
-	if (thisPtr == nullptr)
-		thisPtr = new Server();
-	return thisPtr;
 }
 
 void Server::Init()
@@ -164,7 +163,7 @@ void Server::Init()
 		}
 	);
 
-	m_worlds["default"] = MakeDefaultWorld();
+	m_worlds["default"] = MakeDefaultWorld(*this, m_logger);
 
 	m_serverName = "MCHawk2";
 	m_serverMOTD = "Welcome to a world of blocks!";
@@ -350,12 +349,12 @@ void Server::OnMessagePacket(std::shared_ptr<Client> client, const ClassicProtoc
 	BroadcastMessage(message);
 }
 
-std::shared_ptr<World> MakeDefaultWorld()
+std::shared_ptr<World> MakeDefaultWorld(IServer& server, const Utils::Logger::Ptr& logger)
 {
 	std::shared_ptr<Map> map;
 	map = MapGen::GenerateFlatMap(256, 64, 256);
 
-	std::shared_ptr<World> world = std::make_shared<World>("default");
+	std::shared_ptr<World> world = std::make_shared<World>(server, logger, "default");
 	world->SetSpawnPosition(Utils::Vector(256 / 2, 64 / 2, 256 / 2));
 	world->SetMap(std::move(map));
 

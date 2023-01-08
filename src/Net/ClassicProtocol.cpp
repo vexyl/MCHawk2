@@ -1,5 +1,4 @@
 #include "../../include/Net/ClassicProtocol.hpp"
-#include "../../include/Server.hpp"
 
 using namespace Net;
 
@@ -145,16 +144,6 @@ void ClassicProtocol::PositionOrientationOpcodeHandler(std::shared_ptr<Client> c
 
 	PositionOrientationPacket packet;
 	packet.Deserialize(reader);
-
-	/*std::cout
-		<< "PositionOrientation pid=" << static_cast<signed>(packet.pid)
-		<< " @ ("
-		<< static_cast<short>(packet.x) << ", "
-		<< static_cast<short>(packet.y) << ", "
-		<< static_cast<short>(packet.z) << ")"
-		<< ", yaw=" << static_cast<unsigned>(packet.yaw)
-		<< ", pitch=" << static_cast<unsigned>(packet.pitch)
-		<< std::endl;*/
 
 	onPositionOrientationCallback(client, packet);
 }

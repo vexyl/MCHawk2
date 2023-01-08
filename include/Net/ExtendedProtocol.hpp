@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+// FIXME: only used for htonl?
 #ifdef __linux__
 #include <arpa/inet.h>
 #elif _WIN32

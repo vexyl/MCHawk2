@@ -1,5 +1,4 @@
 #include "../../include/Net/ExtendedProtocol.hpp"
-#include "../../include/Server.hpp"
 
 using namespace Net;
 
@@ -122,8 +121,6 @@ void ExtendedProtocol::PlayerClickedOpcodeHandler(std::shared_ptr<Client> client
 	packet.Deserialize(reader);
 
 	onPlayerClickedCallback(client, packet);
-
-	//std::cout << std::to_string(packet.action) << "," << std::to_string(packet.button) << "," << std::to_string(packet.targetBlockX) << ", " << std::to_string(packet.targetBlockY) << "," << std::to_string(packet.targetBlockZ) << " | " << std::to_string(packet.targetEntityID) << std::endl;
 }
 
 void ExtendedProtocol::TwoWayPingOpcodeHandler(std::shared_ptr<Client> client, Utils::BufferStream& reader)

@@ -1,6 +1,7 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
+#include "IServer.hpp"
 #include "Net/Client.hpp"
 #include "Net/ClassicProtocol.hpp"
 #include "Map.hpp"
@@ -9,8 +10,10 @@
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
 #include "BlockDef.hpp"
+#include "Utils/Logger.hpp"
 
 #include <vector>
+#include <memory>
 
 class World final {
 public:
@@ -67,12 +70,9 @@ public:
 		}
 	}
 
-	World() : m_spawnPosition(0, 0, 0), m_weatherType(WeatherType::kSunny) {}
-
-	World(std::string name) : World()
-	{
-		m_name = name;
-	}
+	World() = delete;
+	World(IServer& server, const Utils::Logger::Ptr& logger) : m_server(server), m_logger(logger), m_spawnPosition(0, 0, 0), m_weatherType(WeatherType::kSunny) {}
+	World(IServer& server, const Utils::Logger::Ptr& logger, std::string name) : m_server(server), m_logger(logger), m_name(name), m_weatherType(WeatherType::kSunny) {}
 
 	std::shared_ptr<Map> GetMap() { return m_map; }
 	Utils::Vector GetSpawnPosition() const { return m_spawnPosition; }
@@ -117,6 +117,8 @@ public:
 private:
 	static int8_t pid;
 
+	IServer& m_server;
+	Utils::Logger::Ptr m_logger;
 	std::shared_ptr<Map> m_map;
 	std::string m_name;
 	Utils::Vector m_spawnPosition;

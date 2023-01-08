@@ -1,10 +1,6 @@
 #include "../include/World.hpp"
-#include "../include/Server.hpp"
-#include "../include/Net/ClassicProtocol.hpp"
-#include "../include/Utils/Vector.hpp"
-#include "../include/Utils/Utils.hpp"
 
-#include <memory>
+#include "../include/Net/ExtendedProtocol.hpp"
 
 using namespace Net;
 
@@ -196,7 +192,7 @@ void World::SendLevel(std::shared_ptr<Client> client)
 
 void World::SendWeatherType(Player::PlayerPtr player)
 {
-	uint8_t version = Server::GetInstance()->GetCPEEntryVersion("EnvWeatherType");
+	uint8_t version = m_server.GetCPEEntryVersion("EnvWeatherType");
 	if (player->HasCPEEntry("EnvWeatherType", version))
 		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
 }
@@ -263,7 +259,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 
 	auto blockPacket = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, blockType);
 
-	Net::ProtocolHandler& protocolHandler = Server::GetInstance()->GetProtocolHandler();
+	Net::ProtocolHandler& protocolHandler = m_server.GetProtocolHandler();
 	std::string blockName = protocolHandler.GetBlockNameByType(packet.type);
 
 	std::cout
@@ -335,7 +331,7 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	}
 
 	// CPE Held Block uses pid field of this packet for block type
-	uint8_t version = Server::GetInstance()->GetCPEEntryVersion("HeldBlock");
+	uint8_t version = m_server.GetCPEEntryVersion("HeldBlock");
 	if (player->HasCPEEntry("HeldBlock", version))
 		player->heldBlock = packet.pid;
 }

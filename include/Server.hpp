@@ -1,6 +1,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "IServer.hpp"
 #include "Net/Packet.hpp"
 #include "Utils/MCString.hpp"
 #include "Net/ProtocolHandler.hpp"
@@ -17,30 +18,18 @@
 #include <map>
 #include <memory>
 
-#pragma region LoggerMacros
-#define LOG(...) Server::GetInstance()->GetLogger().Log(__VA_ARGS__);
-#define LOGLEVEL_NORMAL Utils::Logger::LogLevel::kNormal
-#define LOGLEVEL_DEBUG Utils::Logger::LogLevel::kDebug
-#define LOGLEVEL_INFO Utils::Logger::LogLevel::kInfo
-#define LOGLEVEL_WARNING Utils::Logger::LogLevel::kWarning
-#define LOGLEVEL_ERROR Utils::Logger::LogLevel::kError
-#pragma endregion
-
-class Server final {
+class Server final : public IServer {
 public:
-	Server() : m_socket(), m_logger("log.txt"), m_blockDefaultEventHandler(false) {};
+	Server();
+	
+	~Server();
 
 	Server(const Server&) = delete;
 	Server& operator=(const Server&) = delete;
 
-	~Server();
-
-	static Server* GetInstance();
-
 	Player::PlayerPtr GetPlayer(uint8_t pid);
 
-	Utils::Logger& GetLogger() { return m_logger; }
-	Net::ProtocolHandler& GetProtocolHandler() { return m_protocolHandler; }
+	virtual Net::ProtocolHandler& GetProtocolHandler() override { return m_protocolHandler; }
 
 	std::shared_ptr<World> GetWorld(std::string name)
 	{
@@ -56,7 +45,7 @@ public:
 		return m_worlds;
 	}
 
-	uint8_t GetCPEEntryVersion(std::string name) const
+	virtual uint8_t GetCPEEntryVersion(std::string name) const override
 	{
 		uint8_t version = 0;
 		auto search = m_cpeEntries.find(name);
@@ -80,9 +69,7 @@ public:
 	void Shutdown();
 
 private:
-	static Server* thisPtr; // FIXME: Singleton
-
-	Utils::Logger m_logger;
+	Utils::Logger::Ptr m_logger;
 	Net::ProtocolHandler m_protocolHandler;
 	Net::TCPSocket m_socket;
 
@@ -109,6 +96,6 @@ private:
 	void OnMessagePacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::MessagePacket& packet);
 };
 
-std::shared_ptr<World> MakeDefaultWorld();
+std::shared_ptr<World> MakeDefaultWorld(IServer& server, const Utils::Logger::Ptr& logger);
 
 #endif // SERVER_H_

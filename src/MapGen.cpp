@@ -1,7 +1,15 @@
 #include "../include/MapGen.hpp"
 
 #include "../include/Map.hpp"
-#include "../include/Server.hpp"
+
+// FIXME: only used for htonl
+#ifdef __linux__
+#include <arpa/inet.h>
+#elif _WIN32
+#define NOMINMAX // bug with winsock redefining min
+#include <winsock2.h>
+#undef NOMINMAX
+#endif
 
 std::shared_ptr<Map> MapGen::GenerateFlatMap(uint16_t x, uint16_t y, uint16_t z)
 {
@@ -30,8 +38,6 @@ std::shared_ptr<Map> MapGen::GenerateFlatMap(uint16_t x, uint16_t y, uint16_t z)
 	map->m_xSize = x;
 	map->m_ySize = y;
 	map->m_zSize = z;
-
-	LOG(LOGLEVEL_DEBUG, "Generated flat map (%d bytes)", map->m_bufferSize);
 
 	return std::move(map);
 }

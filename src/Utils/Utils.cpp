@@ -1,25 +1,24 @@
 #include "../../include/Utils/Utils.hpp"
 
-#include "../../include/Server.hpp"
+#include <zlib.h>
 
 #include <cstring>
 #include <cassert>
-#include <zlib.h>
+#include <cstdlib>
 
 #ifdef _WIN32
 #pragma comment(lib, "zlib.lib")
 #endif
 
 namespace Utils {
+// FIXME: Rewrite as loop to not need the outCompBuffer/outCompSize and return status (success, error)
 void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** outCompBuffer, std::size_t* outCompSize)
 {
 	assert(*outCompBuffer == nullptr && buffer != nullptr);
 
 	*outCompBuffer = new uint8_t[bufferSize];
-	if (*outCompBuffer == nullptr) {
-		LOG(LOGLEVEL_ERROR, "Couldn't allocate memory for map buffer");
-		std::exit(1);
-	}
+
+	assert(*outCompBuffer != nullptr);
 
 	std::memset(*outCompBuffer, 0, bufferSize);
 
@@ -33,10 +32,7 @@ void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** out
 	strm.next_out = Z_NULL;
 
 	int ret = deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, (MAX_WBITS + 16), 8, Z_DEFAULT_STRATEGY);
-	if (ret != Z_OK) {
-		LOG(LOGLEVEL_ERROR, "Zlib error: deflateInit2()");
-		std::exit(1);
-	}
+	assert(ret == Z_OK);
 
 	strm.avail_out = (uLong)bufferSize;
 	strm.next_out = (Bytef*)(*outCompBuffer);
@@ -47,8 +43,10 @@ void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** out
 	case Z_NEED_DICT:
 	case Z_DATA_ERROR:
 	case Z_MEM_ERROR:
-		LOG(LOGLEVEL_ERROR, "Zlib error: inflate()");
-		std::exit(1);
+		assert(false && "CompressBuffer error=" + std::to_string(ret));
+		break;
+	default:
+		break;
 	}
 
 	deflateEnd(&strm);

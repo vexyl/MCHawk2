@@ -7,12 +7,11 @@
 
 constexpr unsigned int kMaxSleepTime = 33;
 
-static Server* server = nullptr;
+Server server;
 
 void Shutdown()
 {
-	if (server != nullptr)
-		server->Shutdown();
+	server.Shutdown();
 }
 
 #ifdef _WIN32
@@ -40,8 +39,7 @@ int main()
 
 	std::cout << "Starting server..." << std::endl;
 
-	server = Server::GetInstance();
-	server->Init();
+	server.Init();
 
 	Utils::Clock clock;
 
@@ -49,14 +47,12 @@ int main()
 	while (running) {
 		clock.Restart();
 
-		running = server->Update();
+		running = server.Update();
 
 		auto ms = clock.GetElapsedTime().AsMilliseconds();
 		if (ms < kMaxSleepTime)
 			Utils::Sleep(kMaxSleepTime - ms);
 	}
-
-	delete server;
 
 	std::cerr << "Goodbye." << std::endl;
 	return 0;
