@@ -99,21 +99,6 @@ public:
 	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
 	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 
-	void NewBlockDef(
-		uint8_t blockID,
-		std::string name,
-		uint8_t solidity,
-		uint8_t movementSpeed,
-		uint8_t topTextureID, uint8_t sideTextureID, uint8_t bottomTextureID,
-		uint8_t transmitLight,
-		uint8_t walkSound,
-		uint8_t fullBright,
-		uint8_t shape,
-		uint8_t blockDraw,
-		uint8_t fogDensity,
-		uint8_t fogR, uint8_t fogG, uint8_t fogB
-	);
-
 private:
 	static int8_t pid;
 

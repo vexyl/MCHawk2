@@ -24,8 +24,8 @@ public:
 	ProtocolHandler& operator=(const ProtocolHandler&) = delete;
 
 	IProtocolPtr GetProtocol(std::string name);
-	bool IsValidBlock(uint8_t type);
-	std::string GetBlockNameByType(uint8_t type);
+	bool IsValidBlock(uint8_t type) const;
+	std::string GetBlockNameByType(uint8_t type) const;
 
 	void RegisterProtocol(std::string name, IProtocolPtr protocol);
 	MessageStatus HandleMessage(std::shared_ptr<Net::Client> client) const;

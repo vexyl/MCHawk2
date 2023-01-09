@@ -27,7 +27,7 @@ IProtocolPtr ProtocolHandler::GetProtocol(std::string name)
 	return protocolEntry->second;
 }
 
-bool ProtocolHandler::IsValidBlock(uint8_t type)
+bool ProtocolHandler::IsValidBlock(uint8_t type) const
 {
 	bool result = false;
 	for (const auto& entry : m_protocols) {
@@ -39,7 +39,7 @@ bool ProtocolHandler::IsValidBlock(uint8_t type)
 	return result;
 }
 
-std::string ProtocolHandler::GetBlockNameByType(uint8_t type)
+std::string ProtocolHandler::GetBlockNameByType(uint8_t type) const
 {
 	std::string result;
 	for (const auto& entry : m_protocols) {

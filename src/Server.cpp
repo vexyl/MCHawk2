@@ -5,7 +5,7 @@
 
 using namespace Net;
 
-Server::Server() : m_socket(), m_blockDefaultEventHandler(false)
+Server::Server()
 {
 	m_logger = std::make_shared<Utils::Logger>("log.txt");
 }
@@ -14,7 +14,6 @@ Server::~Server()
 {
 	TCPSocket::Cleanup();
 }
-
 
 Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 {
@@ -163,7 +162,7 @@ void Server::Init()
 		}
 	);
 
-	m_worlds["default"] = MakeDefaultWorld(*this, m_logger);
+	m_worlds["default"] = MakeDefaultWorld();
 
 	m_serverName = "MCHawk2";
 	m_serverMOTD = "Welcome to a world of blocks!";
@@ -184,6 +183,18 @@ void Server::Init()
 	AddCPEEntry("ChangeModel", 1);
 
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
+}
+
+std::shared_ptr<World> Server::MakeDefaultWorld()
+{
+	std::shared_ptr<Map> map;
+	map = MapGen::GenerateFlatMap(256, 64, 256);
+
+	std::shared_ptr<World> world = std::make_shared<World>(*this, m_logger, "default");
+	world->SetSpawnPosition(Utils::Vector(256 / 2, 64 / 2, 256 / 2));
+	world->SetMap(std::move(map));
+
+	return world;
 }
 
 void Server::ProcessUnauthorizedClients()
@@ -321,8 +332,8 @@ void Server::OnAuthenticationPacket(std::shared_ptr<Client> client, const Classi
 		LOG(LOGLEVEL_DEBUG, "Client supports CPE, sending info.");
 		player->SetCPEEnabled(true);
 		client->QueuePacket(ExtendedProtocol::MakeExtInfoPacket(m_serverName, GetExtensionCount()));
-		for (auto& search : m_cpeEntries) {
-			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(search.second.name), search.second.version));
+		for (auto& entry : m_cpeEntries) {
+			client->QueuePacket(ExtendedProtocol::MakeExtEntryPacket(Utils::MCString(entry.second.name), entry.second.version));
 		}
 	}
 
@@ -349,14 +360,3 @@ void Server::OnMessagePacket(std::shared_ptr<Client> client, const ClassicProtoc
 	BroadcastMessage(message);
 }
 
-std::shared_ptr<World> MakeDefaultWorld(IServer& server, const Utils::Logger::Ptr& logger)
-{
-	std::shared_ptr<Map> map;
-	map = MapGen::GenerateFlatMap(256, 64, 256);
-
-	std::shared_ptr<World> world = std::make_shared<World>(server, logger, "default");
-	world->SetSpawnPosition(Utils::Vector(256 / 2, 64 / 2, 256 / 2));
-	world->SetMap(std::move(map));
-
-	return world;
-}

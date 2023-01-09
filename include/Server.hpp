@@ -27,9 +27,17 @@ public:
 	Server(const Server&) = delete;
 	Server& operator=(const Server&) = delete;
 
-	Player::PlayerPtr GetPlayer(uint8_t pid);
+	virtual bool IsValidBlock(uint8_t blockType) const override
+	{
+		return m_protocolHandler.IsValidBlock(blockType);
+	}
 
-	virtual Net::ProtocolHandler& GetProtocolHandler() override { return m_protocolHandler; }
+	virtual std::string GetBlockNameByType(uint8_t blockType) const override
+	{
+		return m_protocolHandler.GetBlockNameByType(blockType);
+	}
+
+	Player::PlayerPtr GetPlayer(uint8_t pid);
 
 	std::shared_ptr<World> GetWorld(std::string name)
 	{
@@ -60,6 +68,8 @@ public:
 
 	void Init();
 
+	std::shared_ptr<World> MakeDefaultWorld();
+
 	static void SendClientMessage(std::shared_ptr<Net::Client> client, std::string message, int messageType = 0);
 	static void SendWrappedMessage(std::shared_ptr<Net::Client> client, std::string message, int messageType = 0);
 	void BroadcastMessage(std::string message, int messageType = 0);
@@ -82,8 +92,6 @@ private:
 
 	std::string m_serverName, m_serverMOTD;
 
-	bool m_blockDefaultEventHandler;
-
 	void ProcessUnauthorizedClients();
 	void UpdatePlayers();
 	void CheckForConnections();
@@ -95,7 +103,5 @@ private:
 	void OnPositionOrientationPacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 	void OnMessagePacket(std::shared_ptr<Net::Client> client, const Net::ClassicProtocol::MessagePacket& packet);
 };
-
-std::shared_ptr<World> MakeDefaultWorld(IServer& server, const Utils::Logger::Ptr& logger);
 
 #endif // SERVER_H_

@@ -259,8 +259,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 
 	auto blockPacket = ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, blockType);
 
-	Net::ProtocolHandler& protocolHandler = m_server.GetProtocolHandler();
-	std::string blockName = protocolHandler.GetBlockNameByType(packet.type);
+	std::string blockName = m_server.GetBlockNameByType(packet.type);
 
 	std::cout
 		<< "SetBlock type=" << static_cast<unsigned>(packet.type) << " (" << blockName << ")"
@@ -275,7 +274,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 
 	// TODO: Kick player
 	// FIXME: Put in a private World::ReverseBlock function
-	if (!protocolHandler.IsValidBlock(blockType)) {
+	if (!m_server.IsValidBlock(blockType)) {
 		uint8_t actualType = m_map->PeekBlock(pos);
 		client->QueuePacket(ClassicProtocol::MakeSetBlock2Packet(packet.x, packet.y, packet.z, actualType));
 		return;
@@ -336,39 +335,3 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 		player->heldBlock = packet.pid;
 }
 
-// FIXME: Shouldn't be in world, make it a free function in BlockDef namespace
-void World::NewBlockDef(
-	uint8_t blockID,
-	std::string name,
-	uint8_t solidity,
-	uint8_t movementSpeed,
-	uint8_t topTextureID, uint8_t sideTextureID, uint8_t bottomTextureID,
-	uint8_t transmitLight,
-	uint8_t walkSound,
-	uint8_t fullBright,
-	uint8_t shape,
-	uint8_t blockDraw,
-	uint8_t fogDensity,
-	uint8_t fogR, uint8_t fogG, uint8_t fogB
-)
-{
-	BlockDef def;
-	def.blockID = blockID;
-	def.name = name;
-	def.solidity = solidity;
-	def.movementSpeed = movementSpeed;
-	def.topTextureID = topTextureID;
-	def.sideTextureID = sideTextureID;
-	def.bottomTextureID = bottomTextureID;
-	def.transmitLight = transmitLight;
-	def.walkSound = walkSound;
-	def.fullBright = fullBright;
-	def.shape = shape;
-	def.blockDraw = blockDraw;
-	def.fogDensity = fogDensity;
-	def.fogR = fogR;
-	def.fogG = fogG;
-	def.fogB = fogB;
-
-	AddBlockDef(def);
-}
