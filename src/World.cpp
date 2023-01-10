@@ -14,6 +14,32 @@ using namespace Net;
 
 int8_t World::pid = 0;
 
+void World::SetEnvironmentSetting(EnvironmentType type, Utils::Color color)
+{
+	switch (type) {
+	case EnvironmentType::kSkyColor:
+		m_env.skyColor.color = color;
+		break;
+	case EnvironmentType::kCloudColor:
+		m_env.cloudColor.color = color;
+		break;
+	case EnvironmentType::kFogColor:
+		m_env.fogColor.color = color;
+		break;
+	case EnvironmentType::kAmbientLight:
+		m_env.ambientLight.color = color;
+		break;
+	case EnvironmentType::kDiffuseLight:
+		m_env.diffuseLight.color = color;
+		break;
+	case EnvironmentType::kSkyboxColor:
+		m_env.skyboxColor.color = color;
+		break;
+	default:
+		break;
+	}
+}
+
 void World::SetWeatherType(WeatherType type)
 {
 	if (m_weatherType != type) {
@@ -334,4 +360,3 @@ void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicP
 	if (player->HasCPEEntry("HeldBlock", version))
 		player->heldBlock = packet.pid;
 }
-

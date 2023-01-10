@@ -38,6 +38,7 @@ struct Color {
 		this->red = color.red;
 		this->green = color.green;
 		this->blue = color.blue;
+
 		return *this;
 	}
 };

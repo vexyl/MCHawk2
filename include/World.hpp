@@ -17,13 +17,13 @@
 
 class World final {
 public:
-	enum WeatherType {
+	enum class WeatherType {
 		kSunny = 0,
 		kRaining,
 		kSnowing
 	};
 
-	enum EnvironmentType {
+	enum class EnvironmentType {
 		kSkyColor = 0,
 		kCloudColor,
 		kFogColor,
@@ -46,30 +46,6 @@ public:
 		environment_setting skyboxColor;
 	};
 
-	void SetEnvironmentSetting(EnvironmentType type, Utils::Color color)
-	{
-		switch (type) {
-		case EnvironmentType::kSkyColor:
-			m_env.skyColor.color = color;
-			break;
-		case EnvironmentType::kCloudColor:
-			m_env.cloudColor.color = color;
-			break;
-		case EnvironmentType::kFogColor:
-			m_env.fogColor.color = color;
-			break;
-		case EnvironmentType::kAmbientLight:
-			m_env.ambientLight.color = color;
-			break;
-		case EnvironmentType::kDiffuseLight:
-			m_env.diffuseLight.color = color;
-			break;
-		case EnvironmentType::kSkyboxColor:
-			m_env.skyboxColor.color = color;
-			break;
-		}
-	}
-
 	World() = delete;
 	World(IServer& server, const Utils::Logger::Ptr& logger) : m_server(server), m_logger(logger), m_spawnPosition(0, 0, 0), m_weatherType(WeatherType::kSunny) {}
 	World(IServer& server, const Utils::Logger::Ptr& logger, std::string name) : m_server(server), m_logger(logger), m_name(name), m_weatherType(WeatherType::kSunny) {}
@@ -82,6 +58,7 @@ public:
 
 	void SetMap(std::shared_ptr<Map> map) { m_map = std::move(map); }
 	void SetSpawnPosition(const Utils::Vector& position) { m_spawnPosition = position; }
+	void SetEnvironmentSetting(EnvironmentType type, Utils::Color color);
 	void SetWeatherType(WeatherType type);
 
 	void AddPlayer(Player::PlayerPtr player);

@@ -15,11 +15,31 @@ Server::~Server()
 	TCPSocket::Cleanup();
 }
 
+std::shared_ptr<World> Server::GetWorldByName(std::string name)
+{
+	std::shared_ptr<World> world;
+	auto iter = m_worlds.find(name);
+	if (iter != m_worlds.end())
+		world = iter->second;
+	return world;
+}
+
 Player::PlayerPtr Server::GetPlayer(uint8_t pid)
 {
 	auto iter = m_players.find(pid);
 	assert(iter != m_players.end());
 	return iter->second;
+}
+
+uint8_t Server::GetCPEEntryVersion(std::string name) const
+{
+	uint8_t version = 0;
+	auto search = m_cpeEntries.find(name);
+	if (search != m_cpeEntries.end()) {
+		return search->second.version;
+	}
+
+	return version;
 }
 
 void Server::SendClientMessage(std::shared_ptr<Client> client, std::string message, int messageType)
@@ -32,32 +52,12 @@ void Server::SendWrappedMessage(std::shared_ptr<Client> client, std::string mess
 	int max = 64;
 	int pos = 0;
 	int length = static_cast<int>(message.length());
-	std::string lastColor;
 
 	while (pos < length) {
 		int diff = length - pos;
 		int count = std::min(diff, max);
 
-		if (lastColor != "" && count + 2 > max)
-			count -= 2;
-
-		SendClientMessage(client, lastColor + message.substr(pos, count), messageType);
-
-		if (length > max) {
-			for (int i = count - 1; i >= pos; --i) {
-				if (message.at(i) == '&' && (i + 1) < count) {
-					char color = message.at(i + 1);
-					if (color != 'f') {
-						lastColor = "&";
-						lastColor += color;
-					}
-					else {
-						lastColor = "";
-					}
-					break;
-				}
-			}
-		}
+		SendClientMessage(client, message.substr(pos, count), messageType);
 
 		pos += count;
 	}

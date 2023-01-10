@@ -37,33 +37,10 @@ public:
 		return m_protocolHandler.GetBlockNameByType(blockType);
 	}
 
+	std::shared_ptr<World> GetWorldByName(std::string name);
 	Player::PlayerPtr GetPlayer(uint8_t pid);
-
-	std::shared_ptr<World> GetWorld(std::string name)
-	{
-		std::shared_ptr<World> world;
-		auto iter = m_worlds.find(name);
-		if (iter != m_worlds.end())
-			world = iter->second;
-		return world;
-	}
-
-	std::map<std::string, std::shared_ptr<World>> GetWorlds()
-	{
-		return m_worlds;
-	}
-
-	virtual uint8_t GetCPEEntryVersion(std::string name) const override
-	{
-		uint8_t version = 0;
-		auto search = m_cpeEntries.find(name);
-		if (search != m_cpeEntries.end()) {
-			return search->second.version;
-		}
-
-		return version;
-	}
-
+	std::map<std::string, std::shared_ptr<World>> GetWorlds() { return m_worlds; }
+	virtual uint8_t GetCPEEntryVersion(std::string name) const override;
 	uint16_t GetExtensionCount() const { return static_cast<uint16_t>(m_cpeEntries.size()); }
 
 	void Init();
