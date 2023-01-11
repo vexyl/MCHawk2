@@ -2,6 +2,8 @@
 
 #include "../include/Map.hpp"
 
+#include <cstring>
+
 // FIXME: only used for htonl
 #ifdef __linux__
 #include <arpa/inet.h>

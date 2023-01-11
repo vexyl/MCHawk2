@@ -21,9 +21,10 @@ add_executable(MCHawk2 ${SOURCES})
 
 IF (UNIX)
 	target_link_libraries(MCHawk2 PUBLIC pthread)
+	target_link_libraries(MCHawk2 PUBLIC z)
+ELSE()
+	add_subdirectory(deps/zlib-1.2.11)
+	include_directories(MCHawk2 ${ZLIB_DEPS_DIR})
+	target_link_libraries(MCHawk2 PUBLIC zlib)
 ENDIF()
-
-add_subdirectory(deps/zlib-1.2.11)
-include_directories(MCHawk2 ${ZLIB_DEPS_DIR})
-target_link_libraries(MCHawk2 PUBLIC zlib)
 

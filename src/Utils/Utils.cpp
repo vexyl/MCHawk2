@@ -1,10 +1,12 @@
 #include "../../include/Utils/Utils.hpp"
 
-#include <zlib.h>
+#include <iostream>
 
 #include <cstring>
 #include <cassert>
 #include <cstdlib>
+
+#include <zlib.h>
 
 #ifdef _WIN32
 #pragma comment(lib, "zlib.lib")
@@ -43,7 +45,8 @@ void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** out
 	case Z_NEED_DICT:
 	case Z_DATA_ERROR:
 	case Z_MEM_ERROR:
-		assert(false && "CompressBuffer error=" + std::to_string(ret));
+		std::cerr << "CompressBuffer error=" << ret << std::endl;
+		assert(false);
 		break;
 	default:
 		break;
