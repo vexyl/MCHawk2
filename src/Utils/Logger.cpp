@@ -68,8 +68,6 @@ void Logger::Log(LogLevel logLevel, const char* format, ...)
 			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 #endif
 		}
-
-		logFileMessage += "DEBUG ";
 	} else if (logLevel == LogLevel::kDebug) {
 		if (!mute) {
 #ifdef __linux__

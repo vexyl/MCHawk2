@@ -3,9 +3,14 @@
 #include <iostream>
 #include <fstream>
 
+int PositionToIndex(int x, int y, int z, int xSize, int zSize)
+{
+	return ((y * zSize + z) * xSize + x) + 4;
+}
+
 uint8_t Map::PeekBlock(Utils::Vector& pos)
 {
-	int offset = calcMapOffset(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z), m_xSize, m_zSize);
+	int offset = PositionToIndex(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z));
 
 	if (offset < 0 || offset >= (int)m_bufferSize) {
 		//std::cerr << "Buffer overflow in Map::PeekBlock()" << std::endl;
@@ -18,7 +23,7 @@ uint8_t Map::PeekBlock(Utils::Vector& pos)
 
 void Map::SetBlock(Utils::Vector& pos, uint8_t type)
 {
-	int offset = calcMapOffset(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z), m_xSize, m_zSize);
+	int offset = PositionToIndex(static_cast<int>(pos.x), static_cast<int>(pos.y), static_cast<int>(pos.z));
 
 	if (offset < 0 || offset >= (int)m_bufferSize) {
 		std::cerr << "Buffer overflow in Map::SetBlock()" << std::endl;
@@ -64,4 +69,9 @@ bool Map::LoadFromFile(std::string filename, uint16_t x, uint16_t y, uint16_t z)
 	m_zSize = z;
 
 	return true;
+}
+
+int Map::PositionToIndex(int x, int y, int z)
+{
+	return ::PositionToIndex(x, y, z, m_xSize, m_zSize);
 }

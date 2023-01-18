@@ -6,7 +6,7 @@
 #include <string>
 #include <cstdint>
 
-#define calcMapOffset(x, y, z, xSize, zSize) ((y * zSize + z) * xSize + x) + 4
+int PositionToIndex(int x, int y, int z, int xSize, int zSize);
 
 class Map final {
 public:
@@ -35,6 +35,8 @@ private:
 	uint8_t* m_buffer = nullptr;
 	size_t m_bufferSize = 0;
 	uint16_t m_xSize = 0, m_ySize = 0, m_zSize = 0;
+
+	int PositionToIndex(int x, int y, int z);
 };
 
 #endif // MAP_H_

@@ -359,4 +359,3 @@ void Server::OnMessagePacket(std::shared_ptr<Client> client, const ClassicProtoc
 	LOG(LOGLEVEL_NORMAL, message.c_str());
 	BroadcastMessage(message);
 }
-
