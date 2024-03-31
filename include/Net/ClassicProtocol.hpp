@@ -14,6 +14,8 @@
 #elif _WIN32
 #define NOMINMAX // bug with winsock redefining min
 #include <winsock2.h>
+#undef min
+#undef max
 #undef NOMINMAX
 #endif
 

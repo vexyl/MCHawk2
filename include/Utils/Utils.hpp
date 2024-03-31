@@ -5,8 +5,10 @@
 
 #include <cstddef>
 #include <stdint.h>
-#include <cstring>
 #include <algorithm>
+
+#include <cstring>
+#include <cassert>
 
 #include <zlib.h>
 
@@ -47,6 +49,8 @@ struct MapDeflateContext {
 
 	int CompressNextChunk()
 	{
+		assert(bufferIn != nullptr && bufferInSize != 0);
+
 		strm.avail_in = std::min(kChunkSize, (unsigned int)(bufferInSize - strm.total_in));
 		strm.next_in = (Bytef*)bufferIn + strm.total_in;
 
@@ -82,8 +86,6 @@ struct MapDeflateContext {
 		return -1;
 	}
 };
-
-void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** outCompBuffer, std::size_t* outCompSize);
 
 Vector ConvertVectorToBlock(Vector& v);
 Vector ConvertBlockToVector(Vector& pos);

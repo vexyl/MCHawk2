@@ -1,7 +1,7 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
-#include "../Net/Socket.hpp"
+#include "../Net/TCPSocket.hpp"
 
 #include <list>
 #include <memory>
@@ -14,7 +14,7 @@ class Utils::BufferStream;
 
 class Client final {
 public:
-	Client(std::unique_ptr<Net::Socket>& socket) : m_socket(std::move(socket)) { assert(sid != 255); m_sid = sid++; }
+	Client(std::unique_ptr<Net::TCPSocket>& socket) : m_socket(std::move(socket)) { assert(sid != 255); m_sid = sid++; }
 
 	std::string GetIPAddress() const { return m_socket->GetIPAddress(); }
 	bool KeepAlive() const { return m_keepAlive; }
@@ -35,7 +35,7 @@ public:
 private:
 	static int8_t sid;
 
-	std::unique_ptr<Net::Socket> m_socket;
+	std::unique_ptr<Net::TCPSocket> m_socket;
 	std::list<std::shared_ptr<Net::Packet>> m_packetQueue;
 	bool m_keepAlive = true, m_isAuthorized = false;
 	int8_t m_sid = 0;

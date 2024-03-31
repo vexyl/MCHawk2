@@ -2,7 +2,7 @@
 #define PROTOCOLHANDLER_H_
 
 #include "../Net/IProtocol.hpp"
-#include "../Net/Socket.hpp"
+#include "../Net/TCPSocket.hpp"
 
 #include <string>
 #include <map>

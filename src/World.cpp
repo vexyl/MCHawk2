@@ -178,9 +178,6 @@ void World::SendLevel(std::shared_ptr<Client> client)
 	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
 	client->QueuePacket(levelInitializePacket);
 
-	uint8_t* compBuffer = nullptr;
-	size_t compSize;
-
 	Utils::MapDeflateContext mapDeflateContext;
 	int ret = mapDeflateContext.Initialize(m_map->GetReadOnlyBufferPtr(), m_map->GetBufferSize());
 	
@@ -194,8 +191,8 @@ void World::SendLevel(std::shared_ptr<Client> client)
 		deflating = ret < 0 ? true : false;
 	}
 
-	compBuffer = mapDeflateContext.bufferOut;
-	compSize = mapDeflateContext.bufferOutSize;
+	uint8_t* compBuffer = mapDeflateContext.bufferOut;
+	size_t compSize = mapDeflateContext.bufferOutSize;
 
 	LOG(LOGLEVEL_DEBUG, "Compressed map size: %d bytes", compSize);
 

@@ -1,6 +1,6 @@
 #include "../include/Server.hpp"
 
-#include "../include/Net/Socket.hpp"
+#include "../include/Net/TCPSocket.hpp"
 #include "../include/Utils/Utils.hpp"
 
 using namespace Net;
@@ -280,7 +280,7 @@ void Server::UpdatePlayers()
 
 void Server::CheckForConnections()
 {
-	std::unique_ptr<Net::Socket> new_socket = m_socket.Accept();
+	std::unique_ptr<Net::TCPSocket> new_socket = m_socket.Accept();
 	if (new_socket != nullptr) {
 		std::shared_ptr<Client> client = std::make_shared<Client>(new_socket);
 		LOG(LOGLEVEL_INFO, "New connection (%s)", client->GetIPAddress().c_str());

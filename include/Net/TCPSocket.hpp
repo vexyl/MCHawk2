@@ -1,7 +1,7 @@
 #ifndef TCPSOCKET_H_
 #define TCPSOCKET_H_
 
-#include "Socket.hpp"
+#include "SocketBuffer.hpp"
 
 #include <string>
 
@@ -21,9 +21,9 @@ typedef int SocketType;
 #endif
 
 namespace Net {
-class TCPSocket final : public Socket {
+class TCPSocket final {
 public:
-	TCPSocket() : m_port(0) {};
+	TCPSocket() : m_socketBuffer(kMaxBufferSize), m_port(0) {};
 	TCPSocket(SocketType socket) : TCPSocket() { m_socket = socket; }
 
 	~TCPSocket();
@@ -32,23 +32,32 @@ public:
 	TCPSocket(TCPSocket&&) = default;
 	TCPSocket& operator=(const TCPSocket&) = default;
 	TCPSocket& operator=(TCPSocket&&) = default;
-
+	
+	bool IsActive() { return m_active; }
+	uint8_t PeekFirstByte() { return m_socketBuffer.PeekFirstByte(); }
+	uint8_t* GetBufferPtr() { return m_socketBuffer.GetBufferPtr(); }
+	size_t GetAvailableDataCount() { return m_socketBuffer.GetAvailableDataCount(); }
+	
 	static void Initialize();
 	static void Cleanup();
 
-	virtual void SetIPAddress(std::string address) override { m_IPAddress = address; }
+	virtual void SetIPAddress(std::string address) { m_IPAddress = address; }
 
-	virtual std::string GetIPAddress() const override { return m_IPAddress; }
+	virtual std::string GetIPAddress() const { return m_IPAddress; }
 	uint16_t GetPort() const { return m_port;  }
 
-	virtual void Bind(uint16_t port) override;
+	virtual void Bind(uint16_t port);
 	virtual void Listen();
-	virtual std::unique_ptr<Socket> Accept() const override;
-	virtual size_t Poll() override;
-	virtual bool Receive(Utils::BufferStream& bufferStream) override;
-	virtual int Send(const Utils::BufferStream& bufferStream) override;
+	virtual std::unique_ptr<TCPSocket> Accept() const;
+	virtual size_t Poll();
+	virtual bool Receive(Utils::BufferStream& bufferStream);
+	virtual int Send(const Utils::BufferStream& bufferStream);
 
 private:
+	static constexpr unsigned int kMaxBufferSize = 8192;
+	SocketBuffer m_socketBuffer;
+	bool m_active = true;
+	
 	SocketType m_socket = INVALIDSOCKET;
 	std::string m_IPAddress;
 	uint16_t m_port;
