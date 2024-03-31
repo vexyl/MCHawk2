@@ -5,8 +5,84 @@
 
 #include <cstddef>
 #include <stdint.h>
+#include <cstring>
+#include <algorithm>
+
+#include <zlib.h>
 
 namespace Utils {
+struct MapDeflateContext {
+	const unsigned int kChunkSize = 1024;
+
+	z_stream strm;
+	int flush;
+
+	const uint8_t* bufferIn;
+	std::size_t bufferInSize;
+	uint8_t* bufferOut;
+	std::size_t bufferOutSize;
+
+	int Initialize(const uint8_t* buffer_in, std::size_t buffer_in_size)
+	{
+		if (buffer_in == nullptr || buffer_in_size == 0)
+			return 0;
+
+		bufferIn = buffer_in;
+		bufferInSize = buffer_in_size;
+
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		strm.avail_out = 0;
+		strm.next_out = Z_NULL;
+
+		flush = Z_NO_FLUSH;
+
+		bufferOut = new uint8_t[bufferInSize];
+		std::memset(bufferOut, 0, bufferInSize);
+
+		int ret = deflateInit2(&strm, Z_BEST_COMPRESSION, Z_DEFLATED, (MAX_WBITS + 16), 8, Z_DEFAULT_STRATEGY);
+		return ret == Z_OK ? 1 : 0;
+	}
+
+	int CompressNextChunk()
+	{
+		strm.avail_in = std::min(kChunkSize, (unsigned int)(bufferInSize - strm.total_in));
+		strm.next_in = (Bytef*)bufferIn + strm.total_in;
+
+		if (strm.total_in + strm.avail_in == bufferInSize)
+			flush = Z_FINISH;
+
+		do {
+			strm.avail_out = kChunkSize;
+			strm.next_out = (Bytef*)(bufferOut + strm.total_out);
+
+			int ret = deflate(&strm, flush);
+
+			switch (ret) {
+			case Z_NEED_DICT:
+			case Z_DATA_ERROR:
+			case Z_MEM_ERROR:
+			case Z_STREAM_ERROR:
+				deflateEnd(&strm);
+				return 0;
+				break;
+			default:
+				break;
+			}
+		} while (strm.avail_out == 0);
+
+		if (flush == Z_FINISH) {
+			bufferOutSize = strm.total_out;
+			deflateEnd(&strm);
+			if (bufferOut == nullptr || bufferOutSize == 0)
+				return 0;
+			return 1;
+		}
+		return -1;
+	}
+};
+
 void CompressBuffer(const uint8_t* buffer, std::size_t bufferSize, uint8_t** outCompBuffer, std::size_t* outCompSize);
 
 Vector ConvertVectorToBlock(Vector& v);

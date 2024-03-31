@@ -181,7 +181,21 @@ void World::SendLevel(std::shared_ptr<Client> client)
 	uint8_t* compBuffer = nullptr;
 	size_t compSize;
 
-	Utils::CompressBuffer(m_map->GetReadOnlyBufferPtr(), m_map->GetBufferSize(), &compBuffer, &compSize);
+	Utils::MapDeflateContext mapDeflateContext;
+	int ret = mapDeflateContext.Initialize(m_map->GetReadOnlyBufferPtr(), m_map->GetBufferSize());
+	
+	assert(ret != 0);
+
+	bool deflating = true;
+	while (deflating) {
+		ret = mapDeflateContext.CompressNextChunk();
+		assert(ret != 0 && "Failed to compress map");
+
+		deflating = ret < 0 ? true : false;
+	}
+
+	compBuffer = mapDeflateContext.bufferOut;
+	compSize = mapDeflateContext.bufferOutSize;
 
 	LOG(LOGLEVEL_DEBUG, "Compressed map size: %d bytes", compSize);
 
