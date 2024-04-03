@@ -1,10 +1,10 @@
 #include "../include/World.hpp"
 
 #include "../include/Net/ExtendedProtocol.hpp"
+#include "../include/Tasks/SendLevelTask.hpp"
 
 using namespace Net;
 
-// FIXME
 #pragma region HelperMacros
 #define FOREACH_PLAYER(player_arg, client_arg) \
 	for (Player::PlayerPtr player_arg : m_players)  { \
@@ -57,7 +57,10 @@ void World::AddPlayer(Player::PlayerPtr player)
 
 	player->SetPID(pid);
 	player->SetPosition(m_spawnPosition);
-	SendLevel(client);
+
+	client->SetTemporaryPacketQueue(true);
+	std::shared_ptr<Task> task(new SendLevelTask(this, client));
+	m_taskManager.AttachTask(task);
 
 	std::string name = player->GetName();
 	Utils::Vector convertedPosition = Utils::ConvertBlockToPlayer(m_spawnPosition);
@@ -170,61 +173,7 @@ void World::AddBlockDef(BlockDef def)
 
 void World::Update()
 {
-
-}
-
-void World::SendLevel(std::shared_ptr<Client> client)
-{
-	auto levelInitializePacket = ClassicProtocol::MakeLevelInitializePacket();
-	client->QueuePacket(levelInitializePacket);
-
-	Utils::MapDeflateContext mapDeflateContext;
-	int ret = mapDeflateContext.Initialize(m_map->GetReadOnlyBufferPtr(), m_map->GetBufferSize());
-	
-	assert(ret != 0);
-
-	bool deflating = true;
-	while (deflating) {
-		ret = mapDeflateContext.CompressNextChunk();
-		assert(ret != 0 && "Failed to compress map");
-
-		deflating = ret < 0 ? true : false;
-	}
-
-	uint8_t* compBuffer = mapDeflateContext.bufferOut;
-	size_t compSize = mapDeflateContext.bufferOutSize;
-
-	LOG(LOGLEVEL_DEBUG, "Compressed map size: %d bytes", compSize);
-
-	size_t bytes = 0;
-	while (bytes < compSize) {
-		size_t remainingBytes = compSize - bytes;
-		size_t count = (remainingBytes >= 1024) ? 1024 : (remainingBytes);
-
-		auto chunkPacket = std::make_shared<ClassicProtocol::LevelDataChunkPacket>();
-
-		chunkPacket->chunkLength = static_cast<uint16_t>(count);
-
-		std::memcpy(chunkPacket->chunkData, &compBuffer[bytes], count);
-
-		// Padding; must send exactly 1024 bytes per chunk
-		if (count < 1024) {
-			size_t paddingSize = 1024 - count;
-			std::memset(&chunkPacket->chunkData[count], 0x00, paddingSize);
-		}
-
-		bytes += count;
-		chunkPacket->percent = static_cast<uint8_t>((((float)bytes / (float)compSize) * 100.0f));
-
-		client->QueuePacket(chunkPacket);
-		client->ProcessPacketsInQueue();
-	}
-
-	delete compBuffer;
-
-	auto levelFinalizePacket = ClassicProtocol::MakeLevelFinalizePacket(m_map->GetXSize(), m_map->GetYSize(), m_map->GetZSize());
-
-	client->QueuePacket(levelFinalizePacket);
+	m_taskManager.UpdateTasks();
 }
 
 void World::SendWeatherType(Player::PlayerPtr player)

@@ -10,6 +10,7 @@
 #include "Utils/Vector.hpp"
 #include "Player.hpp"
 #include "BlockDef.hpp"
+#include "TaskManager.hpp"
 #include "Utils/Logger.hpp"
 
 #include <vector>
@@ -68,7 +69,6 @@ public:
 
 	void Update();
 
-	void SendLevel(std::shared_ptr<Net::Client> client);
 	void SendWeatherType(Player::PlayerPtr player);
 	void SendBlockDefinitions(Player::PlayerPtr player);
 	void SendBlockPermissions(Player::PlayerPtr player);
@@ -82,6 +82,7 @@ private:
 	IServer& m_server;
 	Utils::Logger::Ptr m_logger;
 	std::shared_ptr<Map> m_map;
+	TaskManager m_taskManager;
 	std::string m_name;
 	Utils::Vector m_spawnPosition;
 	std::vector<Player::PlayerPtr> m_players;

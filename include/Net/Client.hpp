@@ -24,19 +24,21 @@ public:
 	uint8_t GetCurrentOpcode() const { return m_socket->PeekFirstByte(); }
 
 	void SetAuthorized(bool isAuthorized) { m_isAuthorized = isAuthorized; }
-
+	void SetTemporaryPacketQueue(bool useTemporaryQueue);
+	void FlushTemporaryPacketQueue();
 	void Kill() { m_keepAlive = false; }
 
 	bool TrySocketReceive(size_t packetSize, Utils::BufferStream& reader) const;
 	size_t PollSocket() { return m_socket->Poll(); }
-	void QueuePacket(std::shared_ptr<Net::Packet> packet);
+	void QueuePacket(std::shared_ptr<Net::Packet> packet, bool useTemporaryQueue=false);
 	void ProcessPacketsInQueue(bool forcePrimaryQueue = false);
 
 private:
 	static int8_t sid;
 
 	std::unique_ptr<Net::TCPSocket> m_socket;
-	std::list<std::shared_ptr<Net::Packet>> m_packetQueue;
+	std::list<std::shared_ptr<Net::Packet>> m_packetQueue, m_temporaryPacketQueue;
+	bool m_useTemporaryQueue = false;
 	bool m_keepAlive = true, m_isAuthorized = false;
 	int8_t m_sid = 0;
 };

@@ -13,18 +13,43 @@ bool Client::TrySocketReceive(size_t packetSize, Utils::BufferStream& reader) co
 	return m_socket->Receive(reader);
 }
 
-void Client::QueuePacket(std::shared_ptr<Net::Packet> packet)
+void Client::QueuePacket(std::shared_ptr<Net::Packet> packet, bool useTemporaryQueue)
 {
 	assert(packet != nullptr);
-	m_packetQueue.push_back(packet);
+
+	if (useTemporaryQueue)
+		m_temporaryPacketQueue.push_back(packet);
+	else
+		m_packetQueue.push_back(packet);
+}
+
+void Client::SetTemporaryPacketQueue(bool useTemporaryQueue)
+{
+	if (m_useTemporaryQueue && !useTemporaryQueue)
+		FlushTemporaryPacketQueue();
+	else if (!m_useTemporaryQueue && useTemporaryQueue)
+		ProcessPacketsInQueue();
+	m_useTemporaryQueue = useTemporaryQueue;
+}
+
+void Client::FlushTemporaryPacketQueue()
+{
+	for (auto& packet : m_temporaryPacketQueue) {
+		m_packetQueue.push_front(packet);
+	}
+	m_temporaryPacketQueue.clear();
 }
 
 void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
 {
-	auto iter = m_packetQueue.begin();
-	while (iter != m_packetQueue.end()) {
+	std::list<std::shared_ptr<Net::Packet>>* packetQueue = &m_packetQueue;
+	if (m_useTemporaryQueue)
+		packetQueue = &m_temporaryPacketQueue;
+
+	auto iter = packetQueue->begin();
+	while (iter != packetQueue->end()) {
 		if (!m_keepAlive) {
-			m_packetQueue.clear();
+			packetQueue->clear();
 			return;
 		}
 
@@ -50,6 +75,6 @@ void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
 			break;
 		}
 
-		iter = m_packetQueue.erase(iter);
+		iter = packetQueue->erase(iter);
 	}
 }

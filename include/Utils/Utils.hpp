@@ -14,7 +14,7 @@
 
 namespace Utils {
 struct MapDeflateContext {
-	const unsigned int kChunkSize = 1024;
+	const unsigned int kChunkSize = 1024*1024;
 
 	z_stream strm;
 	int flush;
@@ -23,11 +23,13 @@ struct MapDeflateContext {
 	std::size_t bufferInSize;
 	uint8_t* bufferOut;
 	std::size_t bufferOutSize;
+	std::size_t lastOut;
 
 	int Initialize(const uint8_t* buffer_in, std::size_t buffer_in_size)
 	{
 		if (buffer_in == nullptr || buffer_in_size == 0)
 			return 0;
+		assert(buffer_in != nullptr && buffer_in_size != 0);
 
 		bufferIn = buffer_in;
 		bufferInSize = buffer_in_size;
@@ -35,9 +37,11 @@ struct MapDeflateContext {
 		strm.zalloc = Z_NULL;
 		strm.zfree = Z_NULL;
 		strm.opaque = Z_NULL;
+		strm.total_in = 0;
 		strm.avail_out = 0;
 		strm.next_out = Z_NULL;
 
+		lastOut = 0;
 		flush = Z_NO_FLUSH;
 
 		bufferOut = new uint8_t[bufferInSize];
@@ -51,6 +55,8 @@ struct MapDeflateContext {
 	{
 		assert(bufferIn != nullptr && bufferInSize != 0);
 
+		int lastTotalIn = 0;
+
 		strm.avail_in = std::min(kChunkSize, (unsigned int)(bufferInSize - strm.total_in));
 		strm.next_in = (Bytef*)bufferIn + strm.total_in;
 
@@ -61,7 +67,13 @@ struct MapDeflateContext {
 			strm.avail_out = kChunkSize;
 			strm.next_out = (Bytef*)(bufferOut + strm.total_out);
 
-			int ret = deflate(&strm, flush);
+			int flushStream = flush;
+			if (flushStream != Z_FINISH && (strm.total_out - lastOut) >= kChunkSize) {
+				flushStream = Z_FULL_FLUSH;
+				lastOut = strm.total_out;
+			}
+
+			int ret = deflate(&strm, flush != Z_FINISH ? Z_FULL_FLUSH : flush);
 
 			switch (ret) {
 			case Z_NEED_DICT:
