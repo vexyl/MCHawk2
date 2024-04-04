@@ -31,7 +31,7 @@ public:
 	bool TrySocketReceive(size_t packetSize, Utils::BufferStream& reader) const;
 	size_t PollSocket() { return m_socket->Poll(); }
 	void QueuePacket(std::shared_ptr<Net::Packet> packet, bool useTemporaryQueue=false);
-	void ProcessPacketsInQueue(bool forcePrimaryQueue = false);
+	void ProcessPacketsInQueue();
 
 private:
 	static int8_t sid;

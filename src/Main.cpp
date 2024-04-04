@@ -54,6 +54,6 @@ int main()
 			Utils::Sleep(kMaxSleepTime - ms);
 	}
 
-	std::cerr << "Goodbye." << std::endl;
+	std::cerr << "Server exited normally" << std::endl;
 	return 0;
 }

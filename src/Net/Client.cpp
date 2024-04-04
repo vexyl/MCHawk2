@@ -40,7 +40,7 @@ void Client::FlushTemporaryPacketQueue()
 	m_temporaryPacketQueue.clear();
 }
 
-void Client::ProcessPacketsInQueue(bool forcePrimaryQueue)
+void Client::ProcessPacketsInQueue()
 {
 	std::list<std::shared_ptr<Net::Packet>>* packetQueue = &m_packetQueue;
 	if (m_useTemporaryQueue)

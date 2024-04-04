@@ -124,7 +124,7 @@ void Server::Init()
 				return;
 
 			player->AddCPEEntry(extName, packet.version);
-			std::cout << player->GetName() << " CPE Ext: " << extName << " version " << packet.version << std::endl;
+			LOG(LOGLEVEL_DEBUG, "%s CPE Ext: %s version %d", player->GetName().c_str(), extName.c_str(), packet.version);
 
 			if (extName == "CustomBlocks") {
 				// TODO: Have init function take care of this
@@ -162,11 +162,6 @@ void Server::Init()
 		}
 	);
 
-	m_worlds["default"] = MakeDefaultWorld();
-
-	m_serverName = "MCHawk2";
-	m_serverMOTD = "Welcome to a world of blocks!";
-
 	AddCPEEntry("CustomBlocks", 1);
 	AddCPEEntry("HeldBlock", 1);
 	AddCPEEntry("InventoryOrder", 1);
@@ -182,6 +177,12 @@ void Server::Init()
 	AddCPEEntry("ExtPlayerList", 2);
 	AddCPEEntry("ChangeModel", 1);
 
+	m_serverName = "MCHawk2";
+	m_serverMOTD = "Welcome to a world of blocks!";
+
+	if (m_worlds.find("default") == m_worlds.end())
+		m_worlds["default"] = MakeDefaultWorld();
+
 	LOG(LOGLEVEL_INFO, "Server initialized and listening on port %d", m_socket.GetPort());
 }
 
@@ -189,6 +190,8 @@ std::shared_ptr<World> Server::MakeDefaultWorld()
 {
 	std::shared_ptr<Map> map;
 	map = MapGen::GenerateFlatMap(256, 64, 256);
+
+	LOG(LOGLEVEL_DEBUG, "Created default map: %dx%dx%d", map->GetXSize(), map->GetYSize(), map->GetZSize());
 
 	std::shared_ptr<World> world = std::make_shared<World>(*this, m_logger, "default");
 	world->SetSpawnPosition(Utils::Vector(256 / 2, 64 / 2, 256 / 2));
@@ -302,6 +305,7 @@ bool Server::Update()
 
 void Server::Shutdown()
 {
+	LOG(LOGLEVEL_DEBUG, "Shutting down...");
 	m_running = false;
 }
 
