@@ -1,8 +1,8 @@
 #ifndef SENDLEVEL_TASK_H_
 #define SENDLEVEL_TASK_H_
 
-#include "../Task.hpp"
-#include "../World.hpp"
+#include "../Task.h"
+#include "../World.h"
 
 class SendLevelTask final : public Task {
 public:

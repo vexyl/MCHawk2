@@ -1,4 +1,4 @@
-#include "ClassicProtocol.hpp"
+#include "ClassicProtocol.h"
 
 using namespace Net;
 

@@ -1,7 +1,7 @@
-#include "Server.hpp"
+#include "Server.h"
 
-#include "Net/TCPSocket.hpp"
-#include "Utils/Utils.hpp"
+#include "Net/TCPSocket.h"
+#include "Utils/Utils.h"
 
 using namespace Net;
 

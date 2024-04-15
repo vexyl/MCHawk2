@@ -1,7 +1,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include "Vector.hpp"
+#include "Vector.h"
 
 #include <cstddef>
 #include <stdint.h>

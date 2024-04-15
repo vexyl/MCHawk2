@@ -1,17 +1,17 @@
 #ifndef WORLD_H_
 #define WORLD_H_
 
-#include "IServer.hpp"
-#include "Net/Client.hpp"
-#include "Net/ClassicProtocol.hpp"
-#include "Map.hpp"
-#include "MapGen.hpp"
-#include "Utils/Utils.hpp"
-#include "Utils/Vector.hpp"
-#include "Player.hpp"
-#include "BlockDef.hpp"
-#include "TaskManager.hpp"
-#include "Utils/Logger.hpp"
+#include "IServer.h"
+#include "Net/Client.h"
+#include "Net/ClassicProtocol.h"
+#include "Map.h"
+#include "MapGen.h"
+#include "Utils/Utils.h"
+#include "Utils/Vector.h"
+#include "Player.h"
+#include "BlockDef.h"
+#include "TaskManager.h"
+#include "Utils/Logger.h"
 
 #include <vector>
 #include <memory>

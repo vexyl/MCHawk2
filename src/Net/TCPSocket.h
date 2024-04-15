@@ -1,7 +1,7 @@
 #ifndef TCPSOCKET_H_
 #define TCPSOCKET_H_
 
-#include "SocketBuffer.hpp"
+#include "SocketBuffer.h"
 
 #include <string>
 

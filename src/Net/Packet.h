@@ -1,7 +1,7 @@
 #ifndef PACKET_H_
 #define PACKET_H_
 
-#include "../Utils/BufferStream.hpp"
+#include "../Utils/BufferStream.h"
 
 #include <memory>
 

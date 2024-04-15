@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-#include "MCString.hpp"
+#include "MCString.h"
 
 namespace Net {
 	class Client;

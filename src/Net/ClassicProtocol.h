@@ -1,9 +1,9 @@
 #ifndef CLASSICPROTOCOL_H_
 #define CLASSICPROTOCOL_H_
 
-#include "IProtocol.hpp"
-#include "Packet.hpp"
-#include "../Utils/MCString.hpp"
+#include "IProtocol.h"
+#include "Packet.h"
+#include "../Utils/MCString.h"
 
 #include <map>
 #include <memory>

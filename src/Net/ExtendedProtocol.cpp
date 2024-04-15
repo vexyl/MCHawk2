@@ -1,4 +1,4 @@
-#include "ExtendedProtocol.hpp"
+#include "ExtendedProtocol.h"
 
 using namespace Net;
 

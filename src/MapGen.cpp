@@ -1,6 +1,6 @@
-#include "MapGen.hpp"
+#include "MapGen.h"
 
-#include "Map.hpp"
+#include "Map.h"
 
 #include <cstring>
 

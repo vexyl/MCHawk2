@@ -1,6 +1,6 @@
-#include "Client.hpp"
+#include "Client.h"
 
-#include "Packet.hpp"
+#include "Packet.h"
 
 #include <iostream>
 

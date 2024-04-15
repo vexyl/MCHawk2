@@ -1,6 +1,6 @@
-#include "Player.hpp"
-#include "Net/ClassicProtocol.hpp"
-#include "Net/ExtendedProtocol.hpp"
+#include "Player.h"
+#include "Net/ClassicProtocol.h"
+#include "Net/ExtendedProtocol.h"
 
 #include <algorithm>
 

@@ -1,7 +1,7 @@
-#include "ProtocolHandler.hpp"
-#include "ClassicProtocol.hpp"
-#include "ExtendedProtocol.hpp"
-#include "Client.hpp"
+#include "ProtocolHandler.h"
+#include "ClassicProtocol.h"
+#include "ExtendedProtocol.h"
+#include "Client.h"
 
 using namespace Net;
 

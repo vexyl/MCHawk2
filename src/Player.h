@@ -1,10 +1,10 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "Entity.hpp"
-#include "Net/Client.hpp"
-#include "CPEEntry.hpp"
-#include "Utils/Vector.hpp"
+#include "Entity.h"
+#include "Net/Client.h"
+#include "CPEEntry.h"
+#include "Utils/Vector.h"
 
 #include <string>
 #include <memory>

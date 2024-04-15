@@ -1,7 +1,7 @@
 #ifndef IPROTOCOL_H_
 #define IPROTOCOL_H_
 
-#include "../Utils/BufferStream.hpp"
+#include "../Utils/BufferStream.h"
 
 #include <functional>
 #include <memory>

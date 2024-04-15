@@ -1,7 +1,7 @@
 #ifndef ENTITY_H_
 #define ENTITY_H_
 
-#include "Utils/Vector.hpp"
+#include "Utils/Vector.h"
 
 #include <string>
 #include <stdint.h>
