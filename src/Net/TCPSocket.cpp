@@ -1,4 +1,4 @@
-#include "../../include/Net/TCPSocket.hpp"
+#include "TCPSocket.hpp"
 
 #include <iostream>
 
@@ -16,7 +16,9 @@
 #endif
 
 #ifdef _WIN32
-#define errno WSAGetLastError()
+#define TCPSOCKET_ERROR WSAGetLastError()
+#else
+#define TCPSOCKET_ERROR errno
 #endif
 
 using namespace Net;
@@ -91,13 +93,13 @@ void TCPSocket::Bind(uint16_t port)
 	// Disable Nagle's algorithm
 	int flag = 1;
 	if (setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0) {
-		std::cerr << "Failed to setsockopt() TCP_NODELAY, errno=" << errno << std::endl;
+		std::cerr << "Failed to setsockopt() TCP_NODELAY, errno=" << TCPSOCKET_ERROR << std::endl;
 		std::exit(1);
 	}
 
 	iResult = bind(m_socket, addrInfoResult->ai_addr, static_cast<int>(addrInfoResult->ai_addrlen));
 	if (iResult == SOCKETERROR) {
-		std::cerr << "Failed to initialize TCPSocket: bind() failed, errno=" << errno << std::endl;
+		std::cerr << "Failed to initialize TCPSocket: bind() failed, errno=" << TCPSOCKET_ERROR << std::endl;
 		std::exit(1);
 	}
 
@@ -163,11 +165,8 @@ size_t TCPSocket::Poll()
 		} else {
 			std::cerr << "WSAGetLastError: " << result << std::endl;
 		}
-
-		return 0;
-#else
-		return 0;
 #endif
+		return 0;
 	} else if (bytesReceived == 0) {
 		m_active = false;
 	}

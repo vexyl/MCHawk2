@@ -1,4 +1,4 @@
-#include "../../include/Utils/MCString.hpp"
+#include "MCString.hpp"
 
 #include <cstring>
 

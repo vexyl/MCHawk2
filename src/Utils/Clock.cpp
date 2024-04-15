@@ -1,6 +1,6 @@
 // Design inspired by SFML's sf::Clock
 
-#include "../../include/Utils/Clock.hpp"
+#include "Clock.hpp"
 
 namespace Utils {
 void Sleep(int64_t ms)

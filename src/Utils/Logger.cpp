@@ -1,4 +1,4 @@
-﻿#include "../../include/Utils/Logger.hpp"
+﻿#include "Logger.hpp"
 
 #include <chrono>
 #include <ctime>

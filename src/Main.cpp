@@ -1,5 +1,5 @@
-#include "../include/Server.hpp"
-#include "../include/Utils/Clock.hpp"
+#include "Server.hpp"
+#include "Utils/Clock.hpp"
 
 #ifndef _WIN32
 #include <signal.h>

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_subdirectory(vendor/zlib)
 
-file(GLOB_RECURSE SOURCES src/*.cpp include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.hpp)
 
 # add the executable
 add_executable(MCHawk2 ${SOURCES})

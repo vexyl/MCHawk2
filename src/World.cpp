@@ -1,7 +1,7 @@
-#include "../include/World.hpp"
+#include "World.hpp"
 
-#include "../include/Net/ExtendedProtocol.hpp"
-#include "../include/Tasks/SendLevelTask.hpp"
+#include "Net/ExtendedProtocol.hpp"
+#include "Tasks/SendLevelTask.hpp"
 
 using namespace Net;
 

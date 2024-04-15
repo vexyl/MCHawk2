@@ -1,5 +1,5 @@
 // Learned from Math for Game Developers youtube series by Jorge Rodriguez
-#include "../../include/Utils/Vector.hpp"
+#include "Vector.hpp"
 
 #include <assert.h>
 #include <math.h>

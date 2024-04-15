@@ -1,7 +1,7 @@
-#include "../../include/Net/ProtocolHandler.hpp"
-#include "../../include/Net/ClassicProtocol.hpp"
-#include "../../include/Net/ExtendedProtocol.hpp"
-#include "../../include/Net/Client.hpp"
+#include "ProtocolHandler.hpp"
+#include "ClassicProtocol.hpp"
+#include "ExtendedProtocol.hpp"
+#include "Client.hpp"
 
 using namespace Net;
 
@@ -77,11 +77,9 @@ ProtocolHandler::MessageStatus ProtocolHandler::HandleMessage(std::shared_ptr<Ne
 			return MessageStatus::kNotReady;
 
 		handledOpcode = entry.second->HandleOpcode(opcode, client, reader);
-		if (handledOpcode) {
-			//std::cout << "Opcode " << static_cast<int>(opcode) << " handled by protocol: " << entry.first << "\n" << std::endl;
-			return MessageStatus::kSuccess;
-		}
+		if (handledOpcode)
+			break;
 	}
 
-	return MessageStatus::kUnknownOpcode;
+	return handledOpcode ? MessageStatus::kSuccess : MessageStatus::kUnknownOpcode;
 }

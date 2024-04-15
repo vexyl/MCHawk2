@@ -1,4 +1,4 @@
-#include "../../include/Net/SocketBuffer.hpp"
+#include "SocketBuffer.hpp"
 
 using namespace Net;
 

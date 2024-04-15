@@ -1,6 +1,6 @@
-#include "../../include/Net/Client.hpp"
+#include "Client.hpp"
 
-#include "../../include/Net/Packet.hpp"
+#include "Packet.hpp"
 
 #include <iostream>
 
