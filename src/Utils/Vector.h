@@ -30,14 +30,6 @@ struct Vector {
 	Vector Normalized() const;
 	Vector Cross(const Vector& v) const;
 	float DotProduct(const Vector& v) const;
-
-	// For bindings
-	void SetX(float x) { this->x = x; }
-	void SetY(float y) { this->y = y; }
-	void SetZ(float z) { this->z = z; }
-	int16_t GetX() { return static_cast<int16_t>(x); }
-	int16_t GetY() { return static_cast<int16_t>(y); }
-	int16_t GetZ() { return static_cast<int16_t>(z); }
 };
 } // namespace Utils
 
