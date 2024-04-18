@@ -1,7 +1,7 @@
 #ifndef SOCKET_BUFFER_H_
 #define SOCKET_BUFFER_H_
 
-#include "../Utils/BufferStream.h"
+#include "../../Utils/BufferStream.h"
 
 #include <cstdint>
 

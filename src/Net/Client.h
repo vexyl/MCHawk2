@@ -1,7 +1,7 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
-#include "../Net/TCPSocket.h"
+#include "Socket/TCPSocket.h"
 
 #include <list>
 #include <memory>

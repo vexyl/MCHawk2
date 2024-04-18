@@ -2,8 +2,8 @@
 #define EXTENDEDPROTOCOL_H_
 
 #include "IProtocol.h"
-#include "Packet.h"
-#include "../Utils/MCString.h"
+#include "../Packet.h"
+#include "../../Utils/MCString.h"
 
 #include <map>
 #include <memory>

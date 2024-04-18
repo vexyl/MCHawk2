@@ -1,6 +1,6 @@
 #include "Server.h"
 
-#include "Net/TCPSocket.h"
+#include "Net/Socket/TCPSocket.h"
 #include "Utils/Utils.h"
 
 using namespace Net;

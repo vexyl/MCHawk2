@@ -3,7 +3,7 @@
 
 #include "IServer.h"
 #include "Net/Client.h"
-#include "Net/ClassicProtocol.h"
+#include "Net/Protocols/ClassicProtocol.h"
 #include "Map.h"
 #include "MapGen.h"
 #include "Utils/Utils.h"

@@ -1,8 +1,8 @@
 #ifndef PROTOCOLHANDLER_H_
 #define PROTOCOLHANDLER_H_
 
-#include "../Net/IProtocol.h"
-#include "../Net/TCPSocket.h"
+#include "Protocols/IProtocol.h"
+#include "Socket/TCPSocket.h"
 
 #include <string>
 #include <map>
