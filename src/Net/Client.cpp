@@ -6,8 +6,6 @@
 
 using namespace Net;
 
-int8_t Client::sid = 0;
-
 bool Client::TrySocketReceive(size_t packetSize, Utils::BufferStream& reader) const
 {
 	return m_socket->Receive(reader);

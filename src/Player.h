@@ -16,7 +16,7 @@ class World;
 
 class Player final : public Entity {
 public:
-	typedef std::shared_ptr<Player> PlayerPtr;
+	typedef std::shared_ptr<Player> Ptr;
 	static const int kMaxHotbarSlots = 9;
 
 	int heldBlock = 0;

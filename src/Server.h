@@ -13,9 +13,10 @@
 #include "World.h"
 #include "Player.h"
 #include "CPEEntry.h"
+#include "Linker.h"
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <memory>
 
 class Server final : public IServer {
@@ -38,8 +39,7 @@ public:
 	}
 
 	std::shared_ptr<World> GetWorldByName(std::string name);
-	Player::PlayerPtr GetPlayer(uint8_t pid);
-	std::map<std::string, std::shared_ptr<World>> GetWorlds() { return m_worlds; }
+	std::unordered_map<std::string, std::shared_ptr<World>> GetWorlds() { return m_worlds; }
 	virtual uint8_t GetCPEEntryVersion(std::string name) const override;
 	uint16_t GetExtensionCount() const { return static_cast<uint16_t>(m_cpeEntries.size()); }
 
@@ -59,13 +59,12 @@ private:
 	Utils::Logger::Ptr m_logger;
 	Net::ProtocolHandler m_protocolHandler;
 	Net::TCPSocket m_socket;
-
+	Linker m_linker;
 	bool m_running = true;
 
 	std::vector<std::shared_ptr<Net::Client>> m_unauthorizedClients;
-	std::map<int8_t, std::shared_ptr<Player>> m_players;
-	std::map<std::string, std::shared_ptr<World>> m_worlds;
-	std::map<std::string, CPEEntry> m_cpeEntries;
+	std::unordered_map<std::string, std::shared_ptr<World>> m_worlds;
+	std::unordered_map<std::string, CPEEntry> m_cpeEntries;
 
 	std::string m_serverName, m_serverMOTD;
 

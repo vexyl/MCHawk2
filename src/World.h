@@ -16,6 +16,14 @@
 #include <vector>
 #include <memory>
 
+class EntityReplicator final {
+public:
+
+
+private:
+
+};
+
 class World final {
 public:
 	enum class WeatherType {
@@ -54,7 +62,7 @@ public:
 	std::shared_ptr<Map> GetMap() { return m_map; }
 	Utils::Vector GetSpawnPosition() const { return m_spawnPosition; }
 	std::string GetName() const { return m_name; }
-	const std::vector<Player::PlayerPtr>& GetPlayers() const { return m_players; }
+	const std::vector<Player::Ptr>& GetPlayers() const { return m_players; }
 	WeatherType GetWeatherType() const { return m_weatherType; }
 
 	void SetMap(std::shared_ptr<Map> map) { m_map = std::move(map); }
@@ -62,19 +70,19 @@ public:
 	void SetEnvironmentSetting(EnvironmentType type, Utils::Color color);
 	void SetWeatherType(WeatherType type);
 
-	void AddPlayer(Player::PlayerPtr player);
+	void AddPlayer(Player::Ptr player);
 	void RemovePlayer(int8_t pid);
 
 	void AddBlockDef(BlockDef def);
 
 	void Update();
 
-	void SendWeatherType(Player::PlayerPtr player);
-	void SendBlockDefinitions(Player::PlayerPtr player);
-	void SendBlockPermissions(Player::PlayerPtr player);
+	void SendWeatherType(Player::Ptr player);
+	void SendBlockDefinitions(Player::Ptr player);
+	void SendBlockPermissions(Player::Ptr player);
 
-	void OnSetBlockPacket(Player::PlayerPtr player, const Net::ClassicProtocol::SetBlockPacket& packet);
-	void OnPositionOrientationPacket(Player::PlayerPtr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
+	void OnSetBlockPacket(Player::Ptr player, const Net::ClassicProtocol::SetBlockPacket& packet);
+	void OnPositionOrientationPacket(Player::Ptr player, const Net::ClassicProtocol::PositionOrientationPacket& packet);
 
 private:
 	static int8_t pid;
@@ -85,7 +93,7 @@ private:
 	TaskManager m_taskManager;
 	std::string m_name;
 	Utils::Vector m_spawnPosition;
-	std::vector<Player::PlayerPtr> m_players;
+	std::vector<Player::Ptr> m_players;
 	WeatherType m_weatherType;
 	std::vector<BlockDef> m_blockDefinitions;
 	environment m_env;
