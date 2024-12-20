@@ -47,6 +47,7 @@ void TaskManager::UpdateTasks()
 
 std::weak_ptr<Task> TaskManager::AttachTask(std::shared_ptr<Task> task)
 {
+	task->OnInit();
 	m_taskList.push_back(task);
 	return std::weak_ptr<Task>(task);
 }

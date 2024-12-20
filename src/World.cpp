@@ -58,7 +58,6 @@ void World::AddPlayer(Player::Ptr player)
 	player->SetPID(pid);
 	player->SetPosition(m_spawnPosition);
 
-	client->SetTemporaryPacketQueue(true);
 	std::shared_ptr<Task> task(new SendLevelTask(this, client));
 	m_taskManager.AttachTask(task);
 

@@ -4,6 +4,7 @@
 #include "SocketBuffer.h"
 
 #include <string>
+#include <memory>
 
 #ifdef _WIN32
 #include <winsock2.h>

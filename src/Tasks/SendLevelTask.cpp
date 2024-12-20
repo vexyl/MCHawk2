@@ -76,7 +76,9 @@ int MapDeflateContext::CompressNextChunk()
 void SendLevelTask::OnInit()
 {
 	Task::OnInit();
-
+	
+	m_client->SetTemporaryPacketQueue(true);
+	
 	auto levelInitializePacket = Net::ClassicProtocol::MakeLevelInitializePacket();
 
 	std::shared_ptr<Map> map = m_world->GetMap();
