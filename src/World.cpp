@@ -7,7 +7,7 @@ using namespace Net;
 
 #pragma region HelperMacros
 #define FOREACH_PLAYER(player_arg, client_arg) \
-	for (Player::PlayerPtr player_arg : m_players)  { \
+	for (Player::Ptr player_arg : m_players)  { \
 			std::shared_ptr<Client> client_arg = player_arg->GetClient();
 #define END_FOREACH_PLAYER }
 #pragma endregion
@@ -44,13 +44,13 @@ void World::SetWeatherType(WeatherType type)
 {
 	if (m_weatherType != type) {
 		m_weatherType = type;
-		for (Player::PlayerPtr player : m_players)
+		for (Player::Ptr player : m_players)
 			SendWeatherType(player);
 	}
 }
 
 // FIXME: Too long, break up into multiple functions
-void World::AddPlayer(Player::PlayerPtr player)
+void World::AddPlayer(Player::Ptr player)
 {
 	std::shared_ptr<Client> client = player->GetClient();
 	int8_t pid = World::pid++;
@@ -152,7 +152,7 @@ void World::AddPlayer(Player::PlayerPtr player)
 void World::RemovePlayer(int8_t pid)
 {
 	auto iter = std::find_if(m_players.begin(), m_players.end(),
-		[pid](const Player::PlayerPtr player) { return player->GetPID() == pid; });
+		[pid](const Player::Ptr player) { return player->GetPID() == pid; });
 
 	assert(iter != m_players.end());
 
@@ -176,14 +176,14 @@ void World::Update()
 	m_taskManager.UpdateTasks();
 }
 
-void World::SendWeatherType(Player::PlayerPtr player)
+void World::SendWeatherType(Player::Ptr player)
 {
 	uint8_t version = m_server.GetCPEEntryVersion("EnvWeatherType");
 	if (player->HasCPEEntry("EnvWeatherType", version))
 		player->GetClient()->QueuePacket(Net::ExtendedProtocol::MakeEnvSetWeatherTypePacket(static_cast<uint8_t>(m_weatherType)));
 }
 
-void World::SendBlockDefinitions(Player::PlayerPtr player)
+void World::SendBlockDefinitions(Player::Ptr player)
 {
 	uint8_t version = player->GetCPEEntryVersion("BlockDefinitions");
 	if (version == 0)
@@ -230,12 +230,12 @@ void World::SendBlockDefinitions(Player::PlayerPtr player)
 	}
 }
 
-void World::SendBlockPermissions(Player::PlayerPtr player)
+void World::SendBlockPermissions(Player::Ptr player)
 {
 	// TODO
 }
 
-void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::SetBlockPacket& packet)
+void World::OnSetBlockPacket(Player::Ptr player, const ClassicProtocol::SetBlockPacket& packet)
 {
 	std::shared_ptr<Client> client = player->GetClient();
 
@@ -275,7 +275,7 @@ void World::OnSetBlockPacket(Player::PlayerPtr player, const ClassicProtocol::Se
 	END_FOREACH_PLAYER
 }
 
-void World::OnPositionOrientationPacket(Player::PlayerPtr player, const ClassicProtocol::PositionOrientationPacket& packet)
+void World::OnPositionOrientationPacket(Player::Ptr player, const ClassicProtocol::PositionOrientationPacket& packet)
 {
 	int8_t srcPid = player->GetPID();
 	Utils::Vector position = player->GetPosition();

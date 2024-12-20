@@ -1,8 +1,6 @@
 #ifndef ISERVER
 #define ISERVER
 
-#include "Net/ProtocolHandler.h"
-
 #include <string>
 
 #include <cstdint>

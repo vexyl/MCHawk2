@@ -5,6 +5,8 @@
 
 using namespace Net;
 
+int64_t Linker::NextId = 0;
+
 Server::Server()
 {
 	m_logger = std::make_shared<Utils::Logger>("log.txt");
@@ -22,13 +24,6 @@ std::shared_ptr<World> Server::GetWorldByName(std::string name)
 	if (iter != m_worlds.end())
 		world = iter->second;
 	return world;
-}
-
-Player::PlayerPtr Server::GetPlayer(uint8_t pid)
-{
-	auto iter = m_players.find(pid);
-	assert(iter != m_players.end());
-	return iter->second;
 }
 
 uint8_t Server::GetCPEEntryVersion(std::string name) const
@@ -65,8 +60,9 @@ void Server::SendWrappedMessage(std::shared_ptr<Client> client, std::string mess
 
 void Server::BroadcastMessage(std::string message, int messageType)
 {
-	for (auto& player : m_players)
-		SendWrappedMessage(player.second->GetClient(), message, messageType);
+	auto players = m_linker.GetAll<Player>();
+	for (auto& player : players)
+		SendWrappedMessage(player->GetClient(), message, messageType);
 }
 
 void Server::Init()
@@ -117,7 +113,7 @@ void Server::Init()
 		[this](std::shared_ptr<Client> client, const ExtendedProtocol::ExtEntryPacket& packet)
 		{
 			//std::cout << "ExtEntry: " << packet.extName.ToString() << " | " << packet.version << std::endl;
-			Player::PlayerPtr player = GetPlayer(client->GetSID());
+			Player::Ptr player = m_linker.Get<Player>(client->GetId());
 			std::string extName = packet.extName.ToString();
 			auto search = m_cpeEntries.find(extName);
 			if (search == m_cpeEntries.end() || packet.version != search->second.version)
@@ -246,18 +242,20 @@ void Server::ProcessUnauthorizedClients()
 
 void Server::UpdatePlayers()
 {
-	auto iter = m_players.begin();
-	while (iter != m_players.end()) {
-		Player::PlayerPtr player = iter->second;
+	auto players = m_linker.GetAll<Player>();
+	auto iter = players.begin();
+	while (iter != players.end()) {
+		Player::Ptr player = *iter;
 		std::shared_ptr<Client> client = player->GetClient();
-		std::string name = iter->second->GetName();
+		std::string name = player->GetName();
 
 		if (!client->IsSocketActive())
 			client->Kill();
 
 		if (!client->KeepAlive()) {
-			iter->second->GetWorld()->RemovePlayer(player->GetPID());
-			iter = m_players.erase(iter);
+			player->GetWorld()->RemovePlayer(player->GetPID());
+			m_linker.Remove<Player>(client->GetId());
+			iter = players.erase(iter);
 			BroadcastMessage("&e" + name + " disconnected");
 			LOG(LOGLEVEL_INFO, "Player '%s' disconnected (%s)", name.c_str(), client->GetIPAddress().c_str());
 			continue;
@@ -306,6 +304,13 @@ bool Server::Update()
 void Server::Shutdown()
 {
 	LOG(LOGLEVEL_DEBUG, "Shutting down...");
+	auto players = m_linker.GetAll<Player>();
+	for (auto& player : players) {
+		auto client = player->GetClient();
+		client->QueuePacket(ClassicProtocol::MakeDisconnectPlayerPacket(Utils::MCString("Server shut down")));
+		client->ProcessPacketsInQueue();
+	}
+
 	m_running = false;
 }
 
@@ -319,14 +324,13 @@ void Server::OnAuthenticationPacket(std::shared_ptr<Client> client, const Classi
 {
 	std::string name = packet.name.ToString();
 
-	LOG(LOGLEVEL_INFO, "Player '%s' authorized with key %s", name.c_str(), packet.key.ToString().c_str());
+	LOG(LOGLEVEL_INFO, "Client '%s' authorized with key %s", name.c_str(), packet.key.ToString().c_str());
 	BroadcastMessage("&e" + name + " connected");
 
-	auto pair = m_players.emplace(client->GetSID(), std::make_shared<Player>(client));
+	Player::Ptr player = std::make_shared<Player>(client);
 
-	assert(pair.second == true);
-
-	Player::PlayerPtr player = pair.first->second;
+	m_linker.Add<Player>(player);
+	client->SetId(player->GetId());
 	player->SetName(name);
 
 	client->QueuePacket(ClassicProtocol::MakeServerIdentificationPacket(ClassicProtocol::kVersion, m_serverName, m_serverMOTD, 0));
@@ -346,19 +350,20 @@ void Server::OnAuthenticationPacket(std::shared_ptr<Client> client, const Classi
 
 void Server::OnSetBlockPacket(std::shared_ptr<Client> client, const ClassicProtocol::SetBlockPacket& packet)
 {
-	Player::PlayerPtr player = GetPlayer(client->GetSID());
+	Player::Ptr player = m_linker.Get<Player>(client->GetId());
 	player->GetWorld()->OnSetBlockPacket(player, packet);
 }
 
 void Server::OnPositionOrientationPacket(std::shared_ptr<Client> client, const ClassicProtocol::PositionOrientationPacket& packet)
 {
-	Player::PlayerPtr player = GetPlayer(client->GetSID());
+	Player::Ptr player = m_linker.Get<Player>(client->GetId());
 	player->GetWorld()->OnPositionOrientationPacket(player, packet);
 }
 
 void Server::OnMessagePacket(std::shared_ptr<Client> client, const ClassicProtocol::MessagePacket& packet)
 {
-	std::string playerName = GetPlayer(client->GetSID())->GetName();
+	Player::Ptr player = m_linker.Get<Player>(client->GetId());
+	std::string playerName = player->GetName();
 	std::string message = playerName + ": " + packet.message.ToString();
 	LOG(LOGLEVEL_NORMAL, message.c_str());
 	BroadcastMessage(message);
